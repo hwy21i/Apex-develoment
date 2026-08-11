@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import 'tailwindcss';
+
+@theme inline {
+  --color-bg: #F8F5EF;
+  --color-surface: #FFFFFF;
+  --color-panel: #F2EFE8;
+  --color-border: rgba(11,31,58,0.1);
+  --color-gold: #C9A227;
+  --color-gold-dim: rgba(201,162,39,0.1);
+  --color-navy: #0B1F3A;
+  --color-navy-mid: #1a3a60;
+  --color-green: #2a7d4f;
+  --color-red: #b03a2e;
+  --color-muted: rgba(51,51,51,0.38);
+  --color-text: #333333;
+  --color-text-dim: rgba(51,51,51,0.55);
+  --font-slab: 'Roboto Slab', serif;
+  --font-sans: 'Work Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0F1115;
+  color: #E4E5E7;
+  font-family: 'Work Sans', sans-serif;
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2a3044; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #3a4460; }
