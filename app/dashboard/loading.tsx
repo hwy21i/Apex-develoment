@@ -1,0 +1,1 @@
+export default function DashboardLoading() { return <main className="min-h-screen bg-slate-50 p-8"><div className="mx-auto grid max-w-7xl animate-pulse gap-4 sm:grid-cols-4">{[1,2,3,4,5,6].map((item) => <div key={item} className="h-36 rounded-2xl bg-slate-200" />)}</div></main>; }

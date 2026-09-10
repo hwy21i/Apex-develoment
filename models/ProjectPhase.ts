@@ -1,0 +1,3 @@
+import { Schema, model, models } from "mongoose";
+const schema = new Schema({ projectId: { type: Schema.Types.ObjectId, ref: "Project", required: true, index: true }, name: { type: String, required: true }, description: String, plannedStart: Date, plannedEnd: Date, actualStart: Date, actualEnd: Date, plannedPercentage: { type: Number, required: true, min: 0, max: 100 }, actualPercentage: { type: Number, default: 0, min: 0, max: 100 }, status: String, order: Number, assignedUsers: [{ type: Schema.Types.ObjectId, ref: "User" }] }, { timestamps: true });
+export const ProjectPhase = models.ProjectPhase || model("ProjectPhase", schema);

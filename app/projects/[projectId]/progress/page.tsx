@@ -1,0 +1,2 @@
+import ProjectModuleEmpty from "@/components/project/ProjectModuleEmpty"; import { getProject } from "@/lib/services/project-data";
+export default async function Page({ params }: { params: Promise<{ projectId: string }> }) { const { projectId } = await params; return <ProjectModuleEmpty title="Progress" description="Task completion and approved progress updates." project={await getProject(projectId)} />; }

@@ -4,25 +4,33 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 const P = {
-  bg: '#0F1115',
+  bg: '#F4F5F7',
   nav: '#16181D',
-  panel: '#2A2D34',
-  border: '#3F434C',
-  brass: '#C9A15A',
-  brassDim: 'rgba(201,161,90,0.1)',
-  brassGlow: 'rgba(201,161,90,0.18)',
-  rust: '#D4772E',
-  green: '#3a9e6e',
-  text: '#E4E5E7',
-  textDim: 'rgba(228,229,231,0.52)',
-  textMuted: 'rgba(228,229,231,0.28)',
+  panel: '#FFFFFF',
+  border: '#D9DEE5',
+  brass: '#3B82B6',
+  brassDim: 'rgba(59,130,182,0.1)',
+  brassGlow: 'rgba(59,130,182,0.22)',
+  rust: '#DC3545',
+  green: '#22A06B',
+  text: '#17191D',
+  textDim: '#69707D',
+  textMuted: '#8A929E',
 }
 
+// FOUND: "$56.4" appears below as the Portfolio Value
 const STATS = [
   { value: '214', label: 'Crew Deployed' },
-  { value: '$56.4M', label: 'Portfolio Value' },
+  { value: '56.4M', label: 'Portfolio Value' },
   { value: '4', label: 'Active Projects' },
   { value: '98%', label: 'On-Time Delivery' },
+]
+
+const PROJECTS_PREVIEW = [
+  { name: 'Addis Heights Tower A', type: 'High-Rise Commercial', progress: 67, status: 'Active' },
+  { name: 'Harbor Logistics Hub', type: 'Industrial Logistics', progress: 38, status: 'Active' },
+  { name: 'Greenfield Eco-Resort', type: 'Hospitality', progress: 12, status: 'Active' },
+  { name: 'Eastside Health Center', type: 'Healthcare Infrastructure', progress: 81, status: 'Delayed' },
 ]
 
 const FEATURES = [
@@ -47,13 +55,6 @@ const FEATURES = [
     body: 'Board-ready summaries generated from live project data. One source of truth for leadership, clients, and site leads.',
   },
 ]
-
-const PROJECTS_PREVIEW = [
-  { name: 'Westfield Tower A', type: 'High-Rise Residential', progress: 67, status: 'On Track' },
-  { name: 'Harbor Bridge Rehab', type: 'Civil Infrastructure', progress: 38, status: 'On Track' },
-  { name: 'Eastside Medical Center', type: 'Healthcare Facility', progress: 81, status: 'Delayed' },
-]
-
 function Bar({ pct, color = P.brass }: { pct: number; color?: string }) {
   return (
     <div style={{ background: 'rgba(63,67,76,0.5)', borderRadius: 99, height: 2, overflow: 'hidden' }}>
@@ -104,13 +105,13 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 66 }}>
           <div className="flex items-center gap-2">
             <div style={{ width: 3, height: 20, background: P.brass, borderRadius: 99 }} />
-            <span style={{ fontFamily: 'Roboto Slab, serif', fontSize: 15, fontWeight: 700, color: P.text, letterSpacing: '-0.01em' }}>
+            <span style={{ fontFamily: 'Roboto Slab, serif', fontSize: 15, fontWeight: 700, color: '#E4E5E7', letterSpacing: '-0.01em' }}>
               Apex <span style={{ color: P.brass }}>Developments</span>
             </span>
           </div>
           <nav className="flex items-center gap-8">
-            {[['Platform', '/platform'], ['Projects', '/projects'], ['About', '/about']].map(([label, href]) => (
-              <Link key={href} href={href} style={{ fontFamily: 'Work Sans', fontSize: 13, color: P.textDim, textDecoration: 'none', fontWeight: 500, transition: 'color 0.15s' }}
+            {[['Platform', '/platform'], ['About', '/about']].map(([label, href]) => (
+              <Link key={href} href={href} style={{ fontFamily: 'Work Sans', fontSize: 13, color: '#C8CFD8', textDecoration: 'none', fontWeight: 500, transition: 'color 0.15s' }}
                 onMouseOver={e => (e.currentTarget.style.color = P.text)}
                 onMouseOut={e => (e.currentTarget.style.color = P.textDim)}>{label}</Link>
             ))}
@@ -167,7 +168,7 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
             </div>
 
             <h1 style={{
-              fontFamily: 'Roboto Slab, serif', fontSize: 56, fontWeight: 700, color: P.text,
+              fontFamily: 'Roboto Slab, serif', fontSize: 56, fontWeight: 700, color: '#E4E5E7',
               lineHeight: 1.08, letterSpacing: '-0.03em', marginBottom: 24,
             }}>
               Built for those<br />
@@ -175,7 +176,7 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
               the world.
             </h1>
 
-            <p style={{ fontSize: 16, color: P.textDim, lineHeight: 1.75, marginBottom: 40, maxWidth: 430 }}>
+            <p style={{ fontSize: 16, color: '#C8CFD8', lineHeight: 1.75, marginBottom: 40, maxWidth: 430 }}>
               Apex Developments unifies project management, budget intelligence, and crew coordination into one executive-grade platform — purpose-built for construction at scale.
             </p>
 
@@ -230,7 +231,7 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
                 </div>
               ))}
               <div style={{ padding: '13px 20px', background: 'rgba(201,161,90,0.06)', display: 'flex', justifyContent: 'space-between', borderTop: `1px solid ${P.border}` }}>
-                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: P.textMuted }}>4 projects · 214 crew</span>
+                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: P.textMuted }}> · 214 crew</span>
                 <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: P.brass }}>$56.4M portfolio</span>
               </div>
             </div>
@@ -307,10 +308,10 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
           <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: P.brass, letterSpacing: '0.22em', marginBottom: 20, textTransform: 'uppercase' }}>Est. 2020</div>
           <blockquote style={{
             fontFamily: 'Roboto Slab, serif', fontSize: 28, fontWeight: 400,
-            color: P.text, maxWidth: 680, lineHeight: 1.45,
+            color: '#E4E5E7', maxWidth: 680, lineHeight: 1.45,
             fontStyle: 'italic', letterSpacing: '-0.01em',
           }}>
-            "The difference between a good project and a great one is the intelligence behind every decision."
+            &ldquo;The difference between a good project and a great one is the intelligence behind every decision.&rdquo;
           </blockquote>
           <div style={{ marginTop: 22, fontFamily: 'Work Sans', fontSize: 12, color: P.textMuted }}>— D. Marchetti, Site Foreman · Westfield Tower A</div>
         </div>

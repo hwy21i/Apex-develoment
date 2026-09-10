@@ -7,12 +7,22 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "format": "oxfmt"
+    "seed": "node --env-file=.env.local scripts/seed.mjs",
+    "seed:projects": "node --env-file=.env.local scripts/add-sample-projects.mjs",
+    "format": "oxfmt",
+    "lint": "eslint ."
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "jose": "^6.2.8",
+    "lucide-react": "^1.41.0",
+    "mongoose": "^9.9.2",
     "next": "^16.3.0",
+    "pdfkit": "^0.19.1",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "xlsx": "^0.18.5",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",

@@ -2,8 +2,8 @@ import "./index.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Apex Developments",
-  description: "Elegant Construction Management System",
+  title: "ConstructFlow | Construction ERP",
+  description: "Construction project management ERP",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

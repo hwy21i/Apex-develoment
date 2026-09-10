@@ -1,0 +1,2 @@
+import ProjectModuleEmpty from "@/components/project/ProjectModuleEmpty"; import { getProject } from "@/lib/services/project-data";
+export default async function Page({ params }: { params: Promise<{ projectId: string }> }) { const { projectId } = await params; return <ProjectModuleEmpty title="Materials" description="Project materials, stock levels, suppliers, and low-stock warnings." project={await getProject(projectId)} />; }
