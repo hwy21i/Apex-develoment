@@ -4,14 +4,19 @@ import { connectToDatabase } from "@/lib/db/mongodb";
 import { Project } from "@/models/Project";
 import { Task } from "@/models/Task";
 import { ProjectSummary } from "@/types/project";
+import { getActiveUser } from "@/lib/auth/guard";
+import { canAccessProject } from "@/lib/services/access";
 
 export async function getProject(projectId: string): Promise<ProjectSummary> {
+  const user = await getActiveUser();
+  if (!user) notFound();
   await connectToDatabase();
   const filter = mongoose.isObjectIdOrHexString(projectId)
     ? { _id: projectId }
     : { projectCode: projectId.toUpperCase() };
   const project = await Project.findOne(filter).populate("projectManager", "fullName").lean();
   if (!project) notFound();
+  if (!(await canAccessProject(user, String(project._id)))) notFound();
   return JSON.parse(JSON.stringify(project)) as ProjectSummary;
 }
 

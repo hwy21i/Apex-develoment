@@ -8,154 +8,83 @@ import {
   Building2,
   Users2,
   CheckSquare,
-  Milestone,
-  Calendar,
-  GitBranch,
   Boxes,
-  Warehouse,
-  ArrowLeftRight,
-  TrendingDown,
-  ShoppingBag,
-  FileText,
   Truck,
-  Receipt,
-  FileCheck,
-  UserSquare2,
-  HardHat,
-  Clock,
-  Briefcase,
-  Wrench,
-  Cog,
-  DollarSign,
   CreditCard,
-  Banknote,
-  PieChart,
-  FolderLock,
-  FileSignature,
-  Bell,
-  Radio,
-  Globe2,
-  ShieldCheck,
-  ScrollText,
+  FileText,
   Settings,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   LogOut,
   X,
+  Warehouse,
+  ShoppingBag,
+  Calendar,
+  GitBranch,
+  HardHat,
+  UserSquare2,
+  Clock,
+  DollarSign,
+  PieChart,
+  FolderLock,
+  ShieldCheck,
 } from "lucide-react";
 import { RoleType, SYSTEM_ROLES } from "@/types/erp";
+import { ApexLogo } from "@/components/brand/ApexLogo";
 
-export interface NavGroup {
+export interface NavItem {
   label: string;
-  items: {
-    label: string;
-    href: string;
-    icon: React.ComponentType<{ className?: string }>;
-    badge?: string;
-  }[];
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
 }
 
-export const ERP_NAV_GROUPS: NavGroup[] = [
+// Primary construction operations navigation.
+export const PRIMARY_ERP_NAV: NavItem[] = [
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Projects", href: "/projects", icon: Building2 },
+  { label: "Tasks", href: "/tasks", icon: CheckSquare },
+  { label: "Materials & Inventory", href: "/inventory", icon: Boxes },
+  { label: "Equipment", href: "/equipment", icon: Truck },
+  { label: "Payments", href: "/finance/payments", icon: CreditCard },
+  { label: "Reports", href: "/reports", icon: FileText },
+  { label: "Clients", href: "/clients", icon: Users2 },
+  { label: "Settings", href: "/administration/settings", icon: Settings },
+];
+
+// Extended ERP Modules accessible via collapsible section so no routes are broken
+export const SECONDARY_ERP_NAV = [
   {
-    label: "MAIN",
+    group: "Planning & Timeline",
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+      { label: "Calendar", href: "/calendar", icon: Calendar },
+      { label: "Timeline", href: "/timeline", icon: GitBranch },
     ],
   },
   {
-    label: "PROJECT MANAGEMENT",
+    group: "Materials & Procurement",
     items: [
-      { label: "Projects", href: "/projects", icon: Building2 },
-      { label: "Clients", href: "/clients", icon: Users2 },
-      { label: "Tasks", href: "/tasks", icon: CheckSquare },
-      { label: "Milestones", href: "/milestones", icon: Milestone },
-      { label: "Project Calendar", href: "/calendar", icon: Calendar },
-      { label: "Project Timeline", href: "/timeline", icon: GitBranch },
-    ],
-  },
-  {
-    label: "MATERIALS & INVENTORY",
-    items: [
-      { label: "Materials", href: "/materials", icon: Boxes },
-      { label: "Inventory", href: "/inventory", icon: Boxes },
+      { label: "Materials Catalog", href: "/materials", icon: Boxes },
       { label: "Warehouses", href: "/warehouses", icon: Warehouse },
-      { label: "Stock Movements", href: "/stock-movements", icon: ArrowLeftRight },
-      { label: "Material Usage", href: "/material-usage", icon: TrendingDown },
+      { label: "Purchase Orders", href: "/procurement/orders", icon: ShoppingBag },
     ],
   },
   {
-    label: "PROCUREMENT",
-    items: [
-      { label: "Material Requests", href: "/procurement/requests", icon: ShoppingBag },
-      { label: "Purchase Orders", href: "/procurement/orders", icon: FileText },
-      { label: "Suppliers", href: "/procurement/suppliers", icon: Truck },
-      { label: "Goods Receipts", href: "/procurement/receipts", icon: FileCheck },
-      { label: "Supplier Invoices", href: "/procurement/invoices", icon: Receipt },
-    ],
-  },
-  {
-    label: "PEOPLE",
+    group: "Workforce",
     items: [
       { label: "Employees", href: "/people/employees", icon: UserSquare2 },
-      { label: "Workers", href: "/people/workers", icon: HardHat },
+      { label: "Site Workers", href: "/people/workers", icon: HardHat },
       { label: "Attendance", href: "/people/attendance", icon: Clock },
-      { label: "Departments", href: "/people/departments", icon: Briefcase },
     ],
   },
   {
-    label: "EQUIPMENT",
-    items: [
-      { label: "Equipment", href: "/equipment", icon: Wrench },
-      { label: "Equipment Assignments", href: "/equipment/assignments", icon: HardHat },
-      { label: "Maintenance", href: "/equipment/maintenance", icon: Cog },
-    ],
-  },
-  {
-    label: "FINANCE",
+    group: "Finance & Admin",
     items: [
       { label: "Budgets", href: "/finance/budgets", icon: DollarSign },
-      { label: "Expenses", href: "/finance/expenses", icon: CreditCard },
-      { label: "Invoices", href: "/finance/invoices", icon: Receipt },
-      { label: "Payments", href: "/finance/payments", icon: Banknote },
-      { label: "Income", href: "/finance/income", icon: TrendingDown },
       { label: "Financial Overview", href: "/finance/overview", icon: PieChart },
-    ],
-  },
-  {
-    label: "DOCUMENTS",
-    items: [
       { label: "Documents", href: "/documents", icon: FolderLock },
-      { label: "Project Documents", href: "/documents/projects", icon: FileText },
-      { label: "Contracts", href: "/documents/contracts", icon: FileSignature },
-      { label: "Receipts", href: "/documents/receipts", icon: Receipt },
-    ],
-  },
-  {
-    label: "REPORTS",
-    items: [
-      { label: "Project Reports", href: "/reports/projects", icon: FileText },
-      { label: "Financial Reports", href: "/reports/financial", icon: PieChart },
-      { label: "Inventory Reports", href: "/reports/inventory", icon: Boxes },
-      { label: "Procurement Reports", href: "/reports/procurement", icon: ShoppingBag },
-      { label: "Workforce Reports", href: "/reports/workforce", icon: HardHat },
-      { label: "Equipment Reports", href: "/reports/equipment", icon: Wrench },
-    ],
-  },
-  {
-    label: "COMMUNICATION",
-    items: [
-      { label: "Notifications", href: "/notifications", icon: Bell, badge: "3" },
-      { label: "Announcements", href: "/announcements", icon: Radio },
-    ],
-  },
-  {
-    label: "ADMINISTRATION",
-    items: [
-      { label: "Countries & Locations", href: "/administration/locations", icon: Globe2 },
-      { label: "Users", href: "/administration/users", icon: Users2 },
-      { label: "Roles & Permissions", href: "/administration/roles", icon: ShieldCheck },
-      { label: "Audit Logs", href: "/administration/audit-logs", icon: ScrollText },
-      { label: "System Settings", href: "/administration/settings", icon: Settings },
+      { label: "Users & Roles", href: "/administration/users", icon: ShieldCheck },
     ],
   },
 ];
@@ -182,64 +111,63 @@ export default function AppSidebar({
   onLogout,
 }: AppSidebarProps) {
   const pathname = usePathname();
+  const [showExtended, setShowExtended] = useState(false);
 
   return (
     <>
-      {/* ================= MOBILE BACKDROP OVERLAY ================= */}
+      {/* ─── Mobile Backdrop Overlay ─── */}
       {isMobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs lg:hidden transition-opacity duration-300"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs md:hidden transition-opacity duration-300"
           onClick={onMobileClose}
           aria-hidden="true"
         />
       )}
 
-      {/* ================= SIDEBAR CONTAINER ================= */}
+      {/* ─── Sidebar Navigation Container ─── */}
       <aside
         id="app-sidebar"
         aria-label="Main Navigation"
         className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#13151A] border-r border-[#232733] text-slate-300 select-none
-          transition-transform duration-300 ease-in-out lg:translate-x-0
-          ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
-          ${isCollapsed ? "lg:w-20" : "lg:w-64"}
-          w-72 shadow-2xl lg:shadow-none
+          transition-all duration-300 ease-in-out
+          ${isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+          ${isCollapsed ? "md:w-20" : "md:w-64"}
+          w-72 shadow-2xl md:shadow-none
         `}
       >
         {/* Top Branding Section */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-[#232733] bg-[#0F1117]">
+        <div className={`relative h-16 flex items-center border-b border-[#232733] bg-[#0F1117] shrink-0 ${isCollapsed ? "justify-center px-2" : "justify-between px-4"}`}>
           <Link
             href="/dashboard"
             onClick={onMobileClose}
-            className="flex items-center gap-2.5 overflow-hidden"
+            className="flex items-center gap-2.5 min-w-0"
           >
-            <div className="h-9 w-9 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white text-lg tracking-wider shadow-md shrink-0">
-              A
-            </div>
+            <ApexLogo size={36} className="rounded-xl shadow-md shadow-amber-500/30" />
             {!isCollapsed && (
-              <div className="flex flex-col truncate">
-                <span className="text-sm font-bold text-white tracking-wide">
-                  APEX <span className="text-blue-400">ERP</span>
+              <div className="flex flex-col truncate leading-none min-w-0">
+                <span className="text-sm font-extrabold text-white tracking-widest uppercase truncate">
+                  Apex <span className="text-amber-400">Build</span>
                 </span>
-                <span className="text-[10px] text-slate-500 font-mono tracking-wider uppercase">
-                  Construction OS
+                <span className="text-[10px] text-slate-500 font-mono tracking-widest uppercase mt-0.5 truncate">
+                  Construction ERP
                 </span>
               </div>
             )}
           </Link>
 
-          {/* Mobile close button */}
+          {/* Mobile close button (>=44px touch target) */}
           <button
             onClick={onMobileClose}
-            className="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 lg:hidden"
-            aria-label="Close menu"
+            className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 md:hidden transition-colors"
+            aria-label="Close navigation drawer"
           >
             <X className="w-5 h-5" />
           </button>
 
-          {/* Desktop collapse toggle button */}
+          {/* Desktop/Tablet collapse toggle button */}
           <button
             onClick={onToggleCollapse}
-            className="hidden lg:flex p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className={`hidden md:flex rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors ${isCollapsed ? "absolute right-1.5 top-5 p-1" : "p-1.5"}`}
             title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
@@ -252,14 +180,14 @@ export default function AppSidebar({
         </div>
 
         {/* User Role Card */}
-        <div className="px-3 py-3 border-b border-[#232733] bg-[#161820]">
+        <div className="px-3 py-3 border-b border-[#232733] bg-[#161820] shrink-0">
           {!isCollapsed ? (
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-white truncate max-w-[150px]">
+                <span className="text-xs font-semibold text-white truncate max-w-[140px]">
                   {userName}
                 </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
                   {userRole}
                 </span>
               </div>
@@ -267,7 +195,7 @@ export default function AppSidebar({
                 <select
                   value={userRole}
                   onChange={(e) => onRoleChange(e.target.value as RoleType)}
-                  className="w-full text-xs bg-[#1F232E] border border-[#2E3342] text-slate-300 rounded px-2 py-1 outline-none focus:border-blue-500"
+                  className="w-full text-xs bg-[#1F232E] border border-[#2E3342] text-slate-300 rounded-lg px-2 py-1 outline-none focus:border-blue-500 cursor-pointer"
                   aria-label="Switch User Role"
                 >
                   {SYSTEM_ROLES.map((r) => (
@@ -287,59 +215,103 @@ export default function AppSidebar({
           )}
         </div>
 
-        {/* Scrollable Navigation Groups */}
-        <div className="flex-1 overflow-y-auto px-2 py-3 space-y-5 scrollbar-thin scrollbar-thumb-slate-800">
-          {ERP_NAV_GROUPS.map((group) => (
-            <div key={group.label} className="space-y-1">
-              {!isCollapsed ? (
-                <p className="px-2 text-[10px] font-semibold text-slate-500 tracking-wider uppercase font-mono">
-                  {group.label}
-                </p>
-              ) : (
-                <div className="h-px bg-[#232733] my-2 mx-1" />
+        {/* Primary Navigation Items (9 items) */}
+        <div className="flex-1 overflow-y-auto px-2 py-3 space-y-1 scrollbar-thin scrollbar-thumb-slate-800">
+          {!isCollapsed && (
+            <p className="px-2.5 py-1 text-[10px] font-semibold text-slate-500 tracking-wider uppercase font-mono">
+              Construction ERP
+            </p>
+          )}
+
+          {PRIMARY_ERP_NAV.map((item) => {
+            const Icon = item.icon;
+            const isActive =
+              pathname === item.href ||
+              (item.href !== "/dashboard" && pathname?.startsWith(item.href));
+
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={onMobileClose}
+                title={isCollapsed ? item.label : undefined}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all group relative ${
+                  isActive
+                    ? "bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/25"
+                    : "text-slate-400 hover:text-slate-100 hover:bg-[#1E222D]"
+                } ${isCollapsed ? "justify-center px-2" : ""}`}
+              >
+                <Icon className="w-4 h-4 shrink-0" />
+                {!isCollapsed && (
+                  <span className="truncate flex-1 text-xs">{item.label}</span>
+                )}
+                {!isCollapsed && item.badge && (
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950">
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+
+          {/* Extended ERP Modules Dropdown */}
+          {!isCollapsed ? (
+            <div className="pt-3">
+              <button
+                onClick={() => setShowExtended(!showExtended)}
+                className="w-full flex items-center justify-between px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider hover:text-slate-200 transition-colors"
+              >
+                <span>Extended Modules</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    showExtended ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {showExtended && (
+                <div className="space-y-3 mt-2 pl-2 border-l border-[#232733] ml-2">
+                  {SECONDARY_ERP_NAV.map((sec) => (
+                    <div key={sec.group} className="space-y-0.5">
+                      <p className="px-2 text-[9px] font-semibold text-slate-500 uppercase font-mono">
+                        {sec.group}
+                      </p>
+                      {sec.items.map((subItem) => {
+                        const SubIcon = subItem.icon;
+                        const isSubActive = pathname?.startsWith(subItem.href);
+                        return (
+                          <Link
+                            key={subItem.label}
+                            href={subItem.href}
+                            onClick={onMobileClose}
+                            className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[11px] transition-colors ${
+                              isSubActive
+                                ? "bg-amber-500/15 text-amber-300 font-semibold"
+                                : "text-slate-400 hover:text-white hover:bg-[#1E222D]"
+                            }`}
+                          >
+                            <SubIcon className="w-3.5 h-3.5 shrink-0 text-slate-500" />
+                            <span className="truncate">{subItem.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
               )}
-
-              {group.items.map((item) => {
-                const Icon = item.icon;
-                const isActive =
-                  pathname === item.href ||
-                  (item.href !== "/dashboard" && pathname?.startsWith(item.href));
-
-                return (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    onClick={onMobileClose}
-                    title={isCollapsed ? item.label : undefined}
-                    className={`flex items-center gap-3 px-2.5 py-2 rounded-lg text-xs font-medium transition-all group relative ${
-                      isActive
-                        ? "bg-blue-600 text-white font-semibold shadow-md shadow-blue-600/20"
-                        : "text-slate-400 hover:text-slate-100 hover:bg-[#1E222D]"
-                    } ${isCollapsed ? "justify-center" : ""}`}
-                  >
-                    <Icon className="w-4 h-4 shrink-0" />
-                    {!isCollapsed && (
-                      <span className="truncate flex-1">{item.label}</span>
-                    )}
-                    {!isCollapsed && item.badge && (
-                      <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950">
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
             </div>
-          ))}
+          ) : (
+            <div className="h-px bg-[#232733] my-2 mx-1" />
+          )}
         </div>
 
         {/* Bottom User Actions */}
         {onLogout && (
-          <div className="p-3 border-t border-[#232733] bg-[#0F1117]">
+          <div className="p-3 border-t border-[#232733] bg-[#0F1117] shrink-0">
             <button
               onClick={onLogout}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition-colors ${
-                isCollapsed ? "justify-center" : ""
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-semibold text-rose-400 hover:bg-rose-500/10 transition-colors ${
+                isCollapsed ? "justify-center px-2" : ""
               }`}
               title="Logout"
             >
@@ -352,4 +324,3 @@ export default function AppSidebar({
     </>
   );
 }
-

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" fill="none">
+  <!-- Amber background square with rounded corners -->
+  <rect width="36" height="36" rx="9" fill="#F59E0B"/>
+  <!-- Construction "A" / rooftop shape representing Apex Build -->
+  <path d="M18 7L7 29h4.5l2.5-5h8l2.5 5H29L18 7z" fill="#1C1917" opacity="0.9"/>
+  <path d="M18 13l-2.8 6h5.6L18 13z" fill="#F59E0B"/>
+  <!-- Horizontal bar (construction beam) -->
+  <rect x="11" y="22" width="14" height="2.2" rx="1.1" fill="#1C1917" opacity="0.5"/>
+</svg>
+

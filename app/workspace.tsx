@@ -293,66 +293,66 @@ export default function Workspace({
         />
       </div>
 
-      <div className="apex-grid">
-        <section className="apex-panel">
-          <div className="apex-panel-title">
-            <h2>Live Project Status</h2>
-            <button onClick={() => openPage("Projects")}>View All</button>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <section className="bg-white border border-slate-200 rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-slate-900">Live Project Status</h2>
+            <button className="text-blue-600 hover:text-blue-800 text-sm" onClick={() => openPage("Projects")}>View All</button>
           </div>
           {visibleProjects.map((p) => (
-            <div key={p.id} className="apex-row">
+            <div key={p.id} className="grid grid-cols-[1.3fr_1fr_auto] gap-4 items-center py-4 border-t border-slate-100">
               <div>
-                <b>{p.name}</b>
-                <small>
+                <b className="text-sm font-semibold text-slate-900">{p.name}</b>
+                <small className="text-xs text-slate-500 mt-1 block">
                   {p.id} · {p.location}
                 </small>
               </div>
-              <div className="apex-progress">
+              <div className="text-xs">
                 <Bar value={p.progress} color={statusColor(p.health)} />
-                <small>{p.progress}% completed</small>
+                <small className="mt-1 block text-slate-500">{p.progress}% completed</small>
               </div>
-              <em style={{ color: statusColor(p.health) }}>{p.health}</em>
+              <em className="text-xs font-semibold not-italic" style={{ color: statusColor(p.health) }}>{p.health}</em>
             </div>
           ))}
         </section>
 
-        <section className="apex-panel">
-          <div className="apex-panel-title">
-            <h2>Critical Tasks & Milestones</h2>
-            <button onClick={() => openPage("Tasks & Milestones")}>All Tasks</button>
+        <section className="bg-white border border-slate-200 rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold text-slate-900">Critical Tasks & Milestones</h2>
+            <button className="text-blue-600 hover:text-blue-800 text-sm" onClick={() => openPage("Tasks & Milestones")}>All Tasks</button>
           </div>
           {sampleTasks.map((task) => (
-            <div className="apex-task" key={task.name}>
-              <span style={{ background: statusColor(task.priority) }} />
-              <div>
-                <b>{task.name}</b>
-                <small>
+            <div className="flex items-center gap-3 py-3 border-t border-slate-100" key={task.name}>
+              <span className="w-2 h-2 rounded-full" style={{ background: statusColor(task.priority) }} />
+              <div className="flex-1">
+                <b className="text-sm font-semibold text-slate-900">{task.name}</b>
+                <small className="text-xs text-slate-500 block">
                   {task.project} · Due: {task.due}
                 </small>
               </div>
-              <strong>{task.progress}%</strong>
+              <strong className="text-xs font-bold text-blue-700">{task.progress}%</strong>
             </div>
           ))}
         </section>
       </div>
 
-      <div className="apex-grid">
-        <section className="apex-panel">
-          <h2>Financial Realization (Budget vs Actual)</h2>
-          <div className="apex-chart">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <section className="bg-white border border-slate-200 rounded-2xl p-6">
+          <h2 className="text-lg font-bold text-slate-900 mb-4">Financial Realization (Budget vs Actual)</h2>
+          <div className="h-40 flex items-end gap-2 p-2 border-b border-slate-100">
             {[45, 60, 52, 78, 70, 85].map((height, index) => (
-              <div key={index}>
-                <i style={{ height: `${height}%` }} />
+              <div key={index} className="flex-1 h-full flex items-end gap-1">
+                <i className="w-1/2 bg-blue-600 rounded-t-sm" style={{ height: `${height}%` }} />
                 <i
-                  className="actual"
+                  className="w-1/2 bg-amber-500 rounded-t-sm"
                   style={{ height: `${Math.max(18, height - (index % 2 ? 14 : 6))}%` }}
                 />
               </div>
             ))}
           </div>
-          <small>
+          <small className="text-xs text-slate-500 mt-3 block">
             Q1 · Q2 · Q3 · Q4 · Year 2 &nbsp; <b>■ Approved Budget</b>{" "}
-            <b className="actual-text">■ Actual Incurred</b>
+            <b className="text-amber-600">■ Actual Incurred</b>
           </small>
         </section>
 

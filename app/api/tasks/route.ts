@@ -4,6 +4,7 @@ import { requirePermission } from "@/lib/auth/guard";
 import { taskSchema } from "@/lib/validation/schemas";
 import { canAccessProject } from "@/lib/services/access";
 import { Task } from "@/models/Task";
+import { Project } from "@/models/Project";
 import { logAudit } from "@/lib/services/audit";
 
 export const runtime = "nodejs";
@@ -20,6 +21,12 @@ export async function GET(request: Request) {
     const status = searchParams.get("status");
 
     const query: Record<string, unknown> = mine ? { assignedTo: guard.user.id } : {};
+    if (guard.user.role !== "Admin") {
+      const projectIds = await Project.find({
+        $or: [{ projectManager: guard.user.id }, { teamMembers: guard.user.id }],
+      }).distinct("_id");
+      query.projectId = { $in: projectIds };
+    }
     if (projectId) query.projectId = projectId;
     if (status) query.status = status;
 

@@ -4,6 +4,7 @@ import { requirePermission } from "@/lib/auth/guard";
 import { operationalSchema } from "@/lib/validation/schemas";
 import { canAccessProject } from "@/lib/services/access";
 import { Operational } from "@/models/Operational";
+import { Project } from "@/models/Project";
 import { logAudit } from "@/lib/services/audit";
 import { Permission } from "@/types/erp";
 
@@ -49,6 +50,13 @@ export async function GET(
     await connectToDatabase();
     const projectId = new URL(request.url).searchParams.get("projectId");
     const query: Record<string, unknown> = { kind };
+
+    if (guard.user.role !== "Admin") {
+      const projectIds = await Project.find({
+        $or: [{ projectManager: guard.user.id }, { teamMembers: guard.user.id }],
+      }).distinct("_id");
+      query.projectId = { $in: projectIds };
+    }
 
     if (projectId) {
       if (!(await canAccessProject(guard.user, projectId))) {

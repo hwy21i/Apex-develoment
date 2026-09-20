@@ -1,9 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import AppSidebar from "./AppSidebar";
 import AppHeader from "./AppHeader";
 import { RoleType } from "@/types/erp";
+
+interface SearchContextType {
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+}
+
+export const SearchContext = createContext<SearchContextType>({
+  searchQuery: "",
+  setSearchQuery: () => {},
+});
+
+export const useSearch = () => useContext(SearchContext);
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -22,6 +34,19 @@ export default function AppShell({
 }: AppShellProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Responsive sidebar auto-collapse on tablet (768px - 1023px)
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768 && window.innerWidth < 1024) {
+        setIsCollapsed(true);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Close mobile sidebar on Escape key
   useEffect(() => {
@@ -35,40 +60,45 @@ export default function AppShell({
   }, [isMobileOpen]);
 
   return (
-    <div className="min-h-screen bg-[#0F1117] text-slate-100 flex flex-col font-sans">
-      {/* ─── Responsive Left Navigation Sidebar ─── */}
-      <AppSidebar
-        isMobileOpen={isMobileOpen}
-        onMobileClose={() => setIsMobileOpen(false)}
-        isCollapsed={isCollapsed}
-        onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
-        userName={userName}
-        userRole={userRole}
-        onRoleChange={onRoleChange}
-        onLogout={onLogout}
-      />
-
-      {/* ─── Main Content Canvas (Adjusts when desktop sidebar collapses) ─── */}
-      <div
-        className={`flex-1 flex flex-col transition-all duration-300 ease-in-out ${
-          isCollapsed ? "lg:pl-20" : "lg:pl-64"
-        }`}
-      >
-        {/* Top Header */}
-        <AppHeader
-          isMobileSidebarOpen={isMobileOpen}
-          onToggleMobileSidebar={() => setIsMobileOpen(!isMobileOpen)}
+    <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
+      <div className="min-h-screen w-full overflow-x-hidden bg-[#f6f7f8] font-sans text-slate-900">
+        <AppSidebar
+          isMobileOpen={isMobileOpen}
+          onMobileClose={() => setIsMobileOpen(false)}
+          isCollapsed={isCollapsed}
+          onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
           userName={userName}
           userRole={userRole}
+          onRoleChange={onRoleChange}
           onLogout={onLogout}
         />
 
-        {/* Dynamic Page Content */}
-        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          {children}
-        </main>
+        {/* Main Content — offset matches sidebar width at every breakpoint:
+             md (tablet):  sidebar visible, auto-collapsed to 80px  → md:pl-20
+             lg (desktop): sidebar expanded 256px / collapsed 80px  → lg:pl-64 / lg:pl-20 */}
+        <div
+          className={`flex-1 flex flex-col min-w-0 overflow-x-hidden transition-all duration-300 ease-in-out
+            md:pl-20
+            ${isCollapsed ? "lg:pl-20" : "lg:pl-64"}
+          `}
+        >
+          {/* Top Header */}
+          <AppHeader
+            isMobileSidebarOpen={isMobileOpen}
+            onToggleMobileSidebar={() => setIsMobileOpen(!isMobileOpen)}
+            userName={userName}
+            userRole={userRole}
+            onLogout={onLogout}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+
+          {/* Dynamic Page Content */}
+          <main className="mx-auto w-full max-w-[1800px] flex-1 overflow-x-hidden p-4 md:p-6 lg:p-8">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </SearchContext.Provider>
   );
 }
-

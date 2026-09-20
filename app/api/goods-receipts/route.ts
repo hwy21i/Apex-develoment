@@ -4,8 +4,11 @@ import { GoodsReceipt } from "@/models/GoodsReceipt";
 import { InventoryTransaction } from "@/models/InventoryTransaction";
 import { Material } from "@/models/Material";
 import { PurchaseOrder } from "@/models/PurchaseOrder";
+import { Project } from "@/models/Project";
 import { requirePermission } from "@/lib/auth/guard";
 import { logAudit } from "@/lib/services/audit";
+import { canAccessProject } from "@/lib/services/access";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +27,16 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get("limit") || "50", 10), 100);
 
     const filter: Record<string, unknown> = {};
-    if (projectId) filter.projectId = projectId;
+    if (projectId) {
+      if (!(await canAccessProject(authResult.user, projectId))) {
+        return NextResponse.json({ success: false, error: "You do not have access to this project" }, { status: 403 });
+      }
+      filter.projectId = projectId;
+    } else if (authResult.user.role !== "Admin") {
+      filter.projectId = {
+        $in: await Project.find({ $or: [{ projectManager: authResult.user.id }, { teamMembers: authResult.user.id }] }).distinct("_id"),
+      };
+    }
     if (warehouseId) filter.warehouseId = warehouseId;
 
     const receipts = await GoodsReceipt.find(filter)
@@ -75,9 +87,27 @@ export async function POST(request: NextRequest) {
 
     await connectToDatabase();
 
+    if (!(await canAccessProject(user, projectId))) {
+      return NextResponse.json(
+        { success: false, error: "You do not have access to this project" },
+        { status: 403 }
+      );
+    }
+
+    const ids = [purchaseOrderId, projectId, warehouseId, supplierId, ...items.map((item) => item.materialId)];
+    const invalidItem = items.some((item) =>
+      !Number.isFinite(item.receivedQuantity) || item.receivedQuantity <= 0 ||
+      !Number.isFinite(item.unitPrice) || item.unitPrice < 0
+    );
+    if (!ids.every((id) => typeof id === "string" && mongoose.isObjectIdOrHexString(id)) || invalidItem) {
+      return NextResponse.json(
+        { success: false, error: "Invalid goods receipt identifiers, quantities, or prices" },
+        { status: 422 }
+      );
+    }
+
     // Auto-generate sequential GRN number
-    const count = await GoodsReceipt.countDocuments();
-    const grnNumber = `GRN-${new Date().getFullYear()}-${String(count + 1).padStart(4, "0")}`;
+    const grnNumber = `GRN-${new Date().getFullYear()}-${new mongoose.Types.ObjectId().toString().slice(-8).toUpperCase()}`;
 
     // 1. Create the GoodsReceipt record
     const newReceipt = await GoodsReceipt.create({

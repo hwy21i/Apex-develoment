@@ -128,6 +128,95 @@ const City =
     )
   );
 
+const Warehouse =
+  mongoose.models.Warehouse ||
+  mongoose.model(
+    "Warehouse",
+    new mongoose.Schema(
+      {
+        name: { type: String, required: true },
+        code: { type: String, required: true, unique: true },
+        location: String,
+        type: { type: String, default: "CENTRAL" },
+        status: { type: String, default: "ACTIVE" },
+      },
+      { timestamps: true }
+    )
+  );
+
+const Supplier =
+  mongoose.models.Supplier ||
+  mongoose.model(
+    "Supplier",
+    new mongoose.Schema(
+      {
+        name: { type: String, required: true },
+        contactPerson: String,
+        email: String,
+        phone: String,
+        address: String,
+        category: String,
+        rating: { type: Number, default: 4.5 },
+        status: { type: String, default: "ACTIVE" },
+        tinNumber: String,
+        paymentTerms: String,
+      },
+      { timestamps: true }
+    )
+  );
+
+const Material =
+  mongoose.models.Material ||
+  mongoose.model(
+    "Material",
+    new mongoose.Schema(
+      {
+        name: { type: String, required: true },
+        sku: { type: String, required: true, unique: true },
+        category: { type: String, required: true },
+        unitOfMeasure: { type: String, default: "pieces" },
+        minimumStockLevel: { type: Number, default: 10 },
+        currentStock: { type: Number, default: 0 },
+        unitCost: { type: Number, default: 0 },
+        status: { type: String, default: "ACTIVE" },
+      },
+      { timestamps: true }
+    )
+  );
+
+const Milestone =
+  mongoose.models.Milestone ||
+  mongoose.model(
+    "Milestone",
+    new mongoose.Schema(
+      {
+        projectId: { type: mongoose.Schema.Types.ObjectId, ref: "Project", required: true },
+        title: { type: String, required: true },
+        description: String,
+        dueDate: Date,
+        status: { type: String, default: "Pending" },
+      },
+      { timestamps: true }
+    )
+  );
+
+const Notification =
+  mongoose.models.Notification ||
+  mongoose.model(
+    "Notification",
+    new mongoose.Schema(
+      {
+        userId: mongoose.Schema.Types.ObjectId,
+        title: { type: String, required: true },
+        message: { type: String, required: true },
+        type: { type: String, default: "SYSTEM" },
+        link: String,
+        isRead: { type: Boolean, default: false },
+      },
+      { timestamps: true }
+    )
+  );
+
 // ============ Clear Existing Collections ============
 console.log("Cleaning existing database collections...");
 await Promise.all([
@@ -137,6 +226,11 @@ await Promise.all([
   Country.deleteMany({}),
   Region.deleteMany({}),
   City.deleteMany({}),
+  Warehouse.deleteMany({}),
+  Supplier.deleteMany({}),
+  Material.deleteMany({}),
+  Milestone.deleteMany({}),
+  Notification.deleteMany({}),
 ]);
 
 // ============ Seed All 9 ERP Roles ============
@@ -344,6 +438,183 @@ await User.updateMany(
   { _id: { $in: [pmUser._id, engUser._id, clientUser._id] } },
   { $set: { assignedProjects: projects.map((p) => p._id) } }
 );
+
+// ============ Seed Warehouses ============
+console.log("Seeding warehouses & logistics centers...");
+const warehouses = await Warehouse.create([
+  {
+    name: "Central Logistics Hub - Kaliti",
+    code: "WH-ADD-01",
+    location: "Akaki Kality, Addis Ababa",
+    type: "CENTRAL",
+    status: "ACTIVE",
+  },
+  {
+    name: "Addis Heights Site Storage",
+    code: "WH-BOLE-02",
+    location: "Bole Sub-City, Site Block B",
+    type: "PROJECT_SITE",
+    status: "ACTIVE",
+  },
+  {
+    name: "Modjo Corridor Depot",
+    code: "WH-MDJ-03",
+    location: "Modjo Dry Port Industrial Corridor",
+    type: "TRANSIT",
+    status: "ACTIVE",
+  },
+]);
+
+// ============ Seed Qualified Suppliers ============
+console.log("Seeding qualified suppliers...");
+const suppliers = await Supplier.create([
+  {
+    name: "Addis Construction Supply Co.",
+    contactPerson: "Solomon Tadesse",
+    email: "sales@addisconstructionsupply.et",
+    phone: "+251 11 234 5678",
+    address: "Bole Sub-City, Addis Ababa",
+    category: "Cement & Aggregates",
+    rating: 4.8,
+    tinNumber: "0012345678",
+    paymentTerms: "Net 30",
+    status: "ACTIVE",
+  },
+  {
+    name: "Tekle Steel Works Plc",
+    contactPerson: "Tekle Wolde",
+    email: "orders@teklesteel.com",
+    phone: "+251 11 456 7890",
+    address: "Akaki Kality Industrial Zone",
+    category: "Steel & Rebar",
+    rating: 4.7,
+    tinNumber: "0023456789",
+    paymentTerms: "Net 45",
+    status: "ACTIVE",
+  },
+  {
+    name: "Ethiopian Aggregate Industries",
+    contactPerson: "Marta Getachew",
+    email: "info@ethioaggregate.et",
+    phone: "+251 11 345 6789",
+    address: "Gelam Quarry Site, Oromia",
+    category: "Aggregates & Sand",
+    rating: 4.3,
+    tinNumber: "0034567890",
+    paymentTerms: "50% Advance, 50% Delivery",
+    status: "ACTIVE",
+  },
+]);
+
+// ============ Seed Materials Catalog ============
+console.log("Seeding materials catalog with ETB unit pricing...");
+const materials = await Material.create([
+  {
+    name: "Portland Pozzolana Cement (50kg bag)",
+    sku: "MAT-CEM-001",
+    category: "Cement & Aggregates",
+    unitOfMeasure: "bags",
+    minimumStockLevel: 200,
+    currentStock: 1850,
+    unitCost: 1500,
+    status: "ACTIVE",
+  },
+  {
+    name: "High-Yield Deformed Steel Rebar 16mm",
+    sku: "MAT-STL-016",
+    category: "Steel & Rebar",
+    unitOfMeasure: "tons",
+    minimumStockLevel: 15,
+    currentStock: 48,
+    unitCost: 85000,
+    status: "ACTIVE",
+  },
+  {
+    name: "Crushed Basalt Stone 20mm (Gravel)",
+    sku: "MAT-AGG-020",
+    category: "Cement & Aggregates",
+    unitOfMeasure: "m3",
+    minimumStockLevel: 50,
+    currentStock: 340,
+    unitCost: 1650,
+    status: "ACTIVE",
+  },
+  {
+    name: "Washed River Sand",
+    sku: "MAT-SND-001",
+    category: "Cement & Aggregates",
+    unitOfMeasure: "m3",
+    minimumStockLevel: 40,
+    currentStock: 220,
+    unitCost: 1800,
+    status: "ACTIVE",
+  },
+  {
+    name: "Construction Safety Helmet (EN 397)",
+    sku: "MAT-PPE-001",
+    category: "Safety Gear",
+    unitOfMeasure: "pieces",
+    minimumStockLevel: 25,
+    currentStock: 120,
+    unitCost: 850,
+    status: "ACTIVE",
+  },
+]);
+
+// ============ Seed Project Milestones ============
+console.log("Seeding project milestones...");
+await Milestone.create([
+  {
+    projectId: projects[0]._id,
+    title: "Deep Piling & Substructure Foundation Complete",
+    description: "Casting of 120 friction piles and 2.5m thick raft slab foundation",
+    dueDate: new Date("2026-04-30"),
+    status: "Completed",
+  },
+  {
+    projectId: projects[0]._id,
+    title: "Floors 1-15 Concrete Frame Top-Out",
+    description: "Cast-in-place columns, elevator cores, and PT slabs up to level 15",
+    dueDate: new Date("2026-11-30"),
+    status: "In Progress",
+  },
+  {
+    projectId: projects[1]._id,
+    title: "Cold Storage Warehouse Steel Frame Erection",
+    description: "Main portal frames, cold room insulation panels, and overhead crane rails",
+    dueDate: new Date("2026-06-15"),
+    status: "In Progress",
+  },
+]);
+
+// ============ Seed Initial Notifications ============
+console.log("Seeding initial system notifications...");
+await Notification.create([
+  {
+    userId: pmUser._id,
+    title: "Material Request Pending Approval",
+    message: "Requisition MR-2026-001 for 500 bags Portland Cement requires your review.",
+    type: "MATERIAL_REQUEST",
+    link: "/procurement/requests",
+    isRead: false,
+  },
+  {
+    userId: pmUser._id,
+    title: "Concrete Pour Scheduled",
+    message: "Level 12 Deck slab concrete pour (450m³) scheduled for Thursday 06:00 AM.",
+    type: "TASK_ASSIGNED",
+    link: "/calendar",
+    isRead: false,
+  },
+  {
+    userId: adminUser._id,
+    title: "System Initialized Successfully",
+    message: "All ERP models, Ethiopian hierarchy, roles, and project foundations are active.",
+    type: "SYSTEM",
+    link: "/administration/settings",
+    isRead: true,
+  },
+]);
 
 // ============ Seed Initial Audit Log ============
 await AuditLog.create({
