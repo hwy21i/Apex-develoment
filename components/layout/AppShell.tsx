@@ -27,8 +27,8 @@ interface AppShellProps {
 
 export default function AppShell({
   children,
-  userName = "Abebe Bekele",
-  userRole = "Admin",
+  userName = "Signed out",
+  userRole,
   onRoleChange,
   onLogout,
 }: AppShellProps) {

@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { RoleType, SYSTEM_ROLES } from "@/types/erp";
+import { RoleType } from "@/types/erp";
 import ConstructionDashboard from "@/components/dashboard/ConstructionDashboard";
 import AppShell from "@/components/layout/AppShell";
 
@@ -197,7 +197,7 @@ export default function Workspace({
   userRole?: RoleType;
 }) {
   const router = useRouter();
-  const [role, setRole] = useState<RoleType>(userRole);
+  const [role] = useState<RoleType>(userRole);
   const [page, setPage] = useState("Dashboard");
   const [projectTab, setProjectTab] = useState("Overview");
   const [selected, setSelectedProject] = useState<Project | null>(null);
@@ -205,7 +205,6 @@ export default function Workspace({
   const [isLoadingProjects, setIsLoadingProjects] = useState(true);
   const [projectError, setProjectError] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [notice, setNotice] = useState("3 unread notifications");
   const [query, setQuery] = useState("");
 
   useEffect(() => {
@@ -225,8 +224,6 @@ export default function Workspace({
     loadProjects();
     return () => { active = false; };
   }, []);
-
-  const allowedMenus = menuPermissions[role] || menuPermissions["Worker"];
 
   const visibleProjects = useMemo(() => {
     if (role === "Worker") return projectsList.slice(0, 1);
@@ -558,10 +555,6 @@ export default function Workspace({
     <AppShell
       userName={userName}
       userRole={role}
-      onRoleChange={(newRole) => {
-        setRole(newRole);
-        setPage("Dashboard");
-      }}
       onLogout={onLogout}
     >
       <div className="space-y-6">
@@ -575,7 +568,6 @@ export default function Workspace({
             onSubmit={(e: FormEvent) => {
               e.preventDefault();
               setShowForm(false);
-              setNotice("Record saved and committed to audit log");
             }}
           >
             <div className="apex-panel-title">

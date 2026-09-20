@@ -68,7 +68,6 @@ export async function POST(request: Request) {
     const response = ok(
       {
         user: sessionPayload,
-        token, // For mobile/API callers that use Bearer token
       },
       "Login successful"
     );
