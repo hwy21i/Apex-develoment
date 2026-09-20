@@ -148,4 +148,28 @@ input[placeholder*="Search"], input[placeholder*="search"] { max-width: 100%; mi
   .entry-cta-grid > div:last-child > div { padding: 18px !important; }
   .entry-footer { padding: 22px 18px !important; }
   .entry-footer-inner { flex-direction: column; align-items: flex-start !important; gap: 12px; }
+
+  .auth-shell { flex-direction: column; min-height: 100vh; }
+  .auth-brand-panel { flex: 0 0 auto !important; min-height: 300px; }
+  .auth-brand-inner { height: auto !important; padding: 28px 22px 24px !important; }
+  .auth-brand-logo { margin-bottom: 42px !important; }
+  .auth-brand-logo span { font-size: 15px !important; }
+  .auth-brand-copy { flex: 0 1 auto !important; justify-content: flex-start !important; padding-bottom: 24px !important; }
+  .auth-brand-copy > div:first-child { font-size: 8px !important; margin-bottom: 10px !important; }
+  .auth-brand-copy h1 { font-size: 29px !important; line-height: 1.1 !important; margin-bottom: 14px !important; }
+  .auth-brand-copy p { font-size: 12px !important; line-height: 1.55 !important; margin-bottom: 22px !important; }
+  .auth-brand-copy > div:last-child { gap: 10px !important; padding-top: 16px !important; }
+  .auth-brand-copy > div:last-child > div > div:first-child { font-size: 18px !important; }
+  .auth-brand-copy > div:last-child > div > div:last-child { font-size: 9px !important; }
+  .auth-security-note { font-size: 8px !important; line-height: 1.4; }
+  .auth-form-panel { align-items: flex-start !important; padding: 30px 20px 42px !important; }
+  .auth-form-content { max-width: 440px; }
+  .auth-mode-toggle { margin-bottom: 22px !important; }
+  .auth-mode-toggle button { padding: 7px 16px !important; }
+  .auth-form-content h2 { font-size: 24px !important; }
+  .auth-form { gap: 14px !important; }
+  .auth-form input, .auth-form select { font-size: 13px !important; padding: 11px 12px !important; }
+  .auth-form > div[style*="justify-content"] { align-items: flex-start !important; flex-direction: column; gap: 8px; }
+  .auth-form > div[style*="justify-content"] span { font-size: 10px !important; }
+  .auth-two-column { grid-template-columns: 1fr !important; }
 }

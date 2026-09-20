@@ -190,7 +190,7 @@ function SignIn({
   };
 
   return (
-    <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+    <form className="auth-form" onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       {/* Demo Preset Quick-Fill */}
       <div>
         <label
@@ -428,8 +428,8 @@ function SignUp({
   };
 
   return (
-    <form onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+    <form className="auth-form" onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div className="auth-two-column" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <Input
           label="Full Name"
           placeholder="e.g. Marta Tesfaye"
@@ -618,6 +618,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
 
   return (
     <div
+      className="auth-shell"
       style={{
         display: "flex",
         minHeight: "100vh",
@@ -627,6 +628,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
     >
       {/* LEFT PANEL — Architecture / Brand */}
       <div
+        className="auth-brand-panel"
         style={{
           flex: "0 0 46%",
           position: "relative",
@@ -656,6 +658,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
         />
 
         <div
+          className="auth-brand-inner"
           style={{
             position: "relative",
             padding: "44px 48px",
@@ -666,7 +669,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
           }}
         >
           {/* Logo */}
-          <div className="flex items-center gap-2" style={{ marginBottom: "auto" }}>
+          <div className="auth-brand-logo flex items-center gap-2" style={{ marginBottom: "auto" }}>
             <div style={{ width: 4, height: 24, background: A.brass, borderRadius: 2 }} />
             <span
               style={{
@@ -682,6 +685,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
           </div>
 
           <div
+            className="auth-brand-copy"
             style={{
               flex: 1,
               display: "flex",
@@ -755,6 +759,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
           </div>
 
           <div
+            className="auth-security-note"
             style={{
               fontFamily: "JetBrains Mono, monospace",
               fontSize: 10,
@@ -769,6 +774,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
 
       {/* RIGHT PANEL — Form */}
       <div
+        className="auth-form-panel"
         style={{
           flex: 1,
           display: "flex",
@@ -778,9 +784,10 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
           overflowY: "auto",
         }}
       >
-        <div style={{ width: "100%", maxWidth: 440 }}>
+        <div className="auth-form-content" style={{ width: "100%", maxWidth: 440 }}>
           {/* Mode Toggle */}
           <div
+            className="auth-mode-toggle"
             style={{
               display: "inline-flex",
               background: "#E2E8F0",
