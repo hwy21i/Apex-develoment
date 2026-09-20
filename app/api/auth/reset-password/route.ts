@@ -5,6 +5,7 @@ import { body, fail, handleError, ok } from "@/lib/api";
 import { resetPasswordSchema } from "@/lib/validation/schemas";
 import { User } from "@/models/User";
 import { logAudit } from "@/lib/services/audit";
+import { clearSession } from "@/lib/auth/session";
 
 export const runtime = "nodejs";
 
@@ -40,9 +41,10 @@ export async function POST(request: Request) {
       userAgent: request.headers.get("user-agent") || undefined,
     });
 
-    return ok(null, "Password has been reset successfully. You may now sign in.");
+    const response = ok(null, "Password has been reset successfully. You may now sign in.");
+    clearSession(response);
+    return response;
   } catch (error) {
     return handleError(error);
   }
 }
-

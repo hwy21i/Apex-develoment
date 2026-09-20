@@ -128,6 +128,8 @@ function SignIn({
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [resetToken, setResetToken] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -188,9 +190,45 @@ function SignIn({
         setErrorMsg(json.error?.message || "Unable to request a password reset.");
         return;
       }
-      setSuccessMsg(json.message || "If an account exists, reset instructions have been generated.");
+      setResetToken(json.data?.devResetToken || "");
+      setSuccessMsg(
+        json.data?.devResetToken
+          ? "Reset token generated for this development environment. Enter a new password below."
+          : json.message || "If an account exists, reset instructions have been generated."
+      );
     } catch {
       setErrorMsg("Error requesting password reset.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetToken || newPassword.length < 8) {
+      setErrorMsg("Enter a valid reset token and a password with at least 8 characters.");
+      return;
+    }
+
+    setErrorMsg("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: resetToken, newPassword }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setErrorMsg(json.error?.message || "Unable to reset password.");
+        return;
+      }
+      setResetToken("");
+      setNewPassword("");
+      setPassword("");
+      setSuccessMsg(json.message || "Password reset successfully. You may now sign in.");
+    } catch {
+      setErrorMsg("Network error connecting to password reset service.");
     } finally {
       setLoading(false);
     }
@@ -305,6 +343,16 @@ function SignIn({
           }}
         >
           ✓ {successMsg}
+        </div>
+      )}
+
+      {resetToken && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: 12, border: `1px solid ${A.border}`, borderRadius: 6, background: "#F8FAFC" }}>
+          <Input label="Reset Token" value={resetToken} onChange={setResetToken} required />
+          <Input label="New Password" type="password" placeholder="At least 8 characters" value={newPassword} onChange={setNewPassword} required />
+          <button type="button" onClick={handleResetPassword} disabled={loading} style={{ width: "100%", padding: "11px 14px", border: `1px solid ${A.brass}`, borderRadius: 6, background: "transparent", color: A.brass, fontWeight: 700, cursor: loading ? "default" : "pointer" }}>
+            {loading ? "Resetting..." : "Set New Password"}
+          </button>
         </div>
       )}
 
