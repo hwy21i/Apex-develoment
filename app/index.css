@@ -164,7 +164,14 @@ input[placeholder*="Search"], input[placeholder*="search"] { max-width: 100%; mi
   .auth-security-note { font-size: 8px !important; line-height: 1.4; }
   .auth-form-panel { align-items: flex-start !important; padding: 30px 20px 42px !important; }
   .auth-form-content { max-width: 440px; }
+  .auth-form-panel { width: 100%; min-width: 0; }
   .auth-mode-toggle { margin-bottom: 22px !important; }
+
+  @media (max-width: 480px) {
+    .auth-brand-panel { display: none !important; }
+    .auth-form-panel { min-height: 100vh; padding: 24px 16px 36px !important; }
+    .auth-form-content { max-width: none; }
+  }
   .auth-mode-toggle button { padding: 7px 16px !important; }
   .auth-form-content h2 { font-size: 24px !important; }
   .auth-form { gap: 14px !important; }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { RoleType, SYSTEM_ROLES } from "@/types/erp";
+import { RoleType } from "@/types/erp";
 
 const A = {
   bg: "#F4F5F7",
@@ -176,16 +176,23 @@ function SignIn({
       return;
     }
     setErrorMsg("");
+    setLoading(true);
     try {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: identifier }),
+        body: JSON.stringify({ email: identifier.trim().toLowerCase() }),
       });
       const json = await res.json();
-      setSuccessMsg(json.message || "Reset instructions generated.");
+      if (!res.ok || !json.success) {
+        setErrorMsg(json.error?.message || "Unable to request a password reset.");
+        return;
+      }
+      setSuccessMsg(json.message || "If an account exists, reset instructions have been generated.");
     } catch {
       setErrorMsg("Error requesting password reset.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -256,6 +263,7 @@ function SignIn({
         <button
           type="button"
           onClick={handleForgotPassword}
+          disabled={loading}
           style={{
             fontFamily: "Work Sans, sans-serif",
             fontSize: 12,
@@ -373,7 +381,6 @@ function SignUp({
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<RoleType>("Site Engineer");
   const [department, setDepartment] = useState("Engineering");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -399,7 +406,6 @@ function SignUp({
           username: username.toLowerCase().trim(),
           email: email.toLowerCase().trim(),
           password,
-          role,
           department,
         }),
       });
@@ -465,45 +471,12 @@ function SignUp({
         required
       />
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div>
-          <label
-            style={{
-              display: "block",
-              fontFamily: "Work Sans, sans-serif",
-              fontSize: 12,
-              fontWeight: 600,
-              color: A.textDim,
-              marginBottom: 6,
-              letterSpacing: "0.04em",
-              textTransform: "uppercase",
-            }}
-          >
-            Assigned ERP Role *
-          </label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value as RoleType)}
-            style={{
-              ...INPUT_BASE,
-              cursor: "pointer",
-            }}
-          >
-            {SYSTEM_ROLES.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <Input
-          label="Department"
-          placeholder="e.g. Structural Engineering"
-          value={department}
-          onChange={setDepartment}
-        />
-      </div>
+      <Input
+        label="Department"
+        placeholder="e.g. Structural Engineering"
+        value={department}
+        onChange={setDepartment}
+      />
 
       {errorMsg && (
         <div
@@ -563,7 +536,7 @@ function SignUp({
             <Spinner /> Registering...
           </>
         ) : (
-          "Create Verified Account"
+          "Create Worker Account"
         )}
       </button>
 
@@ -835,7 +808,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
             <p style={{ fontSize: 13, color: A.textDim, lineHeight: 1.5 }}>
               {mode === "signin"
                 ? "Sign in with your verified credentials or select a demo role."
-                : "Register a new profile to access project operations and workflows."}
+                : "Register a Worker profile to access assigned project operations and workflows."}
             </p>
           </div>
 
