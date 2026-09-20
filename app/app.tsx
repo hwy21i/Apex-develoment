@@ -8,10 +8,7 @@ import { RoleType } from "@/types/erp";
 
 export default function App() {
   const [screen, setScreen] = useState<"loading" | "entry" | "auth" | "workspace">("loading");
-  const [currentUser, setCurrentUser] = useState<AuthIdentity>({
-    name: "Abebe Bekele",
-    role: "Project Manager",
-  });
+  const [currentUser, setCurrentUser] = useState<AuthIdentity | null>(null);
 
   // Check active session on initial load
   useEffect(() => {
@@ -83,6 +80,10 @@ export default function App() {
         }}
       />
     );
+  }
+
+  if (!currentUser) {
+    return null;
   }
 
   return (
