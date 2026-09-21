@@ -180,3 +180,57 @@ input[placeholder*="Search"], input[placeholder*="search"] { max-width: 100%; mi
   .auth-form > div[style*="justify-content"] span { font-size: 10px !important; }
   .auth-two-column { grid-template-columns: 1fr !important; }
 }
+
+.dashboard-reference {
+  color: #17191d;
+}
+
+.dashboard-reference > header {
+  padding: 4px 2px 2px;
+}
+
+.dashboard-reference h1,
+.dashboard-reference h2 {
+  font-family: 'Roboto Slab', serif;
+}
+
+.dashboard-reference section {
+  border-radius: 10px;
+  border-color: #d9dee5;
+  box-shadow: 0 3px 10px rgba(23, 25, 29, .045);
+}
+
+.dashboard-reference section > div:first-child {
+  border-color: #e7eaf0;
+}
+
+.dashboard-reference table thead {
+  background: #f8fafc;
+}
+
+.dashboard-reference table tbody tr {
+  transition: background-color .18s ease;
+}
+
+.dashboard-reference table tbody tr:hover {
+  background: #f4f8fc;
+}
+
+@media (max-width: 639px) {
+  .dashboard-reference {
+    gap: 16px;
+  }
+
+  .dashboard-reference > header h1 {
+    font-size: 26px;
+    line-height: 1.12;
+  }
+
+  .dashboard-reference > header p {
+    line-height: 1.55;
+  }
+
+  .dashboard-reference section {
+    border-radius: 8px;
+  }
+}

@@ -146,11 +146,11 @@ export default function AppSidebar({
             onClick={onMobileClose}
             className="flex items-center gap-2.5 min-w-0"
           >
-            <ApexLogo size={36} className="rounded-xl shadow-md shadow-amber-500/30" />
+            <ApexLogo size={36} className="rounded-xl shadow-md shadow-blue-500/30" />
             {!isCollapsed && (
               <div className="flex flex-col truncate leading-none min-w-0">
                 <span className="text-sm font-extrabold text-white tracking-widest uppercase truncate">
-                  Apex <span className="text-amber-400">Build</span>
+                  Apex <span className="text-blue-400">Build</span>
                 </span>
                 <span className="text-[10px] text-slate-500 font-mono tracking-widest uppercase mt-0.5 truncate">
                   Construction ERP
@@ -241,7 +241,7 @@ export default function AppSidebar({
                 title={isCollapsed ? item.label : undefined}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all group relative ${
                   isActive
-                    ? "bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/25"
+                    ? "bg-blue-600 text-white font-semibold shadow-md shadow-blue-500/25"
                     : "text-slate-400 hover:text-slate-100 hover:bg-[#1E222D]"
                 } ${isCollapsed ? "justify-center px-2" : ""}`}
               >
@@ -250,7 +250,7 @@ export default function AppSidebar({
                   <span className="truncate flex-1 text-xs">{item.label}</span>
                 )}
                 {!isCollapsed && item.badge && (
-                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950">
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-600 text-white">
                     {item.badge}
                   </span>
                 )}
