@@ -41,9 +41,7 @@ export function handleError(error: unknown) {
   }
 
   console.error("API error:", error);
-  const message =
-    error instanceof Error ? error.message : "An unexpected server error occurred";
-  return fail("INTERNAL_ERROR", message, 500);
+  return fail("INTERNAL_ERROR", "An unexpected server error occurred", 500);
 }
 
 export async function body<T>(
