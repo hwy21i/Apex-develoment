@@ -27,8 +27,8 @@ interface AppShellProps {
 
 export default function AppShell({
   children,
-  userName = "Abebe Bekele",
-  userRole = "Admin",
+  userName = "Signed out",
+  userRole,
   onRoleChange,
   onLogout,
 }: AppShellProps) {
@@ -61,7 +61,7 @@ export default function AppShell({
 
   return (
     <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
-      <div className="min-h-screen w-full overflow-x-hidden bg-[#f6f7f8] font-sans text-slate-900">
+      <div className="erp-app-shell min-h-screen w-full overflow-x-hidden bg-[#f4f5f7] font-sans text-slate-900 dark:bg-[#0f1115] dark:text-slate-100">
         <AppSidebar
           isMobileOpen={isMobileOpen}
           onMobileClose={() => setIsMobileOpen(false)}

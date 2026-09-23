@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { connectToDatabase } from "@/lib/db/mongodb";
-import { body, fail, handleError, ok } from "@/lib/api";
+import { body, handleError, ok } from "@/lib/api";
 import { forgotPasswordSchema } from "@/lib/validation/schemas";
 import { User } from "@/models/User";
 import { logAudit } from "@/lib/services/audit";
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 
     // In a production environment with email SMTP configured, send an email here.
     // For development and testing, return the token in non-production mode
-    const isDev = process.env.NODE_ENV !== "production";
+    const isDev = process.env.NODE_ENV === "development";
 
     return ok(
       {
@@ -55,4 +55,3 @@ export async function POST(request: Request) {
     return handleError(error);
   }
 }
-

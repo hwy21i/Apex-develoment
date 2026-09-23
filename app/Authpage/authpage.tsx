@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { RoleType, SYSTEM_ROLES } from "@/types/erp";
+import { RoleType } from "@/types/erp";
 
 const A = {
   bg: "#F4F5F7",
@@ -128,6 +128,8 @@ function SignIn({
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [resetToken, setResetToken] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -176,21 +178,64 @@ function SignIn({
       return;
     }
     setErrorMsg("");
+    setLoading(true);
     try {
       const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: identifier }),
+        body: JSON.stringify({ email: identifier.trim().toLowerCase() }),
       });
       const json = await res.json();
-      setSuccessMsg(json.message || "Reset instructions generated.");
+      if (!res.ok || !json.success) {
+        setErrorMsg(json.error?.message || "Unable to request a password reset.");
+        return;
+      }
+      setResetToken(json.data?.devResetToken || "");
+      setSuccessMsg(
+        json.data?.devResetToken
+          ? "Reset token generated for this development environment. Enter a new password below."
+          : json.message || "If an account exists, reset instructions have been generated."
+      );
     } catch {
       setErrorMsg("Error requesting password reset.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetToken || newPassword.length < 8) {
+      setErrorMsg("Enter a valid reset token and a password with at least 8 characters.");
+      return;
+    }
+
+    setErrorMsg("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: resetToken, newPassword }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setErrorMsg(json.error?.message || "Unable to reset password.");
+        return;
+      }
+      setResetToken("");
+      setNewPassword("");
+      setPassword("");
+      setSuccessMsg(json.message || "Password reset successfully. You may now sign in.");
+    } catch {
+      setErrorMsg("Network error connecting to password reset service.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+    <form className="auth-form" onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       {/* Demo Preset Quick-Fill */}
       <div>
         <label
@@ -256,6 +301,7 @@ function SignIn({
         <button
           type="button"
           onClick={handleForgotPassword}
+          disabled={loading}
           style={{
             fontFamily: "Work Sans, sans-serif",
             fontSize: 12,
@@ -297,6 +343,16 @@ function SignIn({
           }}
         >
           ✓ {successMsg}
+        </div>
+      )}
+
+      {resetToken && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: 12, border: `1px solid ${A.border}`, borderRadius: 6, background: "#F8FAFC" }}>
+          <Input label="Reset Token" value={resetToken} onChange={setResetToken} required />
+          <Input label="New Password" type="password" placeholder="At least 8 characters" value={newPassword} onChange={setNewPassword} required />
+          <button type="button" onClick={handleResetPassword} disabled={loading} style={{ width: "100%", padding: "11px 14px", border: `1px solid ${A.brass}`, borderRadius: 6, background: "transparent", color: A.brass, fontWeight: 700, cursor: loading ? "default" : "pointer" }}>
+            {loading ? "Resetting..." : "Set New Password"}
+          </button>
         </div>
       )}
 
@@ -373,7 +429,6 @@ function SignUp({
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<RoleType>("Site Engineer");
   const [department, setDepartment] = useState("Engineering");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -399,7 +454,6 @@ function SignUp({
           username: username.toLowerCase().trim(),
           email: email.toLowerCase().trim(),
           password,
-          role,
           department,
         }),
       });
@@ -428,8 +482,8 @@ function SignUp({
   };
 
   return (
-    <form onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+    <form className="auth-form" onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div className="auth-two-column" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <Input
           label="Full Name"
           placeholder="e.g. Marta Tesfaye"
@@ -465,45 +519,12 @@ function SignUp({
         required
       />
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div>
-          <label
-            style={{
-              display: "block",
-              fontFamily: "Work Sans, sans-serif",
-              fontSize: 12,
-              fontWeight: 600,
-              color: A.textDim,
-              marginBottom: 6,
-              letterSpacing: "0.04em",
-              textTransform: "uppercase",
-            }}
-          >
-            Assigned ERP Role *
-          </label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value as RoleType)}
-            style={{
-              ...INPUT_BASE,
-              cursor: "pointer",
-            }}
-          >
-            {SYSTEM_ROLES.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <Input
-          label="Department"
-          placeholder="e.g. Structural Engineering"
-          value={department}
-          onChange={setDepartment}
-        />
-      </div>
+      <Input
+        label="Department"
+        placeholder="e.g. Structural Engineering"
+        value={department}
+        onChange={setDepartment}
+      />
 
       {errorMsg && (
         <div
@@ -563,7 +584,7 @@ function SignUp({
             <Spinner /> Registering...
           </>
         ) : (
-          "Create Verified Account"
+          "Create Worker Account"
         )}
       </button>
 
@@ -618,6 +639,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
 
   return (
     <div
+      className="auth-shell"
       style={{
         display: "flex",
         minHeight: "100vh",
@@ -627,6 +649,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
     >
       {/* LEFT PANEL — Architecture / Brand */}
       <div
+        className="auth-brand-panel"
         style={{
           flex: "0 0 46%",
           position: "relative",
@@ -656,6 +679,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
         />
 
         <div
+          className="auth-brand-inner"
           style={{
             position: "relative",
             padding: "44px 48px",
@@ -666,7 +690,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
           }}
         >
           {/* Logo */}
-          <div className="flex items-center gap-2" style={{ marginBottom: "auto" }}>
+          <div className="auth-brand-logo flex items-center gap-2" style={{ marginBottom: "auto" }}>
             <div style={{ width: 4, height: 24, background: A.brass, borderRadius: 2 }} />
             <span
               style={{
@@ -682,6 +706,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
           </div>
 
           <div
+            className="auth-brand-copy"
             style={{
               flex: 1,
               display: "flex",
@@ -755,6 +780,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
           </div>
 
           <div
+            className="auth-security-note"
             style={{
               fontFamily: "JetBrains Mono, monospace",
               fontSize: 10,
@@ -769,6 +795,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
 
       {/* RIGHT PANEL — Form */}
       <div
+        className="auth-form-panel"
         style={{
           flex: 1,
           display: "flex",
@@ -778,9 +805,10 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
           overflowY: "auto",
         }}
       >
-        <div style={{ width: "100%", maxWidth: 440 }}>
+        <div className="auth-form-content" style={{ width: "100%", maxWidth: 440 }}>
           {/* Mode Toggle */}
           <div
+            className="auth-mode-toggle"
             style={{
               display: "inline-flex",
               background: "#E2E8F0",
@@ -828,7 +856,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
             <p style={{ fontSize: 13, color: A.textDim, lineHeight: 1.5 }}>
               {mode === "signin"
                 ? "Sign in with your verified credentials or select a demo role."
-                : "Register a new profile to access project operations and workflows."}
+                : "Register a Worker profile to access assigned project operations and workflows."}
             </p>
           </div>
 

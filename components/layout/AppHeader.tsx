@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Menu, X, Search, Bell, ChevronRight, User, LogOut } from "lucide-react";
+import { Menu, X, Search, Bell, ChevronRight, User, LogOut, Sun, Moon, Monitor } from "lucide-react";
 import { RoleType } from "@/types/erp";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -30,6 +30,20 @@ export default function AppHeader({
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [unreadCount, setUnreadCount] = useState(3);
+  const [theme, setTheme] = useState<"light" | "dark" | "system">(() => {
+    if (typeof window === "undefined") return "light";
+    return (window.localStorage.getItem("apex-theme") as "light" | "dark" | "system" | null) || "light";
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches));
+  }, [theme]);
+
+  const changeTheme = (nextTheme: "light" | "dark" | "system") => {
+    setTheme(nextTheme);
+    window.localStorage.setItem("apex-theme", nextTheme);
+    document.documentElement.classList.toggle("dark", nextTheme === "dark" || (nextTheme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches));
+  };
 
   // Fetch real unread notification count
   useEffect(() => {
@@ -85,7 +99,7 @@ export default function AppHeader({
                 <React.Fragment key={href}>
                   <ChevronRight className="w-3.5 h-3.5 mx-1 text-slate-400 shrink-0" />
                   {isLast ? (
-                      <span className="text-amber-700 font-semibold truncate max-w-[120px] sm:max-w-[200px]">
+                      <span className="text-blue-700 font-semibold truncate max-w-[120px] sm:max-w-[200px]">
                       {formattedSegment}
                     </span>
                   ) : (
@@ -112,7 +126,7 @@ export default function AppHeader({
               value={searchQuery}
               onChange={(e) => onSearchChange?.(e.target.value)}
               placeholder="Search projects, tasks…"
-              className="w-full h-9 bg-slate-100 border border-slate-200 text-slate-800 placeholder-slate-400 text-xs rounded-full pl-9 pr-8 outline-none focus:border-amber-500 focus:bg-white focus:ring-2 focus:ring-amber-500/30 transition-all"
+              className="w-full h-9 bg-slate-100 border border-slate-200 text-slate-800 placeholder-slate-400 text-xs rounded-full pl-9 pr-8 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/30 transition-all"
             />
             {searchQuery && (
               <button
@@ -136,6 +150,15 @@ export default function AppHeader({
             <Search className="w-5 h-5" />
           </button>
 
+          <label className="hidden sm:flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-slate-500 dark:border-[#2F333A] dark:bg-[#22252B] dark:text-slate-300" title="Theme">
+            {theme === "dark" ? <Moon className="h-3.5 w-3.5" /> : theme === "system" ? <Monitor className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
+            <select value={theme} onChange={(event) => changeTheme(event.target.value as "light" | "dark" | "system")} className="h-8 bg-transparent text-[11px] font-semibold outline-none dark:bg-[#22252B]">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="system">System</option>
+            </select>
+          </label>
+
           {/* Notifications Link with Live Badge (>=44px touch target) */}
           <Link
             href="/notifications"
@@ -158,7 +181,7 @@ export default function AppHeader({
               className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 min-h-[44px] transition-colors"
               aria-label="User profile menu"
             >
-              <div className="w-8 h-8 rounded-full bg-slate-800 text-amber-300 flex items-center justify-center text-xs font-bold shadow-xs">
+              <div className="w-8 h-8 rounded-full bg-slate-800 text-blue-300 flex items-center justify-center text-xs font-bold shadow-xs">
                 {userName.charAt(0)}
               </div>
               <div className="hidden sm:flex flex-col text-left">
@@ -216,7 +239,7 @@ export default function AppHeader({
               value={searchQuery}
               onChange={(e) => onSearchChange?.(e.target.value)}
               placeholder="Search projects, tasks, materials, equipment…"
-              className="w-full h-10 bg-slate-100 border border-slate-200 text-slate-800 placeholder-slate-400 text-xs rounded-full pl-9 pr-9 outline-none focus:border-amber-500 focus:bg-white focus:ring-2 focus:ring-amber-500/30 transition-all"
+              className="w-full h-10 bg-slate-100 border border-slate-200 text-slate-800 placeholder-slate-400 text-xs rounded-full pl-9 pr-9 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/30 transition-all"
               autoFocus
             />
             {searchQuery && (

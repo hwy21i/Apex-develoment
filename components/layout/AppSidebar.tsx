@@ -30,7 +30,8 @@ import {
   FolderLock,
   ShieldCheck,
 } from "lucide-react";
-import { RoleType, SYSTEM_ROLES } from "@/types/erp";
+import { Permission, RoleType, SYSTEM_ROLES } from "@/types/erp";
+import { getRolePermissions } from "@/lib/rbac/permissions";
 import { ApexLogo } from "@/components/brand/ApexLogo";
 
 export interface NavItem {
@@ -38,53 +39,54 @@ export interface NavItem {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   badge?: string;
+  requiredPermission?: Permission;
 }
 
 // Primary construction operations navigation.
 export const PRIMARY_ERP_NAV: NavItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Projects", href: "/projects", icon: Building2 },
-  { label: "Tasks", href: "/tasks", icon: CheckSquare },
-  { label: "Materials & Inventory", href: "/inventory", icon: Boxes },
-  { label: "Equipment", href: "/equipment", icon: Truck },
-  { label: "Payments", href: "/finance/payments", icon: CreditCard },
-  { label: "Reports", href: "/reports", icon: FileText },
-  { label: "Clients", href: "/clients", icon: Users2 },
-  { label: "Settings", href: "/administration/settings", icon: Settings },
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, requiredPermission: "PROJECT_VIEW" },
+  { label: "Projects", href: "/projects", icon: Building2, requiredPermission: "PROJECT_VIEW" },
+  { label: "Tasks", href: "/tasks", icon: CheckSquare, requiredPermission: "TASK_VIEW" },
+  { label: "Materials & Inventory", href: "/inventory", icon: Boxes, requiredPermission: "INVENTORY_VIEW" },
+  { label: "Equipment", href: "/equipment", icon: Truck, requiredPermission: "EQUIPMENT_VIEW" },
+  { label: "Payments", href: "/finance/payments", icon: CreditCard, requiredPermission: "PAYMENT_RECORD" },
+  { label: "Reports", href: "/reports", icon: FileText, requiredPermission: "REPORT_VIEW" },
+  { label: "Clients", href: "/clients", icon: Users2, requiredPermission: "CLIENT_VIEW" },
+  { label: "Settings", href: "/administration/settings", icon: Settings, requiredPermission: "SETTINGS_MANAGE" },
 ];
 
 // Extended ERP Modules accessible via collapsible section so no routes are broken
-export const SECONDARY_ERP_NAV = [
+export const SECONDARY_ERP_NAV: { group: string; items: NavItem[] }[] = [
   {
     group: "Planning & Timeline",
     items: [
-      { label: "Calendar", href: "/calendar", icon: Calendar },
-      { label: "Timeline", href: "/timeline", icon: GitBranch },
+      { label: "Calendar", href: "/calendar", icon: Calendar, requiredPermission: "PROJECT_VIEW" },
+      { label: "Timeline", href: "/timeline", icon: GitBranch, requiredPermission: "PROJECT_VIEW" },
     ],
   },
   {
     group: "Materials & Procurement",
     items: [
-      { label: "Materials Catalog", href: "/materials", icon: Boxes },
-      { label: "Warehouses", href: "/warehouses", icon: Warehouse },
-      { label: "Purchase Orders", href: "/procurement/orders", icon: ShoppingBag },
+      { label: "Materials Catalog", href: "/materials", icon: Boxes, requiredPermission: "MATERIAL_VIEW" },
+      { label: "Warehouses", href: "/warehouses", icon: Warehouse, requiredPermission: "INVENTORY_VIEW" },
+      { label: "Purchase Orders", href: "/procurement/orders", icon: ShoppingBag, requiredPermission: "PURCHASE_ORDER_VIEW" },
     ],
   },
   {
     group: "Workforce",
     items: [
-      { label: "Employees", href: "/people/employees", icon: UserSquare2 },
-      { label: "Site Workers", href: "/people/workers", icon: HardHat },
-      { label: "Attendance", href: "/people/attendance", icon: Clock },
+      { label: "Employees", href: "/people/employees", icon: UserSquare2, requiredPermission: "EMPLOYEE_VIEW" },
+      { label: "Site Workers", href: "/people/workers", icon: HardHat, requiredPermission: "EMPLOYEE_VIEW" },
+      { label: "Attendance", href: "/people/attendance", icon: Clock, requiredPermission: "ATTENDANCE_VIEW" },
     ],
   },
   {
     group: "Finance & Admin",
     items: [
-      { label: "Budgets", href: "/finance/budgets", icon: DollarSign },
-      { label: "Financial Overview", href: "/finance/overview", icon: PieChart },
-      { label: "Documents", href: "/documents", icon: FolderLock },
-      { label: "Users & Roles", href: "/administration/users", icon: ShieldCheck },
+      { label: "Budgets", href: "/finance/budgets", icon: DollarSign, requiredPermission: "FINANCE_VIEW" },
+      { label: "Financial Overview", href: "/finance/overview", icon: PieChart, requiredPermission: "FINANCE_VIEW" },
+      { label: "Documents", href: "/documents", icon: FolderLock, requiredPermission: "DOCUMENT_VIEW" },
+      { label: "Users & Roles", href: "/administration/users", icon: ShieldCheck, requiredPermission: "USER_MANAGE" },
     ],
   },
 ];
@@ -105,13 +107,15 @@ export default function AppSidebar({
   onMobileClose,
   isCollapsed,
   onToggleCollapse,
-  userName = "Abebe Bekele",
-  userRole = "Admin",
+  userName = "Signed out",
+  userRole,
   onRoleChange,
   onLogout,
 }: AppSidebarProps) {
   const pathname = usePathname();
   const [showExtended, setShowExtended] = useState(false);
+  const permissions = getRolePermissions(userRole as RoleType);
+  const canSee = (permission?: Permission) => !permission || permissions.includes("*") || permissions.includes(permission);
 
   return (
     <>
@@ -142,11 +146,11 @@ export default function AppSidebar({
             onClick={onMobileClose}
             className="flex items-center gap-2.5 min-w-0"
           >
-            <ApexLogo size={36} className="rounded-xl shadow-md shadow-amber-500/30" />
+            <ApexLogo size={36} className="rounded-xl shadow-md shadow-blue-500/30" />
             {!isCollapsed && (
               <div className="flex flex-col truncate leading-none min-w-0">
                 <span className="text-sm font-extrabold text-white tracking-widest uppercase truncate">
-                  Apex <span className="text-amber-400">Build</span>
+                  Apex <span className="text-blue-400">Build</span>
                 </span>
                 <span className="text-[10px] text-slate-500 font-mono tracking-widest uppercase mt-0.5 truncate">
                   Construction ERP
@@ -188,10 +192,10 @@ export default function AppSidebar({
                   {userName}
                 </span>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                  {userRole}
+                  {userRole ?? "Signed out"}
                 </span>
               </div>
-              {onRoleChange && (
+              {onRoleChange && userRole && (
                 <select
                   value={userRole}
                   onChange={(e) => onRoleChange(e.target.value as RoleType)}
@@ -207,7 +211,7 @@ export default function AppSidebar({
               )}
             </div>
           ) : (
-            <div className="flex justify-center" title={`${userName} (${userRole})`}>
+            <div className="flex justify-center" title={`${userName} (${userRole ?? "Signed out"})`}>
               <div className="w-8 h-8 rounded-full bg-blue-600/30 border border-blue-500/50 flex items-center justify-center text-xs font-bold text-blue-300">
                 {userName.charAt(0)}
               </div>
@@ -223,7 +227,7 @@ export default function AppSidebar({
             </p>
           )}
 
-          {PRIMARY_ERP_NAV.map((item) => {
+          {PRIMARY_ERP_NAV.filter((item) => canSee(item.requiredPermission)).map((item) => {
             const Icon = item.icon;
             const isActive =
               pathname === item.href ||
@@ -237,7 +241,7 @@ export default function AppSidebar({
                 title={isCollapsed ? item.label : undefined}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all group relative ${
                   isActive
-                    ? "bg-amber-500 text-slate-950 font-semibold shadow-md shadow-amber-500/25"
+                    ? "bg-blue-600 text-white font-semibold shadow-md shadow-blue-500/25"
                     : "text-slate-400 hover:text-slate-100 hover:bg-[#1E222D]"
                 } ${isCollapsed ? "justify-center px-2" : ""}`}
               >
@@ -246,7 +250,7 @@ export default function AppSidebar({
                   <span className="truncate flex-1 text-xs">{item.label}</span>
                 )}
                 {!isCollapsed && item.badge && (
-                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950">
+                  <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-600 text-white">
                     {item.badge}
                   </span>
                 )}
@@ -276,7 +280,7 @@ export default function AppSidebar({
                       <p className="px-2 text-[9px] font-semibold text-slate-500 uppercase font-mono">
                         {sec.group}
                       </p>
-                      {sec.items.map((subItem) => {
+                      {sec.items.filter((subItem) => canSee(subItem.requiredPermission)).map((subItem) => {
                         const SubIcon = subItem.icon;
                         const isSubActive = pathname?.startsWith(subItem.href);
                         return (

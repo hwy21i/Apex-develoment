@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { RoleType, SessionUser } from "@/types/erp";
+import { RoleType, SessionUser, SYSTEM_ROLES } from "@/types/erp";
 
 const getSecretKey = () => {
   const secret = process.env.JWT_SECRET;
@@ -35,6 +35,9 @@ export async function verifyToken(token: string): Promise<SessionUser | null> {
   try {
     const key = getSecretKey();
     const { payload } = await jwtVerify(token, key);
+    if (typeof payload.role !== "string" || !SYSTEM_ROLES.includes(payload.role as RoleType)) {
+      return null;
+    }
     return {
       id: String(payload.id),
       fullName: String(payload.fullName || ""),

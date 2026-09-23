@@ -6,7 +6,7 @@ import {
   Shield, Check, X, Lock, Key, Users, Edit,
   CheckCircle, AlertCircle, ChevronRight
 } from "lucide-react";
-import { RoleType } from "@/types/erp";
+import { Permission, RoleType } from "@/types/erp";
 import { ROLE_PERMISSIONS } from "@/lib/rbac/permissions";
 
 const ALL_ROLES: RoleType[] = [
@@ -21,18 +21,18 @@ const ALL_ROLES: RoleType[] = [
   "Client",
 ];
 
-const PERMISSION_CATEGORIES = [
+const PERMISSION_CATEGORIES: { category: string; permissions: Permission[] }[] = [
   {
     category: "Project & Planning",
     permissions: ["PROJECT_VIEW", "PROJECT_CREATE", "PROJECT_UPDATE", "PROJECT_ARCHIVE", "TASK_VIEW", "TASK_CREATE", "TASK_UPDATE", "TASK_DELETE", "MILESTONE_VIEW", "MILESTONE_MANAGE", "PROGRESS_LOG"],
   },
   {
     category: "Procurement & Materials",
-    permissions: ["MATERIAL_VIEW", "MATERIAL_MANAGE", "INVENTORY_VIEW", "STOCK_TRANSACTION_CREATE", "MATERIAL_REQUEST_CREATE", "MATERIAL_REQUEST_VIEW", "MATERIAL_REQUEST_APPROVE", "PURCHASE_ORDER_CREATE", "PURCHASE_ORDER_VIEW", "PURCHASE_ORDER_APPROVE", "GOODS_RECEIPT_CREATE", "GOODS_RECEIPT_VIEW"],
+    permissions: ["MATERIAL_VIEW", "MATERIAL_CREATE", "MATERIAL_UPDATE", "INVENTORY_VIEW", "STOCK_TRANSACTION_VIEW", "MATERIAL_REQUEST_CREATE", "MATERIAL_REQUEST_VIEW", "MATERIAL_REQUEST_APPROVE", "PURCHASE_ORDER_CREATE", "PURCHASE_ORDER_VIEW", "PURCHASE_ORDER_APPROVE", "GOODS_RECEIPT_CREATE", "GOODS_RECEIPT_VIEW"],
   },
   {
     category: "Financials & Billing",
-    permissions: ["FINANCE_VIEW", "BUDGET_MANAGE", "EXPENSE_CREATE", "EXPENSE_APPROVE", "INVOICE_CREATE", "INVOICE_APPROVE", "PAYMENT_RECORD"],
+    permissions: ["FINANCE_VIEW", "EXPENSE_CREATE", "EXPENSE_APPROVE", "INVOICE_VIEW", "INVOICE_CREATE", "PAYMENT_RECORD"],
   },
   {
     category: "HR & Site Labor",
@@ -54,9 +54,9 @@ export default function RolesAndPermissionsPage() {
   const currentPermissions = ROLE_PERMISSIONS[selectedRole] || [];
   const isSuperAdmin = selectedRole === "Admin";
 
-  const hasPermission = (perm: string) => {
+  const hasPermission = (perm: Permission) => {
     if (isSuperAdmin) return true;
-    return currentPermissions.includes(perm as any);
+    return currentPermissions.includes(perm);
   };
 
   return (

@@ -94,7 +94,7 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
     <div style={{ background: P.bg, minHeight: '100vh', fontFamily: 'Work Sans, sans-serif', color: P.text }}>
 
       {/* NAV */}
-      <header style={{
+      <header className="entry-header" style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
         background: scrolled ? 'rgba(22,24,29,0.96)' : 'transparent',
         backdropFilter: scrolled ? 'blur(16px)' : 'none',
@@ -109,9 +109,9 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
               Apex <span style={{ color: P.brass }}>Developments</span>
             </span>
           </div>
-          <nav className="flex items-center gap-8">
+          <nav className="entry-nav flex items-center gap-8">
             {[['Platform', '/platform'], ['About', '/about']].map(([label, href]) => (
-              <Link key={href} href={href} style={{ fontFamily: 'Work Sans', fontSize: 13, color: '#C8CFD8', textDecoration: 'none', fontWeight: 500, transition: 'color 0.15s' }}
+              <Link className="entry-nav-link" key={href} href={href} style={{ fontFamily: 'Work Sans', fontSize: 13, color: '#C8CFD8', textDecoration: 'none', fontWeight: 500, transition: 'color 0.15s' }}
                 onMouseOver={e => (e.currentTarget.style.color = P.text)}
                 onMouseOut={e => (e.currentTarget.style.color = P.textDim)}>{label}</Link>
             ))}
@@ -125,7 +125,7 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
       </header>
 
       {/* HERO */}
-      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', background: P.nav }}>
+      <section className="entry-hero" style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', background: P.nav }}>
         {/* Background photo */}
         <div style={{
           position: 'absolute', inset: 0,
@@ -150,12 +150,12 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
         {/* Brass top rule */}
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(to right, ${P.brass} 0%, transparent 60%)` }} />
 
-        <div style={{
+        <div className="entry-hero-content" style={{
           position: 'relative', maxWidth: 1200, margin: '0 auto', padding: '130px 48px 110px',
           width: '100%', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center',
         }}>
           {/* Left */}
-          <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(28px)', transition: 'all 0.8s ease' }}>
+          <div className="entry-hero-copy" style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(28px)', transition: 'all 0.8s ease' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               border: `1px solid rgba(201,161,90,0.3)`, borderRadius: 99,
@@ -195,7 +195,7 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
           </div>
 
           {/* Right — live project preview */}
-          <div style={{
+          <div className="entry-portfolio-wrap" style={{
             opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(32px)',
             transition: 'all 0.9s ease 0.18s',
           }}>
@@ -239,15 +239,15 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
         </div>
 
         {/* Scroll cue */}
-        <div style={{ position: 'absolute', bottom: 36, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+        <div className="entry-scroll-cue" style={{ position: 'absolute', bottom: 36, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
           <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: P.textMuted, letterSpacing: '0.2em' }}>SCROLL</span>
           <div style={{ width: 1, height: 36, background: `linear-gradient(to bottom, ${P.brass}60, transparent)` }} />
         </div>
       </section>
 
       {/* STATS BAND */}
-      <section style={{ background: P.panel, borderTop: `1px solid ${P.border}`, borderBottom: `1px solid ${P.border}`, padding: '0 48px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)' }}>
+      <section className="entry-stats" style={{ background: P.panel, borderTop: `1px solid ${P.border}`, borderBottom: `1px solid ${P.border}`, padding: '0 48px' }}>
+        <div className="entry-stats-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)' }}>
           {STATS.map((s, i) => (
             <div key={i} style={{
               padding: '36px 0', textAlign: 'center',
@@ -261,7 +261,7 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
       </section>
 
       {/* FEATURES */}
-      <section style={{ padding: '100px 48px', background: P.bg }}>
+      <section className="entry-features" style={{ padding: '100px 48px', background: P.bg }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ maxWidth: 560, marginBottom: 68 }}>
             <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: P.brass, letterSpacing: '0.2em', marginBottom: 16, textTransform: 'uppercase' }}>Platform</div>
@@ -273,7 +273,7 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: P.border, border: `1px solid ${P.border}`, borderRadius: 10, overflow: 'hidden' }}>
+          <div className="entry-features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1, background: P.border, border: `1px solid ${P.border}`, borderRadius: 10, overflow: 'hidden' }}>
             {FEATURES.map((f, i) => (
               <div key={i}
                 style={{
@@ -318,8 +318,8 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
       </section>
 
       {/* CTA */}
-      <section style={{ padding: '100px 48px', background: P.panel, borderTop: `1px solid ${P.border}` }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
+      <section className="entry-cta" style={{ padding: '100px 48px', background: P.panel, borderTop: `1px solid ${P.border}` }}>
+        <div className="entry-cta-grid" style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
           <div>
             <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: P.brass, letterSpacing: '0.2em', marginBottom: 20, textTransform: 'uppercase' }}>Get Started</div>
             <h2 style={{ fontFamily: 'Roboto Slab, serif', fontSize: 44, fontWeight: 700, color: P.text, letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: 22 }}>
@@ -352,8 +352,8 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ background: P.bg, borderTop: `1px solid ${P.border}`, padding: '28px 48px' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <footer className="entry-footer" style={{ background: P.bg, borderTop: `1px solid ${P.border}`, padding: '28px 48px' }}>
+        <div className="entry-footer-inner" style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div className="flex items-center gap-2">
             <div style={{ width: 3, height: 18, background: P.brass, borderRadius: 99 }} />
             <span style={{ fontFamily: 'Roboto Slab, serif', fontSize: 14, fontWeight: 700, color: P.text }}>
