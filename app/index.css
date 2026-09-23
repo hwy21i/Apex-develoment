@@ -234,3 +234,95 @@ input[placeholder*="Search"], input[placeholder*="search"] { max-width: 100%; mi
     border-radius: 8px;
   }
 }
+
+.dark body {
+  background: #0f1115;
+  color: #e4e5e7;
+}
+
+.dark .erp-app-shell main {
+  background: #0f1115;
+}
+
+.dark .erp-app-shell header {
+  background: #16181d !important;
+  border-color: #2f333a !important;
+}
+
+.dark .erp-app-shell header input {
+  background: #22252b;
+  border-color: #3f434c;
+  color: #e4e5e7;
+}
+
+.dark .erp-app-shell header .text-slate-800,
+.dark .erp-app-shell header .text-slate-900,
+.dark .erp-app-shell header .text-slate-700 {
+  color: #e4e5e7 !important;
+}
+
+.dark .erp-app-shell header .text-slate-500,
+.dark .erp-app-shell header .text-slate-600,
+.dark .erp-app-shell header .text-slate-400 {
+  color: #9a9da5 !important;
+}
+
+.dark .dashboard-reference {
+  color: #e4e5e7;
+}
+
+.dark .dashboard-reference section,
+.dark .dashboard-reference .bg-white,
+.dark .dashboard-reference .bg-slate-50 {
+  background: #1c1f24 !important;
+  border-color: #2f333a !important;
+  color: #e4e5e7;
+}
+
+.dark .dashboard-reference .text-slate-950,
+.dark .dashboard-reference .text-slate-900,
+.dark .dashboard-reference .text-slate-800,
+.dark .dashboard-reference .text-slate-700 {
+  color: #e4e5e7 !important;
+}
+
+.dark .dashboard-reference .text-slate-600,
+.dark .dashboard-reference .text-slate-500,
+.dark .dashboard-reference .text-slate-400 {
+  color: #9a9da5 !important;
+}
+
+.dark .dashboard-reference .border-slate-100,
+.dark .dashboard-reference .border-slate-200,
+.dark .dashboard-reference .divide-slate-100 {
+  border-color: #2f333a !important;
+}
+
+.dark .dashboard-reference table thead {
+  background: #22252b !important;
+}
+
+.dark .dashboard-reference table tbody tr:hover {
+  background: #22252b;
+}
+
+.dark .dashboard-reference input,
+.dark .dashboard-reference select,
+.dark .dashboard-reference textarea {
+  background: #22252b;
+  border-color: #3f434c;
+  color: #e4e5e7;
+}
+
+.erp-form-card {
+  border: 1px solid #e4e6e8;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgba(23, 25, 29, .045);
+}
+
+.dark .erp-form-card {
+  border-color: #2f333a;
+  background: #1c1f24;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, .18);
+}

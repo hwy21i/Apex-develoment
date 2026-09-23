@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Menu, X, Search, Bell, ChevronRight, User, LogOut } from "lucide-react";
+import { Menu, X, Search, Bell, ChevronRight, User, LogOut, Sun, Moon, Monitor } from "lucide-react";
 import { RoleType } from "@/types/erp";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -30,6 +30,20 @@ export default function AppHeader({
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [unreadCount, setUnreadCount] = useState(3);
+  const [theme, setTheme] = useState<"light" | "dark" | "system">(() => {
+    if (typeof window === "undefined") return "light";
+    return (window.localStorage.getItem("apex-theme") as "light" | "dark" | "system" | null) || "light";
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches));
+  }, [theme]);
+
+  const changeTheme = (nextTheme: "light" | "dark" | "system") => {
+    setTheme(nextTheme);
+    window.localStorage.setItem("apex-theme", nextTheme);
+    document.documentElement.classList.toggle("dark", nextTheme === "dark" || (nextTheme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches));
+  };
 
   // Fetch real unread notification count
   useEffect(() => {
@@ -135,6 +149,15 @@ export default function AppHeader({
           >
             <Search className="w-5 h-5" />
           </button>
+
+          <label className="hidden sm:flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-slate-500 dark:border-[#2F333A] dark:bg-[#22252B] dark:text-slate-300" title="Theme">
+            {theme === "dark" ? <Moon className="h-3.5 w-3.5" /> : theme === "system" ? <Monitor className="h-3.5 w-3.5" /> : <Sun className="h-3.5 w-3.5" />}
+            <select value={theme} onChange={(event) => changeTheme(event.target.value as "light" | "dark" | "system")} className="h-8 bg-transparent text-[11px] font-semibold outline-none dark:bg-[#22252B]">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+              <option value="system">System</option>
+            </select>
+          </label>
 
           {/* Notifications Link with Live Badge (>=44px touch target) */}
           <Link
