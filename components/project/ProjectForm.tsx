@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import HierarchicalLocationSelector, {
   HierarchicalLocationValue,
 } from "@/components/location/HierarchicalLocationSelector";
+import { FormCard, FormSection } from "@/components/ui/FormCard";
 
 const initialForm = {
   name: "",
@@ -78,10 +79,8 @@ export default function ProjectForm() {
   }
 
   return (
-    <form
-      onSubmit={submit}
-      className="erp-form-card grid gap-6 p-5 sm:p-6"
-    >
+    <FormCard className="p-5 sm:p-6">
+      <form onSubmit={submit} className="grid gap-6">
       {error && (
         <p
           role="alert"
@@ -91,8 +90,8 @@ export default function ProjectForm() {
         </p>
       )}
 
-      {/* Primary Project Details */}
-      <div className="grid gap-5 md:grid-cols-2">
+      <FormSection title="Project information" description="Core identity and lifecycle details for this construction project.">
+        <div className="grid gap-5 md:grid-cols-2">
         <Field
           label="Project Name"
           required
@@ -129,20 +128,22 @@ export default function ProjectForm() {
             <option value="cancelled">Cancelled</option>
           </select>
         </label>
-      </div>
+        </div>
+      </FormSection>
 
-      {/* Hierarchical Location Section */}
-      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3 dark:border-[#2F333A] dark:bg-[#22252B]">
+      <FormSection title="Site location" description="Use the hierarchy to connect the project to its operating site.">
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3 dark:border-[#2F333A] dark:bg-[#22252B]">
         <div className="flex items-center justify-between">
           <span className="text-xs font-mono uppercase text-blue-700 dark:text-blue-300 font-bold tracking-wider">
             Site Location Hierarchy (Country → Region → City → Site)
           </span>
         </div>
-        <HierarchicalLocationSelector value={hierarchy} onChange={setHierarchy} />
-      </div>
+          <HierarchicalLocationSelector value={hierarchy} onChange={setHierarchy} />
+        </div>
+      </FormSection>
 
-      {/* Financial & Schedule Metrics */}
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+      <FormSection title="Schedule and budget">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
         <Field
           label="Start Date"
           required
@@ -173,9 +174,10 @@ export default function ProjectForm() {
           onChange={(v) => update("contractValue", v)}
           placeholder="e.g. 165000000"
         />
-      </div>
+        </div>
+      </FormSection>
 
-      {/* Scope / Description */}
+      <FormSection title="Project details">
       <label className="grid gap-1.5 text-xs text-slate-700 dark:text-slate-300">
         <span className="font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
           Project Scope & Description
@@ -188,6 +190,7 @@ export default function ProjectForm() {
           className="erp-field rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/15 dark:border-[#3F434C] dark:bg-[#22252B] dark:text-slate-100"
         />
       </label>
+      </FormSection>
 
       {/* Actions */}
       <div className="flex justify-end gap-3 pt-2">
@@ -205,7 +208,8 @@ export default function ProjectForm() {
           {saving ? "Creating Project..." : "Create Project"}
         </button>
       </div>
-    </form>
+      </form>
+    </FormCard>
   );
 }
 
