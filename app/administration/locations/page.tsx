@@ -65,7 +65,7 @@ export default function CountriesAndLocationsPage() {
   }
 
   useEffect(() => {
-    fetchCountries();
+    queueMicrotask(fetchCountries);
   }, []);
 
   async function handleCreateCountry(e: React.FormEvent) {
@@ -146,13 +146,13 @@ export default function CountriesAndLocationsPage() {
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-blue-400 font-mono text-xs font-semibold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 font-mono text-xs font-semibold uppercase tracking-wider mb-1">
               <Globe2 className="w-4 h-4" /> Administration & Master Data
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
+            <h1 className="font-slab text-3xl font-bold text-slate-900 tracking-tight dark:text-slate-100">
               Countries & Locations Management
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-slate-500 mt-1 dark:text-slate-500 dark:text-slate-400">
               Multi-country hierarchy: Country → Region / State → City → Project Location
             </p>
           </div>
@@ -160,13 +160,13 @@ export default function CountriesAndLocationsPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowAddCountry(!showAddCountry)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-slate-900 dark:text-slate-100 text-xs font-semibold transition-colors shadow-sm"
             >
               <Plus className="w-4 h-4" /> Add Country
             </button>
             <button
               onClick={() => setShowAddLocation(!showAddLocation)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#1F2430] hover:bg-[#282E3E] text-slate-200 border border-[#31374A] text-xs font-semibold transition-colors shadow-sm"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 dark:bg-[#22252B] dark:hover:bg-[#2A2D34] dark:text-slate-900 dark:text-slate-100 dark:border-[#3F434C] text-xs font-semibold transition-colors shadow-sm"
             >
               <MapPin className="w-4 h-4 text-blue-400" /> New Site Location
             </button>
@@ -187,25 +187,25 @@ export default function CountriesAndLocationsPage() {
 
         {/* Add Country Drawer Form */}
         {showAddCountry && (
-          <div className="bg-[#141720] border border-[#262C3D] rounded-xl p-5 shadow-lg space-y-4">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+          <div className="bg-white dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] rounded-xl p-5 shadow-lg space-y-4">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider font-mono">
               Register New Country
             </h2>
             <form onSubmit={handleCreateCountry} className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-slate-400">Country Name *</label>
+                <label className="text-xs text-slate-500 dark:text-slate-400">Country Name *</label>
                 <input
                   type="text"
                   required
                   value={countryName}
                   onChange={(e) => setCountryName(e.target.value)}
                   placeholder="e.g. Ethiopia"
-                  className="bg-[#1A1D27] border border-[#2B3142] rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-blue-500"
+                  className="bg-white dark:bg-[#22252B] border border-slate-200 dark:border-[#3F434C] rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-slate-400">Country Code (2-letter) *</label>
+                <label className="text-xs text-slate-500 dark:text-slate-400">Country Code (2-letter) *</label>
                 <input
                   type="text"
                   required
@@ -213,36 +213,36 @@ export default function CountriesAndLocationsPage() {
                   value={countryCode}
                   onChange={(e) => setCountryCode(e.target.value.toUpperCase())}
                   placeholder="e.g. ET"
-                  className="bg-[#1A1D27] border border-[#2B3142] rounded-lg px-3 py-1.5 text-xs text-slate-200 uppercase outline-none focus:border-blue-500"
+                  className="bg-white dark:bg-[#22252B] border border-slate-200 dark:border-[#3F434C] rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 uppercase outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-slate-400">Phone Code *</label>
+                <label className="text-xs text-slate-500 dark:text-slate-400">Phone Code *</label>
                 <input
                   type="text"
                   required
                   value={phoneCode}
                   onChange={(e) => setPhoneCode(e.target.value)}
                   placeholder="e.g. +251"
-                  className="bg-[#1A1D27] border border-[#2B3142] rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-blue-500"
+                  className="bg-white dark:bg-[#22252B] border border-slate-200 dark:border-[#3F434C] rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-slate-400">Currency Name *</label>
+                <label className="text-xs text-slate-500 dark:text-slate-400">Currency Name *</label>
                 <input
                   type="text"
                   required
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
                   placeholder="e.g. Ethiopian Birr"
-                  className="bg-[#1A1D27] border border-[#2B3142] rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-blue-500"
+                  className="bg-white dark:bg-[#22252B] border border-slate-200 dark:border-[#3F434C] rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-slate-400">Currency Code *</label>
+                <label className="text-xs text-slate-500 dark:text-slate-400">Currency Code *</label>
                 <input
                   type="text"
                   required
@@ -250,45 +250,45 @@ export default function CountriesAndLocationsPage() {
                   value={currencyCode}
                   onChange={(e) => setCurrencyCode(e.target.value.toUpperCase())}
                   placeholder="e.g. ETB"
-                  className="bg-[#1A1D27] border border-[#2B3142] rounded-lg px-3 py-1.5 text-xs text-slate-200 uppercase outline-none focus:border-blue-500"
+                  className="bg-white dark:bg-[#22252B] border border-slate-200 dark:border-[#3F434C] rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 uppercase outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-slate-400">Currency Symbol *</label>
+                <label className="text-xs text-slate-500 dark:text-slate-400">Currency Symbol *</label>
                 <input
                   type="text"
                   required
                   value={currencySymbol}
                   onChange={(e) => setCurrencySymbol(e.target.value)}
                   placeholder="e.g. Br"
-                  className="bg-[#1A1D27] border border-[#2B3142] rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-blue-500"
+                  className="bg-white dark:bg-[#22252B] border border-slate-200 dark:border-[#3F434C] rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs text-slate-400">Time Zone *</label>
+                <label className="text-xs text-slate-500 dark:text-slate-400">Time Zone *</label>
                 <input
                   type="text"
                   required
                   value={timeZone}
                   onChange={(e) => setTimeZone(e.target.value)}
                   placeholder="e.g. Africa/Addis_Ababa"
-                  className="bg-[#1A1D27] border border-[#2B3142] rounded-lg px-3 py-1.5 text-xs text-slate-200 outline-none focus:border-blue-500"
+                  className="bg-white dark:bg-[#22252B] border border-slate-200 dark:border-[#3F434C] rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-blue-500"
                 />
               </div>
 
               <div className="flex items-end gap-2">
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg shadow-sm"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-slate-900 dark:text-slate-100 text-xs font-semibold rounded-lg shadow-sm"
                 >
                   Save Country
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowAddCountry(false)}
-                  className="px-4 py-2 bg-[#1A1D27] text-slate-400 hover:text-white text-xs font-semibold rounded-lg border border-[#2B3142]"
+                  className="px-4 py-2 bg-white dark:bg-[#22252B] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100 text-xs font-semibold rounded-lg border border-slate-200 dark:border-[#3F434C]"
                 >
                   Cancel
                 </button>
@@ -299,20 +299,20 @@ export default function CountriesAndLocationsPage() {
 
         {/* Add Project Location Wizard */}
         {showAddLocation && (
-          <div className="bg-[#141720] border border-[#262C3D] rounded-xl p-5 shadow-lg space-y-4">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
+          <div className="bg-white dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] rounded-xl p-5 shadow-lg space-y-4">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider font-mono flex items-center gap-2">
               <MapPin className="w-4 h-4 text-blue-400" /> Register Project Site Location
             </h2>
             <form onSubmit={handleCreateLocation} className="space-y-4">
               <div className="max-w-md flex flex-col gap-1">
-                <label className="text-xs text-slate-400 font-semibold">Location / Site Name *</label>
+                <label className="text-xs text-slate-500 dark:text-slate-400 font-semibold">Location / Site Name *</label>
                 <input
                   type="text"
                   required
                   value={locationName}
                   onChange={(e) => setLocationName(e.target.value)}
                   placeholder="e.g. Bole Medhanialem High-Rise Site Plot"
-                  className="bg-[#1A1D27] border border-[#2B3142] rounded-lg px-3 py-2 text-xs text-slate-200 outline-none focus:border-blue-500"
+                  className="bg-white dark:bg-[#22252B] border border-slate-200 dark:border-[#3F434C] rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-slate-100 outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -332,13 +332,13 @@ export default function CountriesAndLocationsPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddLocation(false)}
-                  className="px-4 py-2 bg-[#1A1D27] text-slate-400 hover:text-white text-xs font-semibold rounded-lg border border-[#2B3142]"
+                  className="px-4 py-2 bg-white dark:bg-[#22252B] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100 text-xs font-semibold rounded-lg border border-slate-200 dark:border-[#3F434C]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg shadow-sm"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-slate-900 dark:text-slate-100 text-xs font-semibold rounded-lg shadow-sm"
                 >
                   Save Site Location
                 </button>
@@ -348,12 +348,12 @@ export default function CountriesAndLocationsPage() {
         )}
 
         {/* Countries Table */}
-        <div className="bg-[#141720] border border-[#232733] rounded-xl overflow-hidden shadow-sm">
-          <div className="px-5 py-4 border-b border-[#232733] flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-white">Active Operating Countries</h2>
+        <div className="bg-white dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] rounded-xl overflow-hidden shadow-sm">
+          <div className="px-5 py-4 border-b border-slate-200 dark:border-[#2F333A] flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Active Operating Countries</h2>
             <button
               onClick={fetchCountries}
-              className="text-xs text-slate-400 hover:text-blue-400 flex items-center gap-1"
+              className="text-xs text-slate-500 dark:text-slate-400 hover:text-blue-400 flex items-center gap-1"
             >
               <RefreshCw className="w-3.5 h-3.5" /> Refresh
             </button>
@@ -361,7 +361,7 @@ export default function CountriesAndLocationsPage() {
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-[#181B24] text-slate-400 uppercase tracking-wider font-mono text-[11px] border-b border-[#232733]">
+              <thead className="bg-[#181B24] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono text-[11px] border-b border-slate-200 dark:border-[#2F333A]">
                 <tr>
                   <th className="px-5 py-3">Country</th>
                   <th className="px-5 py-3">Code</th>
@@ -387,13 +387,13 @@ export default function CountriesAndLocationsPage() {
                 ) : (
                   countries.map((c) => (
                     <tr key={c._id} className="hover:bg-[#1A1E29] transition-colors">
-                      <td className="px-5 py-3.5 font-semibold text-white">{c.name}</td>
+                      <td className="px-5 py-3.5 font-semibold text-slate-900 dark:text-slate-100">{c.name}</td>
                       <td className="px-5 py-3.5 font-mono text-blue-400">{c.countryCode}</td>
                       <td className="px-5 py-3.5">
                         {c.currency} ({c.currencySymbol} / {c.currencyCode})
                       </td>
-                      <td className="px-5 py-3.5 font-mono text-slate-400">{c.phoneCode}</td>
-                      <td className="px-5 py-3.5 font-mono text-slate-400">{c.timeZone}</td>
+                      <td className="px-5 py-3.5 font-mono text-slate-500 dark:text-slate-400">{c.phoneCode}</td>
+                      <td className="px-5 py-3.5 font-mono text-slate-500 dark:text-slate-400">{c.timeZone}</td>
                       <td className="px-5 py-3.5">
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                           {c.status}
@@ -410,4 +410,3 @@ export default function CountriesAndLocationsPage() {
     </AppShell>
   );
 }
-
