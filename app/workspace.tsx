@@ -552,11 +552,7 @@ export default function Workspace({
   );
 
   return (
-    <AppShell
-      userName={userName}
-      userRole={role}
-      onLogout={onLogout}
-    >
+    <AppShell onLogout={onLogout}>
       <div className="space-y-6">
         {content}
       </div>

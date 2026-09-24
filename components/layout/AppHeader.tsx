@@ -20,13 +20,14 @@ interface AppHeaderProps {
 export default function AppHeader({
   onToggleMobileSidebar,
   isMobileSidebarOpen,
-  userName = "Abebe Bekele",
-  userRole = "Admin",
+  userName,
+  userRole,
   onLogout,
   searchQuery = "",
   onSearchChange,
 }: AppHeaderProps) {
   const pathname = usePathname() || "/";
+  const displayName = userName || "Signed out";
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [unreadCount, setUnreadCount] = useState(3);
@@ -182,11 +183,11 @@ export default function AppHeader({
               aria-label="User profile menu"
             >
               <div className="w-8 h-8 rounded-full bg-slate-800 text-blue-300 flex items-center justify-center text-xs font-bold shadow-xs">
-                {userName.charAt(0)}
+                {displayName.charAt(0)}
               </div>
               <div className="hidden sm:flex flex-col text-left">
                 <span className="text-xs font-semibold text-slate-800 leading-tight">
-                  {userName}
+                  {displayName}
                 </span>
                 <span className="text-[10px] text-slate-500 font-medium">{userRole}</span>
               </div>
@@ -196,7 +197,7 @@ export default function AppHeader({
             {showProfileMenu && (
               <div className="absolute right-0 mt-2 w-56 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
                 <div className="px-4 py-2.5 border-b border-slate-100">
-                  <p className="text-xs font-semibold text-slate-900">{userName}</p>
+                  <p className="text-xs font-semibold text-slate-900">{displayName}</p>
                   <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-100">
                     {userRole}
                   </span>

@@ -1,57 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
 import EntryPage from "./entrypage/entrypage";
-import AuthPage, { AuthIdentity } from "./Authpage/authpage";
+import AuthPage from "./Authpage/authpage";
 import Workspace from "./workspace";
-import { RoleType } from "@/types/erp";
 
 export default function App() {
+  const { user: currentUser, status, refreshUser, logout } = useAuth();
   const [screen, setScreen] = useState<"loading" | "entry" | "auth" | "workspace" | "service-error">("loading");
-  const [currentUser, setCurrentUser] = useState<AuthIdentity | null>(null);
 
-  // Check active session on initial load
   useEffect(() => {
-    async function checkSession() {
-      try {
-        const res = await fetch("/api/auth/me");
-        if (res.status === 401) {
-          setScreen("entry");
-          return;
-        }
-        if (!res.ok) {
-  
-          setScreen("service-error");
-          return;
-        }
-        const json = await res.json();
-        if (json.success && json.data?.user) {
-          setCurrentUser({
-            name: json.data.user.fullName,
-            username: json.data.user.username,
-            email: json.data.user.email,
-            role: json.data.user.role as RoleType,
-          });
-          setScreen("workspace");
-          return;
-        }
-
-        setScreen("service-error");
-      } catch {
-
+    queueMicrotask(() => {
+      if (status === "loading") return;
+      if (status === "authenticated") {
+        setScreen("workspace");
+      } else if (status === "unauthenticated") {
+        setScreen("entry");
+      } else {
         setScreen("service-error");
       }
-    }
-
-    checkSession();
-  }, []);
+    });
+  }, [status]);
 
   const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } catch {
-      // Ignore network errors on logout
-    }
+    await logout();
     setScreen("entry");
   };
 
@@ -95,9 +68,9 @@ export default function App() {
   if (screen === "auth") {
     return (
       <AuthPage
-        onEnter={(identity) => {
-          setCurrentUser(identity);
-          setScreen("workspace");
+        onEnter={async () => {
+          const authenticatedUser = await refreshUser();
+          if (authenticatedUser) setScreen("workspace");
         }}
       />
     );
@@ -107,11 +80,5 @@ export default function App() {
     return null;
   }
 
-  return (
-    <Workspace
-      userName={currentUser.name}
-      userRole={currentUser.role}
-      onLogout={handleLogout}
-    />
-  );
+  return <Workspace userName={currentUser.fullName} userRole={currentUser.role} onLogout={handleLogout} />;
 }

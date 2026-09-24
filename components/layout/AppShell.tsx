@@ -4,6 +4,7 @@ import React, { useState, useEffect, createContext, useContext } from "react";
 import AppSidebar from "./AppSidebar";
 import AppHeader from "./AppHeader";
 import { RoleType } from "@/types/erp";
+import { useAuth } from "@/components/AuthProvider";
 
 interface SearchContextType {
   searchQuery: string;
@@ -19,19 +20,16 @@ export const useSearch = () => useContext(SearchContext);
 
 interface AppShellProps {
   children: React.ReactNode;
-  userName?: string;
-  userRole?: RoleType;
   onRoleChange?: (role: RoleType) => void;
   onLogout?: () => void;
 }
 
 export default function AppShell({
   children,
-  userName = "Signed out",
-  userRole,
   onRoleChange,
   onLogout,
 }: AppShellProps) {
+  const { user, logout } = useAuth();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -59,6 +57,10 @@ export default function AppShell({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isMobileOpen]);
 
+  const authenticatedUserName = user?.fullName || "Signed out";
+  const authenticatedUserRole = user?.role;
+  const handleLogout = onLogout || logout;
+
   return (
     <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
       <div className="erp-app-shell min-h-screen w-full overflow-x-hidden bg-[#f4f5f7] font-sans text-slate-900 dark:bg-[#0f1115] dark:text-slate-100">
@@ -67,10 +69,10 @@ export default function AppShell({
           onMobileClose={() => setIsMobileOpen(false)}
           isCollapsed={isCollapsed}
           onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
-          userName={userName}
-          userRole={userRole}
+          userName={authenticatedUserName}
+          userRole={authenticatedUserRole}
           onRoleChange={onRoleChange}
-          onLogout={onLogout}
+          onLogout={handleLogout}
         />
 
         {/* Main Content — offset matches sidebar width at every breakpoint:
@@ -86,9 +88,9 @@ export default function AppShell({
           <AppHeader
             isMobileSidebarOpen={isMobileOpen}
             onToggleMobileSidebar={() => setIsMobileOpen(!isMobileOpen)}
-            userName={userName}
-            userRole={userRole}
-            onLogout={onLogout}
+            userName={authenticatedUserName}
+          userRole={authenticatedUserRole}
+            onLogout={handleLogout}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
           />
