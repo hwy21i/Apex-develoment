@@ -41,6 +41,14 @@ export function handleError(error: unknown) {
   }
 
   console.error("API error:", error);
+
+  if (
+    error instanceof Error &&
+    (error.name === "MongoServerError" || error.name === "MongoNetworkError" || "codeName" in error)
+  ) {
+    return fail("SERVICE_UNAVAILABLE", "The data service is temporarily unavailable. Please try again later.", 503);
+  }
+
   return fail("INTERNAL_ERROR", "An unexpected server error occurred", 500);
 }
 
