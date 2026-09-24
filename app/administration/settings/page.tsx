@@ -3,9 +3,19 @@
 import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
-  Settings, Save, Globe, DollarSign, Shield,
-  Database, Bell, CheckCircle, Sliders
+  Globe,
+  DollarSign,
+  Shield,
+  CheckCircle,
+  Save,
 } from "lucide-react";
+import {
+  FormCard,
+  FormSection,
+  FormField,
+  FormInput,
+  FormActions,
+} from "@/components/ui/Form";
 
 export default function SystemSettingsPage() {
   const [saved, setSaved] = useState(false);
@@ -24,7 +34,7 @@ export default function SystemSettingsPage() {
     notificationEmails: "admin@construction-erp.et, finance@construction-erp.et",
   });
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
@@ -32,148 +42,135 @@ export default function SystemSettingsPage() {
 
   return (
     <AppShell>
-      <div className="space-y-6 max-w-4xl">
-        <div className="flex items-center justify-between">
+      <div className="space-y-6 max-w-4xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-white">System Global Settings</h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              System Global Settings
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
               Company legal entity data, Ethiopian Birr financial parameters, tax rates, and security enforcement
             </p>
           </div>
           {saved && (
-            <span className="flex items-center gap-1.5 text-green-400 text-xs bg-green-500/20 border border-green-500/30 px-3 py-1.5 rounded-lg">
+            <span className="inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 text-xs bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40 px-3.5 py-1.5 rounded-xl font-semibold shrink-0">
               <CheckCircle size={14} /> Settings Saved
             </span>
           )}
         </div>
 
-        <form onSubmit={handleSave} className="space-y-6">
-          {/* Company Profile */}
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-5 space-y-4">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2 border-b border-gray-700 pb-2">
-              <Globe size={16} className="text-blue-400" />
-              Corporate Identity & Legal Entity
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div>
-                <label className="text-gray-400 block mb-1">Company Legal Name</label>
-                <input
-                  type="text"
-                  value={formData.companyName}
-                  onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label className="text-gray-400 block mb-1">TIN / Tax Registration Number</label>
-                <input
-                  type="text"
-                  value={formData.taxRegistrationNumber}
-                  onChange={(e) => setFormData({ ...formData, taxRegistrationNumber: e.target.value })}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 font-mono"
-                />
-              </div>
-            </div>
-          </div>
+        <FormCard onSubmit={handleSave}>
+          {/* Corporate Identity */}
+          <FormSection
+            title="Corporate Identity & Legal Entity"
+            subtitle="Registered company profile in Ethiopia"
+            icon={Globe}
+          >
+            <FormField label="Company Legal Name" required>
+              <FormInput
+                type="text"
+                value={formData.companyName}
+                onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+              />
+            </FormField>
+
+            <FormField label="TIN / Tax Registration Number" required>
+              <FormInput
+                type="text"
+                value={formData.taxRegistrationNumber}
+                onChange={(e) => setFormData({ ...formData, taxRegistrationNumber: e.target.value })}
+                className="font-mono"
+              />
+            </FormField>
+          </FormSection>
 
           {/* Financial & Tax Parameters */}
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-5 space-y-4">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2 border-b border-gray-700 pb-2">
-              <DollarSign size={16} className="text-green-400" />
-              Ethiopian Financial & Fiscal Parameters
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-              <div>
-                <label className="text-gray-400 block mb-1">Base Currency</label>
-                <input
-                  type="text"
-                  value={`${formData.currencyCode} (${formData.currencySymbol})`}
-                  disabled
-                  className="w-full bg-gray-900/50 border border-gray-700/60 rounded-lg px-3 py-2 text-gray-300 font-bold"
-                />
-              </div>
-              <div>
-                <label className="text-gray-400 block mb-1">VAT Rate (%)</label>
-                <input
-                  type="number"
-                  value={formData.vatRatePct}
-                  onChange={(e) => setFormData({ ...formData, vatRatePct: Number(e.target.value) })}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label className="text-gray-400 block mb-1">Withholding Tax Rate (%)</label>
-                <input
-                  type="number"
-                  value={formData.withholdingTaxPct}
-                  onChange={(e) => setFormData({ ...formData, withholdingTaxPct: Number(e.target.value) })}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label className="text-gray-400 block mb-1">Default Retention Hold (%)</label>
-                <input
-                  type="number"
-                  value={formData.retentionRatePct}
-                  onChange={(e) => setFormData({ ...formData, retentionRatePct: Number(e.target.value) })}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
-                />
-              </div>
-              <div>
-                <label className="text-gray-400 block mb-1">Fiscal Calendar</label>
-                <input
-                  type="text"
-                  value={formData.fiscalYearStart}
-                  onChange={(e) => setFormData({ ...formData, fiscalYearStart: e.target.value })}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
-                />
-              </div>
-            </div>
-          </div>
+          <FormSection
+            title="Ethiopian Financial & Fiscal Parameters"
+            subtitle="Base currency and tax withholdings"
+            icon={DollarSign}
+          >
+            <FormField label="Base Currency">
+              <FormInput
+                type="text"
+                value={`${formData.currencyCode} (${formData.currencySymbol})`}
+                disabled
+                className="opacity-75 font-semibold cursor-not-allowed"
+              />
+            </FormField>
+
+            <FormField label="VAT Rate (%)">
+              <FormInput
+                type="number"
+                value={formData.vatRatePct}
+                onChange={(e) => setFormData({ ...formData, vatRatePct: Number(e.target.value) })}
+              />
+            </FormField>
+
+            <FormField label="Withholding Tax Rate (%)">
+              <FormInput
+                type="number"
+                value={formData.withholdingTaxPct}
+                onChange={(e) => setFormData({ ...formData, withholdingTaxPct: Number(e.target.value) })}
+              />
+            </FormField>
+
+            <FormField label="Default Retention Hold (%)">
+              <FormInput
+                type="number"
+                value={formData.retentionRatePct}
+                onChange={(e) => setFormData({ ...formData, retentionRatePct: Number(e.target.value) })}
+              />
+            </FormField>
+
+            <FormField label="Fiscal Calendar">
+              <FormInput
+                type="text"
+                value={formData.fiscalYearStart}
+                onChange={(e) => setFormData({ ...formData, fiscalYearStart: e.target.value })}
+              />
+            </FormField>
+          </FormSection>
 
           {/* Security & Access */}
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-5 space-y-4">
-            <h2 className="text-sm font-bold text-white flex items-center gap-2 border-b border-gray-700 pb-2">
-              <Shield size={16} className="text-purple-400" />
-              Security Policies & Session Timeout
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  id="twoFactor"
-                  checked={formData.twoFactorEnforced}
-                  onChange={(e) => setFormData({ ...formData, twoFactorEnforced: e.target.checked })}
-                  className="w-4 h-4 rounded text-blue-600 bg-gray-900 border-gray-700 focus:ring-blue-500"
-                />
-                <label htmlFor="twoFactor" className="text-gray-300">
-                  Enforce Two-Factor Authentication (2FA) for Managers & Admins
-                </label>
-              </div>
-              <div>
-                <label className="text-gray-400 block mb-1">Session Inactivity Timeout (Minutes)</label>
-                <input
-                  type="number"
-                  value={formData.sessionTimeoutMinutes}
-                  onChange={(e) => setFormData({ ...formData, sessionTimeoutMinutes: Number(e.target.value) })}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
-                />
-              </div>
-            </div>
-          </div>
+          <FormSection
+            title="Security Policies & Session Timeout"
+            subtitle="Access protection for managers and engineers"
+            icon={Shield}
+          >
+            <FormField label="Session Inactivity Timeout (Minutes)">
+              <FormInput
+                type="number"
+                value={formData.sessionTimeoutMinutes}
+                onChange={(e) => setFormData({ ...formData, sessionTimeoutMinutes: Number(e.target.value) })}
+              />
+            </FormField>
 
-          <div className="flex justify-end">
+            <div className="flex items-center gap-3 pt-6">
+              <input
+                type="checkbox"
+                id="twoFactor"
+                checked={formData.twoFactorEnforced}
+                onChange={(e) => setFormData({ ...formData, twoFactorEnforced: e.target.checked })}
+                className="w-4 h-4 rounded text-[#C9A15A] border-slate-300 dark:border-slate-700 focus:ring-[#C9A15A]"
+              />
+              <label htmlFor="twoFactor" className="text-xs text-slate-700 dark:text-slate-300 font-medium cursor-pointer">
+                Enforce Two-Factor Authentication (2FA) for Managers & Admins
+              </label>
+            </div>
+          </FormSection>
+
+          <FormActions>
             <button
               type="submit"
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors shadow-lg shadow-blue-600/30"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md shadow-amber-500/20"
             >
-              <Save size={16} />
+              <Save size={15} />
               Save Configuration
             </button>
-          </div>
-        </form>
+          </FormActions>
+        </FormCard>
       </div>
     </AppShell>
   );
 }
-

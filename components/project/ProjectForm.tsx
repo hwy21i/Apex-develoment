@@ -2,9 +2,19 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Building2, Calendar, DollarSign, MapPin, FileText, CheckCircle2 } from "lucide-react";
 import HierarchicalLocationSelector, {
   HierarchicalLocationValue,
 } from "@/components/location/HierarchicalLocationSelector";
+import {
+  FormCard,
+  FormSection,
+  FormField,
+  FormInput,
+  FormSelect,
+  FormTextarea,
+  FormActions,
+} from "@/components/ui/Form";
 
 const initialForm = {
   name: "",
@@ -78,166 +88,163 @@ export default function ProjectForm() {
   }
 
   return (
-    <form
-      onSubmit={submit}
-      className="grid gap-6 rounded-xl border border-[#262C3D] bg-[#141720] p-6 shadow-2xl"
-    >
+    <FormCard onSubmit={submit}>
       {error && (
-        <p
+        <div
           role="alert"
-          className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-xs text-red-300 font-medium"
+          className="rounded-xl border border-rose-300 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/20 p-4 text-xs text-rose-800 dark:text-rose-300 font-medium"
         >
           {error}
-        </p>
+        </div>
       )}
 
-      {/* Primary Project Details */}
-      <div className="grid gap-5 md:grid-cols-2">
-        <Field
-          label="Project Name"
-          required
-          value={form.name}
-          onChange={(v) => update("name", v)}
-          placeholder="e.g. Commercial Bank of Ethiopia HQ"
-        />
-        <Field
-          label="Project Code"
-          value={form.projectCode}
-          onChange={(v) => update("projectCode", v)}
-          placeholder="e.g. PRJ-CBE-001 (auto-generated if empty)"
-        />
-        <Field
-          label="Client Name"
-          required
-          value={form.client}
-          onChange={(v) => update("client", v)}
-          placeholder="e.g. Commercial Bank of Ethiopia"
-        />
-        <label className="grid gap-1.5 text-xs text-slate-300">
-          <span className="font-semibold uppercase tracking-wider text-slate-400">
-            Initial Status
-          </span>
-          <select
+      {/* ─── 1. PROJECT INFORMATION ─── */}
+      <FormSection
+        title="Project Information"
+        subtitle="Basic site identifiers and commissioning client"
+        icon={Building2}
+      >
+        <FormField label="Project Name" required>
+          <FormInput
+            required
+            value={form.name}
+            onChange={(e) => update("name", e.target.value)}
+            placeholder="e.g. Addis Heights Mixed-Use Tower"
+          />
+        </FormField>
+
+        <FormField label="Project Code" helper="Auto-generated if left empty">
+          <FormInput
+            value={form.projectCode}
+            onChange={(e) => update("projectCode", e.target.value)}
+            placeholder="e.g. PRJ-AH-001"
+          />
+        </FormField>
+
+        <FormField label="Client Name" required>
+          <FormInput
+            required
+            value={form.client}
+            onChange={(e) => update("client", e.target.value)}
+            placeholder="e.g. Commercial Bank of Ethiopia"
+          />
+        </FormField>
+
+        <FormField label="Project Status">
+          <FormSelect
             value={form.status}
             onChange={(e) => update("status", e.target.value)}
-            className="rounded-lg border border-[#3F434C] bg-[#1B1E24] px-3 py-2 text-white text-xs outline-none focus:border-blue-500"
           >
             <option value="planning">Planning</option>
             <option value="active">Active</option>
             <option value="on-hold">On Hold</option>
             <option value="completed">Completed</option>
             <option value="cancelled">Cancelled</option>
-          </select>
-        </label>
-      </div>
+          </FormSelect>
+        </FormField>
+      </FormSection>
 
-      {/* Hierarchical Location Section */}
-      <div className="p-4 rounded-xl bg-[#0E1016] border border-[#222736] space-y-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-mono uppercase text-blue-400 font-bold tracking-wider">
-            Site Location Hierarchy (Country → Region → City → Site)
+      {/* ─── 2. SCHEDULE ─── */}
+      <FormSection
+        title="Schedule & Timeline"
+        subtitle="Execution milestones and completion targets"
+        icon={Calendar}
+      >
+        <FormField label="Start Date" required>
+          <FormInput
+            required
+            type="date"
+            value={form.startDate}
+            onChange={(e) => update("startDate", e.target.value)}
+          />
+        </FormField>
+
+        <FormField label="Expected Completion Date" required>
+          <FormInput
+            required
+            type="date"
+            value={form.expectedEndDate}
+            onChange={(e) => update("expectedEndDate", e.target.value)}
+          />
+        </FormField>
+      </FormSection>
+
+      {/* ─── 3. BUDGET & FINANCIALS ─── */}
+      <FormSection
+        title="Budget & Financials"
+        subtitle="Approved capital expenditure in Ethiopian Birr (ETB)"
+        icon={DollarSign}
+      >
+        <FormField label="Total Budget (ETB)" required>
+          <FormInput
+            required
+            type="number"
+            min={0}
+            value={form.totalBudget}
+            onChange={(e) => update("totalBudget", e.target.value)}
+            placeholder="e.g. 150000000"
+          />
+        </FormField>
+
+        <FormField label="Contract Value (ETB)" required>
+          <FormInput
+            required
+            type="number"
+            min={0}
+            value={form.contractValue}
+            onChange={(e) => update("contractValue", e.target.value)}
+            placeholder="e.g. 165000000"
+          />
+        </FormField>
+      </FormSection>
+
+      {/* ─── 4. LOCATION & SCOPE ─── */}
+      <FormSection
+        title="Site Location & Details"
+        subtitle="Hierarchical geographical assignment and technical specifications"
+        icon={MapPin}
+      >
+        <div className="md:col-span-2 p-4 rounded-xl bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] space-y-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#C9A15A] block">
+            Hierarchical Location (Country → Region → City → Site Address)
           </span>
+          <HierarchicalLocationSelector value={hierarchy} onChange={setHierarchy} />
         </div>
-        <HierarchicalLocationSelector value={hierarchy} onChange={setHierarchy} />
-      </div>
 
-      {/* Financial & Schedule Metrics */}
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-        <Field
-          label="Start Date"
-          required
-          type="date"
-          value={form.startDate}
-          onChange={(v) => update("startDate", v)}
-        />
-        <Field
-          label="Expected End Date"
-          required
-          type="date"
-          value={form.expectedEndDate}
-          onChange={(v) => update("expectedEndDate", v)}
-        />
-        <Field
-          label="Total Budget (ETB)"
-          required
-          type="number"
-          value={form.totalBudget}
-          onChange={(v) => update("totalBudget", v)}
-          placeholder="e.g. 150000000"
-        />
-        <Field
-          label="Contract Value (ETB)"
-          required
-          type="number"
-          value={form.contractValue}
-          onChange={(v) => update("contractValue", v)}
-          placeholder="e.g. 165000000"
-        />
-      </div>
+        <FormField label="Scope & Description" fullWidth>
+          <FormTextarea
+            value={form.description}
+            onChange={(e) => update("description", e.target.value)}
+            rows={3}
+            placeholder="Detailed engineering scope, structural blueprints, architectural objectives..."
+          />
+        </FormField>
+      </FormSection>
 
-      {/* Scope / Description */}
-      <label className="grid gap-1.5 text-xs text-slate-300">
-        <span className="font-semibold uppercase tracking-wider text-slate-400">
-          Project Scope & Description
-        </span>
-        <textarea
-          value={form.description}
-          onChange={(e) => update("description", e.target.value)}
-          rows={3}
-          placeholder="Detailed engineering scope, architectural blueprints, phase objectives..."
-          className="rounded-lg border border-[#3F434C] bg-[#1B1E24] px-3 py-2 text-white text-xs outline-none focus:border-blue-500"
-        />
-      </label>
-
-      {/* Actions */}
-      <div className="flex justify-end gap-3 pt-2">
+      {/* ─── ACTIONS ─── */}
+      <FormActions>
         <button
           type="button"
           onClick={() => router.back()}
-          className="rounded-lg px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+          className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 dark:border-[#2F333A] text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
         >
           Cancel
         </button>
         <button
+          type="submit"
           disabled={saving}
-          className="rounded-lg bg-blue-600 hover:bg-blue-500 px-5 py-2 text-xs font-semibold text-white disabled:opacity-60 transition-colors shadow-md"
+          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 font-bold text-xs shadow-md shadow-amber-500/20 disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
         >
-          {saving ? "Creating Project..." : "Create Project"}
+          {saving ? (
+            <span>Saving Project...</span>
+          ) : (
+            <>
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Save Project</span>
+            </>
+          )}
         </button>
-      </div>
-    </form>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  type = "text",
-  required,
-  placeholder,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  type?: string;
-  required?: boolean;
-  placeholder?: string;
-}) {
-  return (
-    <label className="grid gap-1.5 text-xs text-slate-300">
-      <span className="font-semibold uppercase tracking-wider text-slate-400">
-        {label} {required && <span className="text-red-400">*</span>}
-      </span>
-      <input
-        type={type}
-        required={required}
-        min={type === "number" ? 0 : undefined}
-        value={value}
-        placeholder={placeholder}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded-lg border border-[#3F434C] bg-[#1B1E24] px-3 py-2 text-white text-xs outline-none focus:border-blue-500"
-      />
-    </label>
+      </FormActions>
+    </FormCard>
   );
 }
