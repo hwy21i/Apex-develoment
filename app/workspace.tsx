@@ -542,7 +542,6 @@ export default function Workspace({
     </>
   ) : page === "Dashboard" ? (
     <ConstructionDashboard
-      userName={userName}
       onCreate={canCreate ? () => router.push("/projects/new") : undefined}
     />
   ) : page === "Projects" ? (

@@ -10,6 +10,7 @@ import { Equipment } from "@/models/Equipment";
 import { Payment } from "@/models/Payment";
 import { Expense } from "@/models/Expense";
 import { Milestone } from "@/models/Milestone";
+import { hasPermission } from "@/lib/rbac/permissions";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -68,8 +69,14 @@ export async function GET(request: Request) {
         .sort({ createdAt: -1 })
         .limit(8)
         .lean(),
-      Material.find({}).sort({ currentStock: 1 }).limit(10).lean(),
-      Equipment.find({}).lean(),
+      hasPermission(guard.user, "INVENTORY_VIEW")
+        ? Material.find({}).sort({ currentStock: 1 }).limit(10).lean()
+        : Promise.resolve([]),
+      hasPermission(guard.user, "EQUIPMENT_VIEW")
+        ? Equipment.find(
+            guard.user.role === "Admin" ? {} : { assignedProjectId: { $in: projectIds } }
+          ).lean()
+        : Promise.resolve([]),
       Payment.find({ projectId: { $in: projectIds } })
         .populate("projectId", "name projectCode")
         .sort({ paymentDate: -1 })

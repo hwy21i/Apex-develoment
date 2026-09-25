@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Menu, X, Search, Bell, ChevronRight, User, LogOut, Sun, Moon, Monitor } from "lucide-react";
 import { RoleType } from "@/types/erp";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ApexLogo } from "@/components/brand/ApexLogo";
 
 interface AppHeaderProps {
@@ -27,7 +27,14 @@ export default function AppHeader({
   onSearchChange,
 }: AppHeaderProps) {
   const pathname = usePathname() || "/";
+  const router = useRouter();
   const displayName = userName || "Signed out";
+  const submitSearch = () => {
+    const query = searchQuery.trim();
+    if (!query) return;
+    router.push(`/projects?q=${encodeURIComponent(query)}`);
+    setShowMobileSearch(false);
+  };
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [unreadCount, setUnreadCount] = useState(3);
@@ -71,6 +78,7 @@ export default function AppHeader({
             onClick={onToggleMobileSidebar}
             aria-label={isMobileSidebarOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={isMobileSidebarOpen}
+            aria-controls="app-sidebar"
             className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 md:hidden transition-colors shrink-0"
           >
             {isMobileSidebarOpen ? (
@@ -126,7 +134,9 @@ export default function AppHeader({
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange?.(e.target.value)}
-              placeholder="Search projects, tasks…"
+              placeholder="Search projects…"
+              aria-label="Search projects"
+              onKeyDown={(event) => { if (event.key === "Enter") submitSearch(); }}
               className="w-full h-9 bg-slate-100 border border-slate-200 text-slate-800 placeholder-slate-400 text-xs rounded-full pl-9 pr-8 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/30 transition-all"
             />
             {searchQuery && (
@@ -239,7 +249,9 @@ export default function AppHeader({
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange?.(e.target.value)}
-              placeholder="Search projects, tasks, materials, equipment…"
+              placeholder="Search projects…"
+              aria-label="Search projects"
+              onKeyDown={(event) => { if (event.key === "Enter") submitSearch(); }}
               className="w-full h-10 bg-slate-100 border border-slate-200 text-slate-800 placeholder-slate-400 text-xs rounded-full pl-9 pr-9 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/30 transition-all"
               autoFocus
             />

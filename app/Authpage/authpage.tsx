@@ -123,8 +123,9 @@ function SignIn({
   onSwitch: () => void;
   onEnter: (identity: AuthIdentity) => void;
 }) {
-  const [identifier, setIdentifier] = useState("pm.abebe");
-  const [password, setPassword] = useState("Password123!");
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const isDevelopment = process.env.NODE_ENV === "development";
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -236,8 +237,7 @@ function SignIn({
 
   return (
     <form className="auth-form" onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-      {/* Demo Preset Quick-Fill */}
-      <div>
+      {isDevelopment && <div>
         <label
           style={{
             display: "block",
@@ -277,11 +277,11 @@ function SignIn({
             </option>
           ))}
         </select>
-      </div>
+      </div>}
 
       <Input
         label="Email or Username"
-        placeholder="admin, pm.abebe, or you@apexdev.et"
+        placeholder="Enter your email or username"
         value={identifier}
         onChange={setIdentifier}
         required
@@ -297,7 +297,7 @@ function SignIn({
       />
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 12, color: A.textDim }}>Default Seed Password: Password123!</span>
+        {isDevelopment && <span style={{ fontSize: 12, color: A.textDim }}>Development demo accounts use Password123!</span>}
         <button
           type="button"
           onClick={handleForgotPassword}

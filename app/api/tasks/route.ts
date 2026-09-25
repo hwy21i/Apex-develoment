@@ -20,15 +20,25 @@ export async function GET(request: Request) {
     const projectId = searchParams.get("projectId");
     const status = searchParams.get("status");
 
-    const query: Record<string, unknown> = mine ? { assignedTo: guard.user.id } : {};
+    const filters: Record<string, unknown>[] = [];
+    if (mine) filters.push({ assignedTo: guard.user.id });
     if (guard.user.role !== "Admin") {
       const projectIds = await Project.find({
         $or: [{ projectManager: guard.user.id }, { teamMembers: guard.user.id }],
       }).distinct("_id");
-      query.projectId = { $in: projectIds };
+      filters.push({ projectId: { $in: projectIds } });
     }
-    if (projectId) query.projectId = projectId;
-    if (status) query.status = status;
+    if (projectId) {
+      if (!/^[a-f\d]{24}$/i.test(projectId)) {
+        return fail("VALIDATION_ERROR", "Invalid project ID", 422);
+      }
+      if (!(await canAccessProject(guard.user, projectId))) {
+        return fail("FORBIDDEN", "You do not have access to this project", 403);
+      }
+      filters.push({ projectId });
+    }
+    if (status) filters.push({ status });
+    const query = filters.length ? { $and: filters } : {};
 
     const tasks = await Task.find(query)
       .populate("projectId", "name projectCode")

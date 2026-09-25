@@ -219,7 +219,9 @@ export default function PurchaseOrdersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
-                {filtered.map((o) => (
+                {filtered.length === 0 ? (
+                  <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-400">No purchase orders match the current search or filter.</td></tr>
+                ) : filtered.map((o) => (
                   <tr key={o._id} className="hover:bg-gray-700/30 transition-colors">
                     <td className="px-4 py-3">
                       <span className="font-mono text-blue-400 font-medium">{o.poNumber}</span>
@@ -243,6 +245,8 @@ export default function PurchaseOrdersPage() {
                     </td>
                     <td className="px-4 py-3">
                       <button
+                        type="button"
+                        aria-label={`View ${o.poNumber}`}
                         onClick={() => setSelected(selected?._id === o._id ? null : o)}
                         className="text-blue-400 hover:text-blue-300 transition-colors"
                       >
@@ -276,7 +280,8 @@ export default function PurchaseOrdersPage() {
             )}
             <div>
               <h3 className="text-sm font-medium text-gray-300 mb-2">Line Items</h3>
-              <table className="w-full text-sm">
+              <div className="overflow-x-auto">
+              <table className="min-w-[540px] w-full text-sm">
                 <thead className="text-gray-400 text-xs">
                   <tr>
                     <th className="text-left py-2">Description</th>
@@ -304,6 +309,7 @@ export default function PurchaseOrdersPage() {
                   </tr>
                 </tfoot>
               </table>
+              </div>
             </div>
           </div>
         )}

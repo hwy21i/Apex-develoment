@@ -21,18 +21,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refreshUser = useCallback(async () => {
     try {
       const response = await fetch("/api/auth/me", { cache: "no-store" });
-      if (response.status === 401) {
+      if (response.status === 401 || response.status === 404) {
         setUser(null);
         setStatus("unauthenticated");
         return null;
       }
       if (!response.ok) {
+        setUser(null);
         setStatus("service-error");
         return null;
       }
 
       const json = await response.json();
       if (!json.success || !json.data?.user) {
+        setUser(null);
         setStatus("service-error");
         return null;
       }
@@ -50,15 +52,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setStatus("authenticated");
       return sessionUser;
     } catch {
+      setUser(null);
       setStatus("service-error");
       return null;
     }
   }, []);
 
   useEffect(() => {
-    queueMicrotask(() => {
-      void refreshUser();
-    });
+    let active = true;
+    const timer = window.setTimeout(() => {
+      if (active) void refreshUser();
+    }, 0);
+    return () => {
+      active = false;
+      window.clearTimeout(timer);
+    };
   }, [refreshUser]);
 
   const logout = useCallback(async () => {

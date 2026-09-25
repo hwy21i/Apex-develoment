@@ -2,18 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
-import {
-  DollarSign,
-  Plus,
-  Search,
-  Filter,
-  CreditCard,
-  Receipt,
-  Banknote,
-  PieChart,
-  ArrowUpRight,
-  ArrowDownRight,
-} from "lucide-react";
+import Link from "next/link";
+import { DollarSign, Plus } from "lucide-react";
+
+interface OperationalExpense {
+  _id: string;
+  title?: string;
+  status?: string;
+  projectId?: { name?: string } | string;
+  data?: { expenseNumber?: string; category?: string; amount?: number; date?: string; payee?: string };
+}
 
 interface ExpenseItem {
   _id: string;
@@ -29,37 +27,45 @@ interface ExpenseItem {
 export default function FinancePage() {
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("expenses");
+  const [error, setError] = useState("");
+  const [summary, setSummary] = useState<{ budget: number; expenses: number; committedCost: number; remaining: number } | null>(null);
 
   async function fetchExpenses() {
     setLoading(true);
     try {
       const res = await fetch("/api/records/expenses");
       const json = await res.json();
-      if (json.success && json.data?.items) {
-        setExpenses(
-          json.data.items.map((e: any) => ({
-            _id: e._id,
-            expenseNumber: e.data?.expenseNumber || "EXP-2026-" + e._id.slice(-4).toUpperCase(),
-            projectName: e.title || "Addis Heights Mixed-Use Tower",
-            category: e.data?.category || "Materials",
-            amount: e.data?.amount || 185000,
-            date: e.data?.date || "2026-09-01",
-            payee: e.data?.payee || "National Cement Share Company",
-            status: e.status || "APPROVED",
-          }))
-        );
+      if (!res.ok || !json.success) {
+        setError(json.error?.message || "Unable to load finance records.");
+        return;
       }
-    } catch (err) {
-      console.error(err);
+      setExpenses(((json.data?.items || []) as OperationalExpense[]).map((expense) => ({
+        _id: expense._id,
+        expenseNumber: expense.data?.expenseNumber || `EXP-${expense._id.slice(-8).toUpperCase()}`,
+        projectName: typeof expense.projectId === "object" ? expense.projectId?.name || "Project unavailable" : "Project unavailable",
+        category: expense.data?.category || "Uncategorized",
+        amount: Number(expense.data?.amount || 0),
+        date: expense.data?.date || "—",
+        payee: expense.data?.payee || "—",
+        status: expense.status || "UNSPECIFIED",
+      })));
+      setError("");
+    } catch {
+      setError("Unable to connect to the finance service.");
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    fetchExpenses();
+    queueMicrotask(() => { void fetchExpenses(); });
+    fetch("/api/dashboard", { cache: "no-store" }).then(async (response) => {
+      const json = await response.json();
+      if (response.ok && json.success) setSummary(json.data.financial);
+    }).catch(() => {});
   }, []);
+
+  const formatMoney = (value?: number) => typeof value === "number" ? `ETB ${value.toLocaleString("en-ET", { minimumFractionDigits: 2 })}` : "—";
 
   return (
     <AppShell>
@@ -78,9 +84,9 @@ export default function FinancePage() {
             </p>
           </div>
 
-          <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0">
+          <Link href="/finance/expenses" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0">
             <Plus className="w-4 h-4" /> Record Expense
-          </button>
+          </Link>
         </div>
 
         {/* Financial KPI Summary Cards */}
@@ -90,7 +96,7 @@ export default function FinancePage() {
               Total Portfolio Budget
             </span>
             <div className="text-2xl font-bold text-white mt-1 font-mono">
-              ETB 82,000,000.00
+              {formatMoney(summary?.budget)}
             </div>
             <span className="text-[11px] text-slate-500 mt-1 block">Approved project baselines</span>
           </div>
@@ -100,9 +106,9 @@ export default function FinancePage() {
               Actual Expenditure
             </span>
             <div className="text-2xl font-bold text-amber-400 mt-1 font-mono">
-              ETB 35,200,000.00
+              {formatMoney(summary?.expenses)}
             </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">42.9% budget utilization</span>
+            <span className="text-[11px] text-slate-500 mt-1 block">Portfolio recorded expenses</span>
           </div>
 
           <div className="bg-[#141720] border border-[#232733] rounded-xl p-5 shadow-sm">
@@ -110,7 +116,7 @@ export default function FinancePage() {
               Committed Cost (POs)
             </span>
             <div className="text-2xl font-bold text-blue-400 mt-1 font-mono">
-              ETB 14,800,000.00
+              {formatMoney(summary?.committedCost)}
             </div>
             <span className="text-[11px] text-slate-500 mt-1 block">Issued purchase orders</span>
           </div>
@@ -120,11 +126,13 @@ export default function FinancePage() {
               Remaining Contingency
             </span>
             <div className="text-2xl font-bold text-emerald-400 mt-1 font-mono">
-              ETB 32,000,000.00
+              {formatMoney(summary?.remaining)}
             </div>
             <span className="text-[11px] text-emerald-500/80 mt-1 block">Healthy financial runway</span>
           </div>
         </div>
+
+        {error && <p role="alert" className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-300">{error}</p>}
 
         {/* Expenses Log Table */}
         <div className="bg-[#141720] border border-[#232733] rounded-xl overflow-hidden shadow-sm">
@@ -196,4 +204,3 @@ export default function FinancePage() {
     </AppShell>
   );
 }
-

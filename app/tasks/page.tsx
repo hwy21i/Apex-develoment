@@ -1,18 +1,31 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import AppShell from "@/components/layout/AppShell";
+import { useAuth } from "@/components/AuthProvider";
+import { hasPermission } from "@/lib/rbac/permissions";
 import {
   CheckSquare,
   Plus,
   Search,
-  Filter,
-  Calendar,
-  AlertCircle,
-  Clock,
   User,
-  Building,
 } from "lucide-react";
+
+interface ProjectOption {
+  _id: string;
+  name: string;
+}
+
+interface ApiTask {
+  _id: string;
+  title: string;
+  projectId?: { name?: string } | string;
+  assignedTo?: { fullName?: string } | string;
+  priority?: TaskRecord["priority"];
+  status?: TaskRecord["status"];
+  progress?: number;
+  dueDate?: string;
+}
 
 interface TaskRecord {
   _id: string;
@@ -26,7 +39,14 @@ interface TaskRecord {
 }
 
 export default function TasksPage() {
+  const { user } = useAuth();
+  const canCreateTask = hasPermission(user, "TASK_CREATE");
   const [tasks, setTasks] = useState<TaskRecord[]>([]);
+  const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [loadError, setLoadError] = useState("");
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -36,30 +56,73 @@ export default function TasksPage() {
     try {
       const res = await fetch("/api/tasks");
       const json = await res.json();
-      if (json.success && json.data?.items) {
-        setTasks(
-          json.data.items.map((t: any) => ({
-            _id: t._id,
-            title: t.title,
-            projectName: t.projectId?.name || "Addis Heights Tower",
-            assignedTo: t.assignedTo?.fullName || "Site Engineer",
-            priority: t.priority || "MEDIUM",
-            status: t.status || "IN_PROGRESS",
-            progress: t.progress || 0,
-            dueDate: t.dueDate ? new Date(t.dueDate).toLocaleDateString() : "Flexible",
-          }))
-        );
+      if (!res.ok || !json.success) {
+        setLoadError(json.error?.message || "Unable to load tasks.");
+        return;
       }
-    } catch (err) {
-      console.error(err);
+      setTasks(
+        (json.data?.items || []).map((t: ApiTask) => ({
+          _id: t._id,
+          title: t.title,
+          projectName: typeof t.projectId === "object" ? t.projectId?.name || "Project unavailable" : "Project unavailable",
+          assignedTo: typeof t.assignedTo === "object" ? t.assignedTo?.fullName || "Unassigned" : "Unassigned",
+          priority: t.priority || "MEDIUM",
+          status: t.status || "NOT_STARTED",
+          progress: t.progress || 0,
+          dueDate: t.dueDate ? new Date(t.dueDate).toLocaleDateString() : "Flexible",
+        }))
+      );
+      setLoadError("");
+    } catch {
+      setLoadError("Unable to connect to the task service.");
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    fetchTasks();
+    queueMicrotask(() => {
+      void fetchTasks();
+    });
+    fetch("/api/projects?limit=100")
+      .then(async (res) => {
+        const json = await res.json();
+        if (res.ok && json.success) setProjects(json.data?.items || []);
+      })
+      .catch(() => {});
   }, []);
+
+  async function createTask(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!user) return;
+    setSaving(true);
+    setFormError("");
+    const form = new FormData(event.currentTarget);
+    try {
+      const res = await fetch("/api/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: String(form.get("title") || "").trim(),
+          projectId: form.get("projectId"),
+          assignedTo: user.id,
+          priority: form.get("priority"),
+          dueDate: form.get("dueDate") || undefined,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setFormError(json.error?.message || "Unable to create task.");
+        return;
+      }
+      setShowCreateForm(false);
+      await fetchTasks();
+    } catch {
+      setFormError("Unable to connect to the task service.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   const filteredTasks = tasks.filter((t) => {
     const matchesSearch =
@@ -93,9 +156,15 @@ export default function TasksPage() {
             </p>
           </div>
 
-          <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0">
-            <Plus className="w-4 h-4" /> Create Task
-          </button>
+          {canCreateTask && (
+            <button
+              type="button"
+              onClick={() => { setFormError(""); setShowCreateForm(true); }}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0"
+            >
+              <Plus className="w-4 h-4" /> Create Task
+            </button>
+          )}
         </div>
 
         {/* Search & Filters */}
@@ -127,6 +196,8 @@ export default function TasksPage() {
             ))}
           </div>
         </div>
+
+        {loadError && <p role="alert" className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-300">{loadError}</p>}
 
         {/* Tasks Table */}
         <div className="bg-[#141720] border border-[#232733] rounded-xl overflow-hidden shadow-sm">
@@ -206,8 +277,26 @@ export default function TasksPage() {
             </table>
           </div>
         </div>
+
+        {showCreateForm && (
+          <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4" onMouseDown={(event) => { if (event.target === event.currentTarget && !saving) setShowCreateForm(false); }}>
+            <form onSubmit={createTask} className="w-full max-w-lg space-y-4 rounded-2xl border border-slate-700 bg-[#141720] p-5 shadow-2xl">
+              <div className="flex items-start justify-between gap-4">
+                <div><h2 className="text-lg font-semibold text-white">Create task</h2><p className="mt-1 text-sm text-slate-400">Add an assignment to a project you can access.</p></div>
+                <button type="button" aria-label="Close create task form" onClick={() => setShowCreateForm(false)} disabled={saving} className="rounded-md px-2 py-1 text-slate-400 hover:bg-slate-800">×</button>
+              </div>
+              {formError && <p role="alert" className="text-sm text-rose-300">{formError}</p>}
+              <label className="grid gap-1.5 text-sm text-slate-300">Task title<input name="title" required minLength={2} maxLength={200} className="rounded-lg border border-slate-700 bg-[#0f1115] px-3 py-2 text-white" /></label>
+              <label className="grid gap-1.5 text-sm text-slate-300">Project<select name="projectId" required disabled={!projects.length} className="rounded-lg border border-slate-700 bg-[#0f1115] px-3 py-2 text-white"><option value="">{projects.length ? "Select a project" : "No accessible projects"}</option>{projects.map((project) => <option key={project._id} value={project._id}>{project.name}</option>)}</select></label>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="grid gap-1.5 text-sm text-slate-300">Priority<select name="priority" defaultValue="MEDIUM" className="rounded-lg border border-slate-700 bg-[#0f1115] px-3 py-2 text-white"><option>LOW</option><option>MEDIUM</option><option>HIGH</option><option>CRITICAL</option></select></label>
+                <label className="grid gap-1.5 text-sm text-slate-300">Due date<input type="date" name="dueDate" className="rounded-lg border border-slate-700 bg-[#0f1115] px-3 py-2 text-white" /></label>
+              </div>
+              <div className="flex justify-end gap-2 pt-2"><button type="button" disabled={saving} onClick={() => setShowCreateForm(false)} className="rounded-lg border border-slate-600 px-4 py-2 text-sm text-slate-200">Cancel</button><button type="submit" disabled={saving || !projects.length} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{saving ? "Creating…" : "Create task"}</button></div>
+            </form>
+          </div>
+        )}
       </div>
     </AppShell>
   );
 }
-

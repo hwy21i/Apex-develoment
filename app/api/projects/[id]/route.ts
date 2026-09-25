@@ -100,7 +100,7 @@ export async function DELETE(
   request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
-  const guard = await requirePermission("PROJECT_DELETE", request);
+  const guard = await requirePermission("PROJECT_ARCHIVE", request);
   if (guard.error) return guard.error;
 
   const { id } = await context.params;

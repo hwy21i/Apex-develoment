@@ -174,6 +174,7 @@ export default function AppSidebar({
             className={`hidden md:flex rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors ${isCollapsed ? "absolute right-1.5 top-5 p-1" : "p-1.5"}`}
             title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-expanded={!isCollapsed}
           >
             {isCollapsed ? (
               <ChevronRight className="w-4 h-4" />
@@ -227,6 +228,7 @@ export default function AppSidebar({
             </p>
           )}
 
+          <nav aria-label="Construction ERP">
           {PRIMARY_ERP_NAV.filter((item) => canSee(item.requiredPermission)).map((item) => {
             const Icon = item.icon;
             const isActive =
@@ -239,6 +241,7 @@ export default function AppSidebar({
                 href={item.href}
                 onClick={onMobileClose}
                 title={isCollapsed ? item.label : undefined}
+                aria-current={isActive ? "page" : undefined}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all group relative ${
                   isActive
                     ? "bg-blue-600 text-white font-semibold shadow-md shadow-blue-500/25"
@@ -263,6 +266,8 @@ export default function AppSidebar({
             <div className="pt-3">
               <button
                 onClick={() => setShowExtended(!showExtended)}
+                aria-expanded={showExtended}
+                aria-controls="extended-erp-modules"
                 className="w-full flex items-center justify-between px-3 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider hover:text-slate-200 transition-colors"
               >
                 <span>Extended Modules</span>
@@ -274,7 +279,7 @@ export default function AppSidebar({
               </button>
 
               {showExtended && (
-                <div className="space-y-3 mt-2 pl-2 border-l border-[#232733] ml-2">
+                <div id="extended-erp-modules" className="space-y-3 mt-2 pl-2 border-l border-[#232733] ml-2">
                   {SECONDARY_ERP_NAV.map((sec) => (
                     <div key={sec.group} className="space-y-0.5">
                       <p className="px-2 text-[9px] font-semibold text-slate-500 uppercase font-mono">
@@ -288,6 +293,7 @@ export default function AppSidebar({
                             key={subItem.label}
                             href={subItem.href}
                             onClick={onMobileClose}
+                            aria-current={isSubActive ? "page" : undefined}
                             className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg text-[11px] transition-colors ${
                               isSubActive
                                 ? "bg-amber-500/15 text-amber-300 font-semibold"
@@ -307,6 +313,7 @@ export default function AppSidebar({
           ) : (
             <div className="h-px bg-[#232733] my-2 mx-1" />
           )}
+          </nav>
         </div>
 
         {/* Bottom User Actions */}

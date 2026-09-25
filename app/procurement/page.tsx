@@ -2,19 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
-import {
-  ShoppingBag,
-  Plus,
-  Search,
-  Filter,
-  FileText,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  Truck,
-  Building,
-  DollarSign,
-} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ShoppingBag, Plus, Search } from "lucide-react";
+
+interface OperationalRequest {
+  _id: string;
+  title?: string;
+  status?: string;
+  data?: { requestNumber?: string; requiredByDate?: string; priority?: RequestItem["priority"]; itemCount?: number; reason?: string };
+}
 
 interface RequestItem {
   _id: string;
@@ -31,37 +28,41 @@ export default function ProcurementPage() {
   const [requests, setRequests] = useState<RequestItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState("requests");
+  const [error, setError] = useState("");
+  const pathname = usePathname();
 
   async function fetchRequests() {
     setLoading(true);
     try {
       const res = await fetch("/api/records/procurement");
       const json = await res.json();
-      if (json.success && json.data?.items) {
-        setRequests(
-          json.data.items.map((r: any) => ({
-            _id: r._id,
-            requestNumber: r.data?.requestNumber || "MR-2026-" + r._id.slice(-4).toUpperCase(),
-            projectName: r.title || "Addis Heights Mixed-Use Tower",
-            requiredByDate: r.data?.requiredByDate || "2026-09-15",
-            priority: r.data?.priority || "HIGH",
-            status: r.status || "APPROVED",
-            itemCount: r.data?.itemCount || 4,
-            reason: r.data?.reason || "Foundation level concrete pour phase 2",
-          }))
-        );
+      if (!res.ok || !json.success) {
+        setError(json.error?.message || "Unable to load procurement requests.");
+        return;
       }
-    } catch (err) {
-      console.error(err);
+      setRequests(((json.data?.items || []) as OperationalRequest[]).map((request) => ({
+        _id: request._id,
+        requestNumber: request.data?.requestNumber || `MR-${request._id.slice(-8).toUpperCase()}`,
+        projectName: request.title || "Project unavailable",
+        requiredByDate: request.data?.requiredByDate || "—",
+        priority: request.data?.priority || "MEDIUM",
+        status: request.status || "UNSPECIFIED",
+        itemCount: request.data?.itemCount ?? 0,
+        reason: request.data?.reason || "—",
+      })));
+      setError("");
+    } catch {
+      setError("Unable to connect to the procurement service.");
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    fetchRequests();
+    queueMicrotask(() => { void fetchRequests(); });
   }, []);
+
+  const filteredRequests = requests.filter((request) => `${request.requestNumber} ${request.projectName} ${request.reason} ${request.status}`.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <AppShell>
@@ -80,32 +81,39 @@ export default function ProcurementPage() {
             </p>
           </div>
 
-          <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0">
-            <Plus className="w-4 h-4" /> New Material Request
-          </button>
+          <Link href="/procurement/requests" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0">
+            <Plus className="w-4 h-4" /> Material Requests
+          </Link>
         </div>
 
         {/* Procurement Pipeline Tabs */}
         <div className="flex gap-2 border-b border-[#232733] pb-2 overflow-x-auto text-xs font-medium">
           {[
-            { id: "requests", label: "Material Requests" },
-            { id: "orders", label: "Purchase Orders (POs)" },
-            { id: "receipts", label: "Goods Receipts (GRNs)" },
-            { id: "suppliers", label: "Supplier Directory" },
+            { id: "requests", label: "Material Requests", href: "/procurement/requests" },
+            { id: "orders", label: "Purchase Orders (POs)", href: "/procurement/orders" },
+            { id: "receipts", label: "Goods Receipts (GRNs)", href: "/procurement/receipts" },
+            { id: "suppliers", label: "Supplier Directory", href: "/procurement/suppliers" },
           ].map((tab) => (
-            <button
+            <Link
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              href={tab.href}
               className={`px-3.5 py-2 rounded-lg transition-colors whitespace-nowrap ${
-                activeTab === tab.id
+                pathname === tab.href
                   ? "bg-blue-600 text-white font-semibold shadow-sm"
                   : "text-slate-400 hover:text-white hover:bg-[#1A1D27]"
               }`}
             >
               {tab.label}
-            </button>
+            </Link>
           ))}
         </div>
+
+        <label className="relative block max-w-md">
+          <span className="sr-only">Search material requests</span>
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" aria-hidden="true" />
+          <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search requests…" className="w-full rounded-lg border border-[#262C3D] bg-[#141720] py-2 pl-9 pr-3 text-xs text-slate-200 outline-none focus:border-blue-500" />
+        </label>
+        {error && <p role="alert" className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-300">{error}</p>}
 
         {/* Requests Table */}
         <div className="bg-[#141720] border border-[#232733] rounded-xl overflow-hidden shadow-sm">
@@ -129,14 +137,14 @@ export default function ProcurementPage() {
                       Loading procurement pipeline records...
                     </td>
                   </tr>
-                ) : requests.length === 0 ? (
+                ) : filteredRequests.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-5 py-8 text-center text-slate-500">
-                      No material requests submitted yet. Click &quot;New Material Request&quot; above.
+                      {requests.length === 0 ? "No material requests are available." : "No requests match your search."}
                     </td>
                   </tr>
                 ) : (
-                  requests.map((r) => (
+                  filteredRequests.map((r) => (
                     <tr key={r._id} className="hover:bg-[#1A1E29] transition-colors">
                       <td className="px-5 py-3.5 font-mono font-semibold text-blue-400">
                         {r.requestNumber}
@@ -174,4 +182,3 @@ export default function ProcurementPage() {
     </AppShell>
   );
 }
-

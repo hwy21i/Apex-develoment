@@ -11,13 +11,25 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 
 export const dynamic = "force-dynamic";
 
-export default async function ProjectsPage() {
+export default async function ProjectsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const { q = "" } = await searchParams;
   const user = await getActiveUser();
   if (!user) return null;
   await connectToDatabase();
+  const accessFilter = { $or: [{ projectManager: user.id }, { teamMembers: user.id }] };
+  const escapedQuery = q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const searchFilter = escapedQuery
+    ? {
+        $or: [
+          { name: { $regex: escapedQuery, $options: "i" } },
+          { projectCode: { $regex: escapedQuery, $options: "i" } },
+          { location: { $regex: escapedQuery, $options: "i" } },
+        ],
+      }
+    : null;
   const access = user.role === "Admin"
-    ? {}
-    : { $or: [{ projectManager: user.id }, { teamMembers: user.id }] };
+    ? searchFilter || {}
+    : searchFilter ? { $and: [accessFilter, searchFilter] } : accessFilter;
   const rawProjects = await Project.find(access).sort({ createdAt: -1 }).limit(100).lean();
   const projects = JSON.parse(JSON.stringify(rawProjects)) as ProjectSummary[];
   const canCreate = hasPermission(user, "PROJECT_CREATE");
@@ -51,10 +63,11 @@ export default async function ProjectsPage() {
         {projects.length === 0 ? (
           <section className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
             <Building2 className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-            <h2 className="text-base font-semibold text-slate-800">No projects yet</h2>
+            <h2 className="text-base font-semibold text-slate-800">{q ? "No matching projects" : "No projects yet"}</h2>
             <p className="mt-1 text-sm text-slate-500 max-w-sm mx-auto">
-              Create the first project to start managing tasks, procurement, budgets, and site milestones.
+              {q ? `No accessible projects match “${q}”.` : "Create the first project to start managing tasks, procurement, budgets, and site milestones."}
             </p>
+            {q && <Link href="/projects" className="mt-4 inline-flex rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700">Clear search</Link>}
             {canCreate && <Link
               href="/projects/new"
               className="mt-4 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-500 text-slate-950 text-xs font-semibold shadow-sm"

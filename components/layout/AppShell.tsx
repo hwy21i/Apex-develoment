@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, createContext, useContext } from "react";
+import { useRouter } from "next/navigation";
 import AppSidebar from "./AppSidebar";
 import AppHeader from "./AppHeader";
 import { RoleType } from "@/types/erp";
@@ -29,7 +30,8 @@ export default function AppShell({
   onRoleChange,
   onLogout,
 }: AppShellProps) {
-  const { user, logout } = useAuth();
+  const { user, status, refreshUser, logout } = useAuth();
+  const router = useRouter();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -60,6 +62,18 @@ export default function AppShell({
   const authenticatedUserName = user?.fullName || "Signed out";
   const authenticatedUserRole = user?.role;
   const handleLogout = onLogout || logout;
+
+  useEffect(() => {
+    if (status === "unauthenticated") router.replace("/Authpage");
+  }, [status, router]);
+
+  if (status === "loading" || status === "unauthenticated") {
+    return <div className="grid min-h-screen place-items-center bg-[#f4f5f7] text-sm text-slate-500 dark:bg-[#0f1115] dark:text-slate-300">Verifying session…</div>;
+  }
+
+  if (status === "service-error") {
+    return <div className="grid min-h-screen place-items-center bg-[#f4f5f7] p-6 text-center dark:bg-[#0f1115]"><div><p className="text-sm text-slate-600 dark:text-slate-300">Unable to verify your session.</p><button type="button" onClick={() => void refreshUser()} className="mt-3 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white">Try again</button></div></div>;
+  }
 
   return (
     <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>

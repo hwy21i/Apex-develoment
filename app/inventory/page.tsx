@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
+import Link from "next/link";
 import {
   Boxes,
   Plus,
@@ -29,6 +30,7 @@ export default function InventoryPage() {
   const [items, setItems] = useState<InventoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function fetchInventory() {
@@ -36,28 +38,37 @@ export default function InventoryPage() {
       try {
         const res = await fetch("/api/records/inventory");
         const json = await res.json();
-        if (json.success && json.data?.items) {
-          setItems(
-            json.data.items.map((i: any) => ({
-              _id: i._id,
-              materialName: i.title || "Dangote OPC Cement Grade 42.5N",
-              sku: i.data?.sku || "MAT-CEM-001",
-              warehouseName: i.data?.warehouseName || "Central Logistics Yard (Modjo)",
-              quantityOnHand: i.data?.quantityOnHand || 1250,
-              unitCost: i.data?.unitCost || 780,
-              totalValue: (i.data?.quantityOnHand || 1250) * (i.data?.unitCost || 780),
-              status: i.status || "IN_STOCK",
-            }))
-          );
+        if (!res.ok || !json.success) {
+          setError(json.error?.message || "Unable to load inventory records.");
+          return;
         }
-      } catch (err) {
-        console.error(err);
+        const records = (json.data?.items || []) as Array<{ _id: string; title?: string; status?: string; data?: { name?: string; sku?: string; warehouseName?: string; quantityOnHand?: number; unitCost?: number } }>;
+        setItems(records.map((item) => {
+          const quantityOnHand = Number(item.data?.quantityOnHand ?? 0);
+          const unitCost = Number(item.data?.unitCost ?? 0);
+          return {
+            _id: item._id,
+            materialName: item.title || item.data?.name || "Unnamed material",
+            sku: item.data?.sku || "—",
+            warehouseName: item.data?.warehouseName || "—",
+            quantityOnHand,
+            unitCost,
+            totalValue: quantityOnHand * unitCost,
+            status: item.status || "UNKNOWN",
+          };
+        }));
+        setError("");
+      } catch {
+        setError("Unable to connect to the inventory service.");
       } finally {
         setLoading(false);
       }
     }
     fetchInventory();
   }, []);
+
+  const filteredItems = items.filter((item) => `${item.materialName} ${item.sku} ${item.warehouseName}`.toLowerCase().includes(search.toLowerCase()));
+  const totalValuation = items.reduce((total, item) => total + item.totalValue, 0);
 
   return (
     <AppShell>
@@ -75,19 +86,19 @@ export default function InventoryPage() {
             </p>
           </div>
 
-          <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0">
+          <Link href="/stock-movements" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0">
             <ArrowRightLeft className="w-4 h-4" /> Stock Movement / Transfer
-          </button>
+          </Link>
         </div>
 
         {/* Valuation Summary */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="bg-[#141720] border border-[#232733] rounded-xl p-5">
             <span className="text-slate-400 text-xs font-semibold uppercase tracking-wider">
-              Total Stock Valuation
+              Loaded Inventory Value
             </span>
             <div className="text-2xl font-bold text-white mt-1 font-mono">
-              ETB 28,450,000.00
+              ETB {totalValuation.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
             <span className="text-[11px] text-slate-500 mt-1 block">Live moving average cost</span>
           </div>
@@ -97,7 +108,7 @@ export default function InventoryPage() {
               Stock Inbound (This Month)
             </span>
             <div className="text-2xl font-bold text-emerald-400 mt-1 font-mono flex items-center gap-1">
-              <TrendingUp className="w-5 h-5" /> ETB 6,200,000.00
+              <TrendingUp className="w-5 h-5" /> —
             </div>
             <span className="text-[11px] text-slate-500 mt-1 block">Via verified Goods Receipts</span>
           </div>
@@ -107,11 +118,18 @@ export default function InventoryPage() {
               Site Issues (Consumed)
             </span>
             <div className="text-2xl font-bold text-blue-400 mt-1 font-mono flex items-center gap-1">
-              <TrendingDown className="w-5 h-5" /> ETB 4,180,000.00
+              <TrendingDown className="w-5 h-5" /> —
             </div>
             <span className="text-[11px] text-slate-500 mt-1 block">Allocated to project cost</span>
           </div>
         </div>
+
+        <div className="relative max-w-md">
+          <label htmlFor="inventory-search" className="sr-only">Search inventory</label>
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" aria-hidden="true" />
+          <input id="inventory-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search materials, SKU, warehouse…" className="w-full rounded-lg border border-[#262C3D] bg-[#141720] py-2 pl-9 pr-3 text-xs text-slate-200 outline-none focus:border-blue-500" />
+        </div>
+        {error && <p role="alert" className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-300">{error}</p>}
 
         {/* Inventory Register */}
         <div className="bg-[#141720] border border-[#232733] rounded-xl overflow-hidden shadow-sm">
@@ -134,14 +152,14 @@ export default function InventoryPage() {
                       Loading inventory records...
                     </td>
                   </tr>
-                ) : items.length === 0 ? (
+                ) : filteredItems.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-5 py-8 text-center text-slate-500">
-                      No stock items in storage.
+                      {items.length === 0 ? "No inventory records are available." : "No inventory records match your search."}
                     </td>
                   </tr>
                 ) : (
-                  items.map((it) => (
+                  filteredItems.map((it) => (
                     <tr key={it._id} className="hover:bg-[#1A1E29] transition-colors">
                       <td className="px-5 py-3.5 font-semibold text-white">
                         {it.materialName}
@@ -177,4 +195,3 @@ export default function InventoryPage() {
     </AppShell>
   );
 }
-

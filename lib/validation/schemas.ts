@@ -112,6 +112,21 @@ export const operationalSchema = z.object({
   data: z.record(z.string(), z.unknown()).default({}),
 });
 
+export const expenseRecordSchema = z.object({
+  projectId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Project ID"),
+  status: z.literal("SUBMITTED").default("SUBMITTED"),
+  title: z.string().min(2).max(200),
+  data: z.object({
+    expenseNumber: z.string().min(2).max(40),
+    category: z.string().min(2).max(100),
+    payee: z.string().min(2).max(160),
+    date: z.coerce.date(),
+    amount: z.coerce.number().positive(),
+    paymentMethod: z.enum(["Cash", "Bank Transfer", "Check", "Petty Cash"]),
+    description: z.string().max(1000).optional(),
+  }),
+});
+
 // ================= LOCATION HIERARCHY VALIDATIONS =================
 export const countrySchema = z.object({
   name: z.string().min(2, "Country name is required").max(100),
@@ -152,4 +167,3 @@ export const locationSchema = z.object({
   siteDescription: z.string().max(1000).optional(),
   status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
 });
-

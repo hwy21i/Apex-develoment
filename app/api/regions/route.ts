@@ -1,6 +1,6 @@
 import { connectToDatabase } from "@/lib/db/mongodb";
 import { body, fail, handleError, ok } from "@/lib/api";
-import { requirePermission } from "@/lib/auth/guard";
+import { requireAuth, requirePermission } from "@/lib/auth/guard";
 import { regionSchema } from "@/lib/validation/schemas";
 import { Region } from "@/models/Region";
 import { logAudit } from "@/lib/services/audit";
@@ -8,6 +8,9 @@ import { logAudit } from "@/lib/services/audit";
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
+  const guard = await requireAuth(request);
+  if (guard.error) return guard.error;
+
   try {
     await connectToDatabase();
     const { searchParams } = new URL(request.url);
@@ -63,4 +66,3 @@ export async function POST(request: Request) {
     return handleError(error);
   }
 }
-
