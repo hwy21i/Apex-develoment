@@ -5,12 +5,8 @@ import AppShell from "@/components/layout/AppShell";
 import Link from "next/link";
 import {
   Boxes,
-  Plus,
   Search,
   ArrowRightLeft,
-  Warehouse,
-  AlertCircle,
-  CheckCircle2,
   TrendingDown,
   TrendingUp,
 } from "lucide-react";

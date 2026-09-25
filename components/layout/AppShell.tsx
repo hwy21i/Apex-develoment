@@ -4,7 +4,6 @@ import React, { useState, useEffect, createContext, useContext } from "react";
 import { useRouter } from "next/navigation";
 import AppSidebar from "./AppSidebar";
 import AppHeader from "./AppHeader";
-import { RoleType } from "@/types/erp";
 import { useAuth } from "@/components/AuthProvider";
 
 interface SearchContextType {
@@ -21,13 +20,11 @@ export const useSearch = () => useContext(SearchContext);
 
 interface AppShellProps {
   children: React.ReactNode;
-  onRoleChange?: (role: RoleType) => void;
   onLogout?: () => void;
 }
 
 export default function AppShell({
   children,
-  onRoleChange,
   onLogout,
 }: AppShellProps) {
   const { user, status, refreshUser, logout } = useAuth();
@@ -85,7 +82,6 @@ export default function AppShell({
           onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
           userName={authenticatedUserName}
           userRole={authenticatedUserRole}
-          onRoleChange={onRoleChange}
           onLogout={handleLogout}
         />
 

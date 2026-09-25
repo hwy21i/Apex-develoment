@@ -1,17 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import AppShell from "@/components/layout/AppShell";
+import { useAuth } from "@/components/AuthProvider";
+import { hasPermission } from "@/lib/rbac/permissions";
 import {
   Users2,
   Plus,
   Search,
   Mail,
   Phone,
-  Building,
   MapPin,
-  FileText,
-  DollarSign,
   Briefcase,
 } from "lucide-react";
 
@@ -27,39 +26,71 @@ interface ClientRecord {
 }
 
 export default function ClientsPage() {
+  const { user } = useAuth();
+  const canCreateClient = hasPermission(user, "CLIENT_CREATE");
   const [clients, setClients] = useState<ClientRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState("");
 
   async function fetchClients() {
     setLoading(true);
     try {
-      const res = await fetch("/api/records/clients");
+      const res = await fetch("/api/clients", { cache: "no-store" });
       const json = await res.json();
-      if (json.success && json.data?.items) {
-        setClients(
-          json.data.items.map((item: any) => ({
-            _id: item._id,
-            name: item.title || item.data?.name || "Corporate Client",
-            companyName: item.data?.companyName || "Commercial Developer",
-            email: item.data?.email || "contact@client.et",
-            phone: item.data?.phone || "+251 91 100 2233",
-            address: item.data?.address || "Addis Ababa, Ethiopia",
-            paymentTerms: item.data?.paymentTerms || "Net 30",
-            status: item.status || "ACTIVE",
-          }))
-        );
+      if (!res.ok || !json.success) {
+        setError(json.error?.message || "Unable to load clients.");
+        return;
       }
-    } catch (err) {
-      console.error(err);
+      setClients((json.data?.items || []).map((item: ClientRecord) => ({
+        _id: item._id,
+        name: item.name,
+        companyName: item.companyName || "—",
+        email: item.email || "—",
+        phone: item.phone || "—",
+        address: item.address || "—",
+        paymentTerms: item.paymentTerms || "Net 30",
+        status: item.status || "UNKNOWN",
+      })));
+      setError("");
+    } catch {
+      setError("Unable to connect to the client service.");
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    fetchClients();
+    queueMicrotask(() => { void fetchClients(); });
   }, []);
+
+  async function createClient(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSaving(true);
+    setFormError("");
+    const form = new FormData(event.currentTarget);
+    try {
+      const response = await fetch("/api/clients", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Object.fromEntries(form.entries())),
+      });
+      const json = await response.json();
+      if (!response.ok || !json.success) {
+        setFormError(json.error?.message || "Unable to create client.");
+        return;
+      }
+      setShowCreateForm(false);
+      await fetchClients();
+    } catch {
+      setFormError("Unable to connect to the client service.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   const filteredClients = clients.filter(
     (c) =>
@@ -84,9 +115,9 @@ export default function ClientsPage() {
             </p>
           </div>
 
-          <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0">
+          {canCreateClient && <button type="button" onClick={() => { setFormError(""); setShowCreateForm(true); }} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0">
             <Plus className="w-4 h-4" /> Add Client
-          </button>
+          </button>}
         </div>
 
         {/* Search */}
@@ -100,6 +131,8 @@ export default function ClientsPage() {
             className="w-full bg-[#141720] border border-[#262C3D] text-slate-200 text-xs rounded-lg pl-9 pr-3 py-2 outline-none focus:border-blue-500"
           />
         </div>
+
+        {error && <p role="alert" className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-300">{error}</p>}
 
         {/* Clients Cards Grid */}
         {loading ? (
@@ -157,8 +190,9 @@ export default function ClientsPage() {
             ))}
           </div>
         )}
+
+        {showCreateForm && <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4"><form role="dialog" aria-modal="true" aria-labelledby="client-dialog-title" onSubmit={createClient} className="max-h-[90vh] w-full max-w-xl space-y-4 overflow-y-auto rounded-2xl border border-gray-700 bg-gray-900 p-5 shadow-2xl"><div className="flex items-start justify-between gap-3"><div><h2 id="client-dialog-title" className="text-lg font-semibold text-white">Add client</h2><p className="mt-1 text-sm text-gray-400">Create a client profile for project and contract records.</p></div><button type="button" aria-label="Close client form" disabled={saving} onClick={() => setShowCreateForm(false)} className="px-2 text-xl text-gray-400">×</button></div>{formError && <p role="alert" className="text-sm text-rose-300">{formError}</p>}<label className="grid gap-1 text-sm text-gray-300">Client name<input name="name" required minLength={2} maxLength={160} className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1 text-sm text-gray-300">Company<input name="companyName" maxLength={160} className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><label className="grid gap-1 text-sm text-gray-300">Email<input name="email" type="email" className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><label className="grid gap-1 text-sm text-gray-300">Phone<input name="phone" maxLength={30} className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><label className="grid gap-1 text-sm text-gray-300">Payment terms<input name="paymentTerms" defaultValue="Net 30" maxLength={80} className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label></div><label className="grid gap-1 text-sm text-gray-300">Address<textarea name="address" maxLength={300} rows={2} className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><div className="flex justify-end gap-2"><button type="button" disabled={saving} onClick={() => setShowCreateForm(false)} className="rounded-lg border border-gray-600 px-4 py-2 text-sm text-gray-200">Cancel</button><button type="submit" disabled={saving} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{saving ? "Saving…" : "Save client"}</button></div></form></div>}
       </div>
     </AppShell>
   );
 }
-

@@ -21,7 +21,7 @@ interface ExpenseVoucher {
 }
 
 interface ProjectOption { _id: string; name: string }
-interface OperationalExpense { _id: string; title?: string; status?: string; projectId?: { name?: string } | string; data?: { expenseNumber?: string; category?: string; payee?: string; date?: string; amount?: number; paymentMethod?: string; description?: string } }
+interface ExpenseApiRecord { _id: string; expenseNumber: string; status: string; projectId?: { name?: string } | string; category: string; payee: string; date: string; amount: number; paymentMethod: string; description: string }
 
 const formatStatus = (value?: string) => value ? value.toLowerCase().split("_").map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ") : "Unspecified";
 
@@ -50,23 +50,23 @@ export default function FinanceExpensesPage() {
   async function fetchExpenses() {
     setLoading(true);
     try {
-      const response = await fetch("/api/records/expenses", { cache: "no-store" });
+      const response = await fetch("/api/expenses", { cache: "no-store" });
       const json = await response.json();
       if (!response.ok || !json.success) {
         setError(json.error?.message || "Unable to load expense records.");
         return;
       }
-      setExpenses(((json.data?.items || []) as OperationalExpense[]).map((record) => ({
+      setExpenses(((json.data?.items || []) as ExpenseApiRecord[]).map((record) => ({
         _id: record._id,
-        voucherNumber: record.data?.expenseNumber || `EXP-${record._id.slice(-8).toUpperCase()}`,
+        voucherNumber: record.expenseNumber,
         projectName: typeof record.projectId === "object" ? record.projectId?.name || "Project unavailable" : "Project unavailable",
-        category: record.data?.category || "Uncategorized",
-        payee: record.data?.payee || "—",
-        expenseDate: record.data?.date || "",
-        amount: Number(record.data?.amount || 0),
-        paymentMethod: record.data?.paymentMethod || "—",
+        category: record.category,
+        payee: record.payee,
+        expenseDate: record.date,
+        amount: Number(record.amount),
+        paymentMethod: formatStatus(record.paymentMethod),
         status: formatStatus(record.status),
-        description: record.data?.description || "",
+        description: record.description,
       })));
       setError("");
     } catch {
@@ -91,22 +91,18 @@ export default function FinanceExpensesPage() {
     const form = new FormData(event.currentTarget);
     const voucherNumber = String(form.get("voucherNumber") || "").trim();
     try {
-      const response = await fetch("/api/records/expenses", {
+      const response = await fetch("/api/expenses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          expenseNumber: voucherNumber,
           projectId: form.get("projectId"),
-          title: voucherNumber,
-          status: "SUBMITTED",
-          data: {
-            expenseNumber: voucherNumber,
-            category: form.get("category"),
-            payee: form.get("payee"),
-            date: form.get("date"),
-            amount: Number(form.get("amount")),
-            paymentMethod: form.get("paymentMethod"),
-            description: form.get("description"),
-          },
+          category: form.get("category"),
+          payee: form.get("payee"),
+          date: form.get("date"),
+          amount: Number(form.get("amount")),
+          paymentMethod: form.get("paymentMethod"),
+          description: form.get("description"),
         }),
       });
       const json = await response.json();
@@ -202,6 +198,7 @@ export default function FinanceExpensesPage() {
             <option value="All">All Statuses</option>
             <option value="Draft">Draft</option>
             <option value="Submitted">Submitted</option>
+            <option value="Pending Approval">Pending Approval</option>
             <option value="Approved">Approved</option>
             <option value="Paid">Paid</option>
             <option value="Rejected">Rejected</option>
@@ -261,7 +258,7 @@ export default function FinanceExpensesPage() {
 
         {selectedExpense && <section className="rounded-xl border border-gray-700 bg-gray-800 p-5" aria-label={`${selectedExpense.voucherNumber} details`}><div className="flex items-center justify-between gap-3"><h2 className="font-semibold text-white">{selectedExpense.voucherNumber} details</h2><button type="button" onClick={() => setSelectedExpense(null)} className="rounded-md border border-gray-600 px-3 py-1.5 text-sm text-gray-200">Close</button></div><dl className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-sm">{[["Project", selectedExpense.projectName], ["Category", selectedExpense.category], ["Payee", selectedExpense.payee], ["Date", selectedExpense.expenseDate || "—"], ["Payment method", selectedExpense.paymentMethod], ["Amount", fmt(selectedExpense.amount)], ["Description", selectedExpense.description || "—"]].map(([label, value]) => <div key={label}><dt className="text-xs text-gray-400">{label}</dt><dd className="mt-1 text-white">{value}</dd></div>)}</dl></section>}
 
-        {showCreateForm && <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4"><form role="dialog" aria-modal="true" aria-labelledby="expense-dialog-title" onSubmit={createExpense} className="max-h-[90vh] w-full max-w-xl space-y-4 overflow-y-auto rounded-2xl border border-gray-700 bg-gray-900 p-5 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><h2 id="expense-dialog-title" className="text-lg font-semibold text-white">New expense voucher</h2><p className="mt-1 text-sm text-gray-400">Submit a project expense for review.</p></div><button type="button" aria-label="Close expense form" disabled={saving} onClick={() => setShowCreateForm(false)} className="px-2 text-xl text-gray-400">×</button></div>{formError && <p role="alert" className="text-sm text-rose-300">{formError}</p>}<label className="grid gap-1 text-sm text-gray-300">Project<select name="projectId" required className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white"><option value="">Select a project</option>{projects.map((project) => <option key={project._id} value={project._id}>{project.name}</option>)}</select></label><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1 text-sm text-gray-300">Voucher number<input name="voucherNumber" required minLength={2} maxLength={40} className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><label className="grid gap-1 text-sm text-gray-300">Category<input name="category" required minLength={2} maxLength={100} className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><label className="grid gap-1 text-sm text-gray-300">Payee<input name="payee" required minLength={2} maxLength={160} className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><label className="grid gap-1 text-sm text-gray-300">Date<input name="date" type="date" required className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><label className="grid gap-1 text-sm text-gray-300">Amount (ETB)<input name="amount" type="number" min="0.01" step="0.01" required className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><label className="grid gap-1 text-sm text-gray-300">Payment method<select name="paymentMethod" className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white"><option>Bank Transfer</option><option>Cash</option><option>Check</option><option>Petty Cash</option></select></label></div><label className="grid gap-1 text-sm text-gray-300">Description<textarea name="description" maxLength={1000} rows={3} className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><div className="flex justify-end gap-2"><button type="button" disabled={saving} onClick={() => setShowCreateForm(false)} className="rounded-lg border border-gray-600 px-4 py-2 text-sm text-gray-200">Cancel</button><button type="submit" disabled={saving || !projects.length} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{saving ? "Submitting…" : "Submit voucher"}</button></div></form></div>}
+        {showCreateForm && <div className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4"><form role="dialog" aria-modal="true" aria-labelledby="expense-dialog-title" onSubmit={createExpense} className="max-h-[90vh] w-full max-w-xl space-y-4 overflow-y-auto rounded-2xl border border-gray-700 bg-gray-900 p-5 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><h2 id="expense-dialog-title" className="text-lg font-semibold text-white">New expense voucher</h2><p className="mt-1 text-sm text-gray-400">Submit a project expense for review.</p></div><button type="button" aria-label="Close expense form" disabled={saving} onClick={() => setShowCreateForm(false)} className="px-2 text-xl text-gray-400">×</button></div>{formError && <p role="alert" className="text-sm text-rose-300">{formError}</p>}<label className="grid gap-1 text-sm text-gray-300">Project<select name="projectId" required className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white"><option value="">Select a project</option>{projects.map((project) => <option key={project._id} value={project._id}>{project.name}</option>)}</select></label><div className="grid gap-4 sm:grid-cols-2"><label className="grid gap-1 text-sm text-gray-300">Voucher number<input name="voucherNumber" required minLength={2} maxLength={40} className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><label className="grid gap-1 text-sm text-gray-300">Category<select name="category" required className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white"><option>Materials</option><option>Labor</option><option>Subcontractor</option><option>Equipment</option><option>Overhead &amp; Permits</option><option>Contingency</option></select></label><label className="grid gap-1 text-sm text-gray-300">Payee<input name="payee" required minLength={2} maxLength={160} className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><label className="grid gap-1 text-sm text-gray-300">Date<input name="date" type="date" required className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><label className="grid gap-1 text-sm text-gray-300">Amount (ETB)<input name="amount" type="number" min="0.01" step="0.01" required className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><label className="grid gap-1 text-sm text-gray-300">Payment method<select name="paymentMethod" className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white"><option value="BANK_TRANSFER">Bank Transfer</option><option value="CASH">Cash</option><option value="CHECK">Check</option><option value="CREDIT_LINE">Credit Line</option></select></label></div><label className="grid gap-1 text-sm text-gray-300">Description<textarea name="description" required minLength={2} maxLength={1000} rows={3} className="rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white" /></label><div className="flex justify-end gap-2"><button type="button" disabled={saving} onClick={() => setShowCreateForm(false)} className="rounded-lg border border-gray-600 px-4 py-2 text-sm text-gray-200">Cancel</button><button type="submit" disabled={saving || !projects.length} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{saving ? "Submitting…" : "Submit voucher"}</button></div></form></div>}
       </div>
     </AppShell>
   );

@@ -30,7 +30,7 @@ import {
   FolderLock,
   ShieldCheck,
 } from "lucide-react";
-import { Permission, RoleType, SYSTEM_ROLES } from "@/types/erp";
+import { Permission, RoleType } from "@/types/erp";
 import { getRolePermissions } from "@/lib/rbac/permissions";
 import { ApexLogo } from "@/components/brand/ApexLogo";
 
@@ -98,7 +98,6 @@ interface AppSidebarProps {
   onToggleCollapse: () => void;
   userName?: string;
   userRole?: RoleType;
-  onRoleChange?: (role: RoleType) => void;
   onLogout?: () => void;
 }
 
@@ -109,7 +108,6 @@ export default function AppSidebar({
   onToggleCollapse,
   userName = "Signed out",
   userRole,
-  onRoleChange,
   onLogout,
 }: AppSidebarProps) {
   const pathname = usePathname();
@@ -196,20 +194,6 @@ export default function AppSidebar({
                   {userRole ?? "Signed out"}
                 </span>
               </div>
-              {onRoleChange && userRole && (
-                <select
-                  value={userRole}
-                  onChange={(e) => onRoleChange(e.target.value as RoleType)}
-                  className="w-full text-xs bg-[#1F232E] border border-[#2E3342] text-slate-300 rounded-lg px-2 py-1 outline-none focus:border-blue-500 cursor-pointer"
-                  aria-label="Switch User Role"
-                >
-                  {SYSTEM_ROLES.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-              )}
             </div>
           ) : (
             <div className="flex justify-center" title={`${userName} (${userRole ?? "Signed out"})`}>

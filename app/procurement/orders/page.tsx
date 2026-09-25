@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
   Plus, Search, Eye, ShoppingCart, CheckCircle, Clock,
-  Truck, Package, AlertCircle, FileText, ChevronDown
+  Truck, Package, AlertCircle, FileText
 } from "lucide-react";
 
 interface PurchaseOrder {
@@ -12,7 +12,7 @@ interface PurchaseOrder {
   poNumber: string;
   supplier: { name: string; contact: string };
   project: { name: string };
-  status: "Draft" | "Sent" | "Confirmed" | "Partially Received" | "Received" | "Cancelled";
+  status: "Draft" | "Sent" | "Confirmed" | "Partially Received" | "Received" | "Cancelled" | "Unspecified";
   items: Array<{
     description: string;
     quantity: number;
@@ -45,88 +45,62 @@ const STATUS_ICONS: Record<string, React.ReactNode> = {
   Cancelled: <AlertCircle size={12} />,
 };
 
-const MOCK_POS: PurchaseOrder[] = [
-  {
-    _id: "1",
-    poNumber: "PO-2024-0001",
-    supplier: { name: "Addis Construction Supply Co.", contact: "+251-11-234-5678" },
-    project: { name: "Addis Heights Tower" },
-    status: "Confirmed",
-    items: [
-      { description: "Portland Cement (50kg bags)", quantity: 500, unit: "bags", unitPrice: 1500, totalPrice: 750000 },
-      { description: "Steel Rebar 16mm", quantity: 20, unit: "tons", unitPrice: 30000, totalPrice: 600000 },
-    ],
-    orderDate: "2024-01-29",
-    expectedDelivery: "2024-02-10",
-    totalAmount: 1350000,
-    paymentTerms: "Net 30",
-  },
-  {
-    _id: "2",
-    poNumber: "PO-2024-0002",
-    supplier: { name: "Ethiopian Aggregate Industries", contact: "+251-11-345-6789" },
-    project: { name: "Ring Road Expansion" },
-    status: "Received",
-    items: [
-      { description: "Crushed Stone 20mm", quantity: 150, unit: "m³", unitPrice: 1500, totalPrice: 225000 },
-    ],
-    orderDate: "2024-01-26",
-    expectedDelivery: "2024-02-05",
-    totalAmount: 225000,
-    paymentTerms: "50% advance, 50% on delivery",
-  },
-  {
-    _id: "3",
-    poNumber: "PO-2024-0003",
-    supplier: { name: "Tekle Steel Works", contact: "+251-11-456-7890" },
-    project: { name: "Bole Business Park" },
-    status: "Partially Received",
-    items: [
-      { description: "H-Beam Steel 200x200", quantity: 30, unit: "tons", unitPrice: 65000, totalPrice: 1950000 },
-      { description: "Steel Columns", quantity: 20, unit: "tons", unitPrice: 62000, totalPrice: 1240000 },
-    ],
-    orderDate: "2024-01-15",
-    expectedDelivery: "2024-01-31",
-    totalAmount: 3190000,
-    paymentTerms: "Net 45",
-  },
-  {
-    _id: "4",
-    poNumber: "PO-2024-0004",
-    supplier: { name: "SafeGuard Ethiopia", contact: "+251-11-567-8901" },
-    project: { name: "Addis Heights Tower" },
-    status: "Sent",
-    items: [
-      { description: "Safety Helmets (Class A)", quantity: 50, unit: "pcs", unitPrice: 850, totalPrice: 42500 },
-      { description: "Safety Boots Size 40-45", quantity: 50, unit: "pairs", unitPrice: 1200, totalPrice: 60000 },
-    ],
-    orderDate: "2024-01-30",
-    expectedDelivery: "2024-02-15",
-    totalAmount: 102500,
-    paymentTerms: "On delivery",
-    notes: "Ensure EN 397 certified helmets",
-  },
-  {
-    _id: "5",
-    poNumber: "PO-2024-0005",
-    supplier: { name: "Bitumen Ethiopia Ltd.", contact: "+251-11-678-9012" },
-    project: { name: "Ring Road Expansion" },
-    status: "Draft",
-    items: [
-      { description: "Bitumen 80/100", quantity: 80, unit: "tons", unitPrice: 9500, totalPrice: 760000 },
-    ],
-    orderDate: "2024-02-01",
-    expectedDelivery: "2024-02-20",
-    totalAmount: 760000,
-    paymentTerms: "Net 30",
-  },
-];
+interface PurchaseOrderApiRecord {
+  _id: string;
+  poNumber: string;
+  status: string;
+  projectId?: { name?: string } | string;
+  supplierId?: { name?: string; contactPerson?: string; phone?: string } | string;
+  items: Array<{ materialName: string; quantity: number; unitOfMeasure: string; unitPrice: number; totalPrice: number }>;
+  createdAt: string;
+  expectedDeliveryDate: string;
+  totalAmount: number;
+  paymentTerms?: string;
+}
+
+const STATUS_LABELS: Record<string, PurchaseOrder["status"]> = {
+  DRAFT: "Draft",
+  ISSUED: "Sent",
+  PARTIALLY_DELIVERED: "Partially Received",
+  COMPLETED: "Received",
+  CANCELLED: "Cancelled",
+};
 
 export default function PurchaseOrdersPage() {
-  const [orders, setOrders] = useState<PurchaseOrder[]>(MOCK_POS);
+  const [orders, setOrders] = useState<PurchaseOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [selected, setSelected] = useState<PurchaseOrder | null>(null);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      void fetch("/api/purchase-orders", { cache: "no-store" }).then(async (response) => {
+        const json = await response.json();
+        if (!response.ok || !json.success) {
+          setError(json.error?.message || "Unable to load purchase orders.");
+          return;
+        }
+        setOrders(((json.data?.items || []) as PurchaseOrderApiRecord[]).map((record) => ({
+          _id: record._id,
+          poNumber: record.poNumber,
+          supplier: {
+            name: typeof record.supplierId === "object" ? record.supplierId?.name || "Supplier unavailable" : "Supplier unavailable",
+            contact: typeof record.supplierId === "object" ? record.supplierId?.contactPerson || record.supplierId?.phone || "—" : "—",
+          },
+          project: { name: typeof record.projectId === "object" ? record.projectId?.name || "Project unavailable" : "Project unavailable" },
+          status: STATUS_LABELS[record.status] || "Unspecified",
+          items: (record.items || []).map((item) => ({ description: item.materialName, quantity: item.quantity, unit: item.unitOfMeasure, unitPrice: item.unitPrice, totalPrice: item.totalPrice })),
+          orderDate: record.createdAt,
+          expectedDelivery: record.expectedDeliveryDate,
+          totalAmount: record.totalAmount,
+          paymentTerms: record.paymentTerms || "—",
+        })));
+        setError("");
+      }).catch(() => setError("Unable to connect to the purchase-order service.")).finally(() => setLoading(false));
+    });
+  }, []);
 
   const filtered = orders.filter((o) => {
     const matchSearch =
@@ -158,10 +132,9 @@ export default function PurchaseOrdersPage() {
               Track and manage all procurement purchase orders
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-            <Plus size={16} />
-            Create PO
-          </button>
+          <div className="text-right"><button type="button" disabled aria-describedby="po-create-unavailable" className="flex cursor-not-allowed items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white opacity-50">
+            <Plus size={16} /> Create PO
+          </button><p id="po-create-unavailable" className="mt-1 text-xs text-gray-400">Purchase-order creation is not available yet.</p></div>
         </div>
 
         {/* Stats */}
@@ -207,6 +180,8 @@ export default function PurchaseOrdersPage() {
           </select>
         </div>
 
+        {error && <p role="alert" className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-300">{error}</p>}
+
         {/* Table */}
         <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
@@ -219,8 +194,8 @@ export default function PurchaseOrdersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
-                {filtered.length === 0 ? (
-                  <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-400">No purchase orders match the current search or filter.</td></tr>
+                {loading ? <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-400">Loading purchase orders…</td></tr> : filtered.length === 0 ? (
+                  <tr><td colSpan={9} className="px-4 py-8 text-center text-gray-400">{orders.length ? "No purchase orders match the current search or filter." : "No purchase orders are available."}</td></tr>
                 ) : filtered.map((o) => (
                   <tr key={o._id} className="hover:bg-gray-700/30 transition-colors">
                     <td className="px-4 py-3">
@@ -238,7 +213,7 @@ export default function PurchaseOrdersPage() {
                     <td className="px-4 py-3 text-white font-bold">{fmt(o.totalAmount)}</td>
                     <td className="px-4 py-3 text-gray-300 text-xs">{o.paymentTerms}</td>
                     <td className="px-4 py-3">
-                      <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium w-fit ${STATUS_COLORS[o.status]}`}>
+                      <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium w-fit ${STATUS_COLORS[o.status] || "border border-gray-600 text-gray-300"}`}>
                         {STATUS_ICONS[o.status]}
                         {o.status}
                       </span>

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { connectToDatabase } from "@/lib/db/mongodb";
 import { Project } from "@/models/Project";
 import { Task } from "@/models/Task";
@@ -9,7 +9,7 @@ import { canAccessProject } from "@/lib/services/access";
 
 export async function getProject(projectId: string): Promise<ProjectSummary> {
   const user = await getActiveUser();
-  if (!user) notFound();
+  if (!user) redirect("/Authpage");
   await connectToDatabase();
   const filter = mongoose.isObjectIdOrHexString(projectId)
     ? { _id: projectId }

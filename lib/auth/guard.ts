@@ -30,13 +30,20 @@ export async function getActiveUser(request?: Request): Promise<SessionUser | nu
 }
 
 export async function requireAuth(request?: Request): Promise<GuardResult> {
-  const user = await getActiveUser(request);
-  if (!user) {
+  try {
+    const user = await getActiveUser(request);
+    if (!user) {
+      return {
+        error: fail("UNAUTHORIZED", "Authentication is required to access this resource", 401),
+      };
+    }
+    return { user };
+  } catch (error) {
+    console.error("Authentication guard failure:", error);
     return {
-      error: fail("UNAUTHORIZED", "Authentication is required to access this resource", 401),
+      error: fail("SERVICE_UNAVAILABLE", "The authentication service is temporarily unavailable.", 503),
     };
   }
-  return { user };
 }
 
 export async function requirePermission(

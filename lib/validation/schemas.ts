@@ -105,6 +105,43 @@ export const taskSchema = z.object({
 });
 
 // ================= OPERATIONAL RECORD VALIDATIONS =================
+export const materialRequestCreateSchema = z.object({
+  projectId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Project ID"),
+  requiredByDate: z.coerce.date(),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
+  materialId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Material ID"),
+  requestedQuantity: z.coerce.number().int().positive(),
+  reason: z.string().min(2).max(1000),
+});
+
+export const materialRequestDecisionSchema = z.object({
+  status: z.enum(["APPROVED", "REJECTED"]),
+  approvalNotes: z.string().max(1000).optional(),
+});
+
+export const clientCreateSchema = z.object({
+  name: z.string().min(2).max(160),
+  companyName: z.string().max(160).optional(),
+  email: z.string().email().optional().or(z.literal("")),
+  phone: z.string().max(30).optional(),
+  address: z.string().max(300).optional(),
+  taxId: z.string().max(80).optional(),
+  paymentTerms: z.string().max(80).default("Net 30"),
+  notes: z.string().max(1000).optional(),
+});
+
+export const expenseCreateSchema = z.object({
+  expenseNumber: z.string().min(2).max(40).transform((value) => value.toUpperCase()),
+  projectId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Project ID"),
+  category: z.enum(["Materials", "Labor", "Subcontractor", "Equipment", "Overhead & Permits", "Contingency"]),
+  amount: z.coerce.number().positive(),
+  date: z.coerce.date(),
+  payee: z.string().min(2).max(160),
+  paymentMethod: z.enum(["CASH", "BANK_TRANSFER", "CHECK", "CREDIT_LINE"]),
+  receiptNumber: z.string().max(80).optional(),
+  description: z.string().min(2).max(1000),
+});
+
 export const operationalSchema = z.object({
   projectId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Project ID"),
   status: z.string().max(64).optional(),
@@ -112,20 +149,6 @@ export const operationalSchema = z.object({
   data: z.record(z.string(), z.unknown()).default({}),
 });
 
-export const expenseRecordSchema = z.object({
-  projectId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Project ID"),
-  status: z.literal("SUBMITTED").default("SUBMITTED"),
-  title: z.string().min(2).max(200),
-  data: z.object({
-    expenseNumber: z.string().min(2).max(40),
-    category: z.string().min(2).max(100),
-    payee: z.string().min(2).max(160),
-    date: z.coerce.date(),
-    amount: z.coerce.number().positive(),
-    paymentMethod: z.enum(["Cash", "Bank Transfer", "Check", "Petty Cash"]),
-    description: z.string().max(1000).optional(),
-  }),
-});
 
 // ================= LOCATION HIERARCHY VALIDATIONS =================
 export const countrySchema = z.object({

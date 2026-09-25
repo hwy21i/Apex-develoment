@@ -29,6 +29,7 @@ export const ROLE_PERMISSIONS: Record<RoleType, Permission[]> = {
     "EQUIPMENT_VIEW",
     "EQUIPMENT_ASSIGN",
     "FINANCE_VIEW",
+    "BUDGET_MANAGE",
     "EXPENSE_CREATE",
     "EXPENSE_APPROVE",
     "DOCUMENT_VIEW",
@@ -109,6 +110,7 @@ export const ROLE_PERMISSIONS: Record<RoleType, Permission[]> = {
     "PURCHASE_ORDER_VIEW",
     "GOODS_RECEIPT_VIEW",
     "FINANCE_VIEW",
+    "BUDGET_MANAGE",
     "EXPENSE_CREATE",
     "EXPENSE_APPROVE",
     "INVOICE_VIEW",
@@ -177,4 +179,3 @@ export function hasAllPermissions(user: SessionUser | null | undefined, permissi
   if (perms.includes("*")) return true;
   return permissions.every((p) => perms.includes(p));
 }
-

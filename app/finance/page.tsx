@@ -5,12 +5,15 @@ import AppShell from "@/components/layout/AppShell";
 import Link from "next/link";
 import { DollarSign, Plus } from "lucide-react";
 
-interface OperationalExpense {
+interface ExpenseApiRecord {
   _id: string;
-  title?: string;
-  status?: string;
+  expenseNumber: string;
+  status: string;
   projectId?: { name?: string } | string;
-  data?: { expenseNumber?: string; category?: string; amount?: number; date?: string; payee?: string };
+  category: string;
+  amount: number;
+  date: string;
+  payee: string;
 }
 
 interface ExpenseItem {
@@ -33,21 +36,21 @@ export default function FinancePage() {
   async function fetchExpenses() {
     setLoading(true);
     try {
-      const res = await fetch("/api/records/expenses");
+      const res = await fetch("/api/expenses", { cache: "no-store" });
       const json = await res.json();
       if (!res.ok || !json.success) {
         setError(json.error?.message || "Unable to load finance records.");
         return;
       }
-      setExpenses(((json.data?.items || []) as OperationalExpense[]).map((expense) => ({
+      setExpenses(((json.data?.items || []) as ExpenseApiRecord[]).map((expense) => ({
         _id: expense._id,
-        expenseNumber: expense.data?.expenseNumber || `EXP-${expense._id.slice(-8).toUpperCase()}`,
+        expenseNumber: expense.expenseNumber,
         projectName: typeof expense.projectId === "object" ? expense.projectId?.name || "Project unavailable" : "Project unavailable",
-        category: expense.data?.category || "Uncategorized",
-        amount: Number(expense.data?.amount || 0),
-        date: expense.data?.date || "—",
-        payee: expense.data?.payee || "—",
-        status: expense.status || "UNSPECIFIED",
+        category: expense.category,
+        amount: Number(expense.amount),
+        date: expense.date,
+        payee: expense.payee,
+        status: expense.status,
       })));
       setError("");
     } catch {

@@ -1,7 +1,7 @@
 import { connectToDatabase } from "@/lib/db/mongodb";
 import { body, fail, handleError, ok } from "@/lib/api";
 import { requirePermission } from "@/lib/auth/guard";
-import { expenseRecordSchema, operationalSchema } from "@/lib/validation/schemas";
+import { operationalSchema } from "@/lib/validation/schemas";
 import { canAccessProject } from "@/lib/services/access";
 import { Operational } from "@/models/Operational";
 import { Project } from "@/models/Project";
@@ -23,7 +23,6 @@ const readPermissions: Record<string, Permission> = {
   equipment: "EQUIPMENT_VIEW",
   maintenance: "MAINTENANCE_LOG",
   budgets: "FINANCE_VIEW",
-  expenses: "FINANCE_VIEW",
   invoices: "INVOICE_VIEW",
   payments: "FINANCE_VIEW",
   documents: "DOCUMENT_VIEW",
@@ -31,7 +30,6 @@ const readPermissions: Record<string, Permission> = {
   announcements: "NOTIFICATION_VIEW",
   issues: "PROJECT_UPDATE",
   safety: "PROGRESS_LOG",
-  clients: "CLIENT_VIEW",
   reports: "REPORT_VIEW",
 };
 
@@ -49,16 +47,12 @@ const writePermissions: Partial<Record<string, Permission>> = {
   attendance: "ATTENDANCE_LOG",
   equipment: "EQUIPMENT_MANAGE",
   maintenance: "MAINTENANCE_LOG",
-  budgets: "FINANCE_VIEW",
-  expenses: "EXPENSE_CREATE",
+  budgets: "BUDGET_MANAGE",
   invoices: "INVOICE_CREATE",
   payments: "PAYMENT_RECORD",
   documents: "DOCUMENT_UPLOAD",
-  notifications: "NOTIFICATION_VIEW",
-  announcements: "NOTIFICATION_VIEW",
   issues: "PROJECT_UPDATE",
   safety: "PROGRESS_LOG",
-  clients: "CLIENT_CREATE",
 };
 
 export const runtime = "nodejs";
@@ -104,7 +98,7 @@ export async function POST(request: Request, context: { params: Promise<{ kind: 
   if (guard.error) return guard.error;
 
   try {
-    const input = await body(request, kind === "expenses" ? expenseRecordSchema : operationalSchema);
+    const input = await body(request, operationalSchema);
     await connectToDatabase();
 
     if (!(await canAccessProject(guard.user, input.projectId))) {

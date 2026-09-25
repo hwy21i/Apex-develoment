@@ -6,6 +6,7 @@ import AppShell from "@/components/layout/AppShell";
 import { Building2, Plus, MapPin, DollarSign } from "lucide-react";
 import { getActiveUser } from "@/lib/auth/guard";
 import { hasPermission } from "@/lib/rbac/permissions";
+import { redirect } from "next/navigation";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 
@@ -14,7 +15,7 @@ export const dynamic = "force-dynamic";
 export default async function ProjectsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q = "" } = await searchParams;
   const user = await getActiveUser();
-  if (!user) return null;
+  if (!user) redirect("/Authpage");
   await connectToDatabase();
   const accessFilter = { $or: [{ projectManager: user.id }, { teamMembers: user.id }] };
   const escapedQuery = q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

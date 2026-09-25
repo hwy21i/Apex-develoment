@@ -80,5 +80,5 @@ export default function App() {
     return null;
   }
 
-  return <Workspace userName={currentUser.fullName} userRole={currentUser.role} onLogout={handleLogout} />;
+  return <Workspace onLogout={handleLogout} />;
 }

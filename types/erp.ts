@@ -77,6 +77,7 @@ export type Permission =
   | "MAINTENANCE_LOG"
   // Finance & Cost Control
   | "FINANCE_VIEW"
+  | "BUDGET_MANAGE"
   | "EXPENSE_CREATE"
   | "EXPENSE_APPROVE"
   | "INVOICE_VIEW"
@@ -134,4 +135,3 @@ export interface PaginatedResult<T> {
     totalPages: number;
   };
 }
-

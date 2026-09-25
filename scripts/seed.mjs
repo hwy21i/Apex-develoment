@@ -6,6 +6,9 @@ const uri = process.env.MONGODB_URI;
 if (!uri) {
   throw new Error("MONGODB_URI is required. Add it to .env.local before seeding.");
 }
+if (process.env.NODE_ENV === "production") {
+  throw new Error("Demo seed data cannot be loaded in production.");
+}
 
 await mongoose.connect(uri);
 
