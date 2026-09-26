@@ -855,7 +855,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
             </h2>
             <p style={{ fontSize: 13, color: A.textDim, lineHeight: 1.5 }}>
               {mode === "signin"
-                ? "Sign in with your verified credentials or select a demo role."
+                ? "Sign in with your account credentials or select a demo role."
                 : "Register a Worker profile to access assigned project operations and workflows."}
             </p>
           </div>

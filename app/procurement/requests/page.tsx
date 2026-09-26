@@ -4,7 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import { useAuth } from "@/components/AuthProvider";
 import { hasPermission } from "@/lib/rbac/permissions";
-import { Plus, Search, Eye, CheckCircle, XCircle, Clock, Package, FileText, AlertCircle } from "lucide-react";
+import { Plus, Search, Eye, CheckCircle, XCircle, Clock, Package, FileText } from "lucide-react";
 
 interface MaterialRequest {
   _id: string;

@@ -25,6 +25,7 @@ export async function GET(request: Request) {
       .populate("materialId", "name sku unitOfMeasure")
       .populate("warehouseId", "name code")
       .populate("toWarehouseId", "name code")
+      .populate("projectId", "name projectCode")
       .populate("performedBy", "fullName")
       .sort({ createdAt: -1 })
       .limit(200)
