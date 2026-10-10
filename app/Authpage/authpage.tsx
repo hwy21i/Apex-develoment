@@ -25,7 +25,7 @@ const INPUT_BASE: React.CSSProperties = {
   border: `1px solid ${A.border}`,
   borderRadius: 6,
   padding: "12px 14px",
-  fontFamily: "Work Sans, sans-serif",
+  fontFamily: "'Plus Jakarta Sans', sans-serif",
   fontSize: 14,
   color: A.text,
   outline: "none",
@@ -56,7 +56,7 @@ function Input({
       <label
         style={{
           display: "block",
-          fontFamily: "Work Sans, sans-serif",
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
           fontSize: 12,
           fontWeight: 600,
           color: A.textDim,
@@ -105,6 +105,7 @@ export type AuthIdentity = {
 };
 
 const DEMO_PRESETS: { label: string; role: RoleType; identifier: string }[] = [
+  { label: "Hawariya (Admin)", role: "Admin", identifier: "hawariya21" },
   { label: "Executive Admin", role: "Admin", identifier: "admin" },
   { label: "Project Manager", role: "Project Manager", identifier: "pm.abebe" },
   { label: "Site Engineer", role: "Site Engineer", identifier: "engineer.marta" },
@@ -123,7 +124,7 @@ function SignIn({
   onSwitch: () => void;
   onEnter: (identity: AuthIdentity) => void;
 }) {
-  const [identifier, setIdentifier] = useState("pm.abebe");
+  const [identifier, setIdentifier] = useState("hawariya21");
   const [password, setPassword] = useState("Password123!");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -196,7 +197,7 @@ function SignIn({
         <label
           style={{
             display: "block",
-            fontFamily: "Work Sans, sans-serif",
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontSize: 11,
             fontWeight: 600,
             color: A.brass,
@@ -257,7 +258,7 @@ function SignIn({
           type="button"
           onClick={handleForgotPassword}
           style={{
-            fontFamily: "Work Sans, sans-serif",
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
             fontSize: 12,
             color: A.brass,
             background: "none",
@@ -310,7 +311,7 @@ function SignIn({
           border: "none",
           background: loading ? A.brassDim : A.brass,
           color: loading ? A.textDim : "#FFFFFF",
-          fontFamily: "Work Sans, sans-serif",
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
           fontSize: 14,
           fontWeight: 700,
           cursor: loading ? "default" : "pointer",
@@ -335,7 +336,7 @@ function SignIn({
       <p
         style={{
           textAlign: "center",
-          fontFamily: "Work Sans, sans-serif",
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
           fontSize: 13,
           color: A.textDim,
           marginTop: 4,
@@ -470,7 +471,7 @@ function SignUp({
           <label
             style={{
               display: "block",
-              fontFamily: "Work Sans, sans-serif",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
               fontSize: 12,
               fontWeight: 600,
               color: A.textDim,
@@ -545,7 +546,7 @@ function SignUp({
           border: "none",
           background: loading ? A.brassDim : A.brass,
           color: loading ? A.textDim : "#FFFFFF",
-          fontFamily: "Work Sans, sans-serif",
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
           fontSize: 14,
           fontWeight: 700,
           cursor: loading ? "default" : "pointer",
@@ -570,7 +571,7 @@ function SignUp({
       <p
         style={{
           textAlign: "center",
-          fontFamily: "Work Sans, sans-serif",
+          fontFamily: "'Plus Jakarta Sans', sans-serif",
           fontSize: 13,
           color: A.textDim,
         }}
@@ -622,7 +623,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
         display: "flex",
         minHeight: "100vh",
         background: A.bg,
-        fontFamily: "Work Sans, sans-serif",
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
       }}
     >
       {/* LEFT PANEL — Architecture / Brand */}
@@ -794,7 +795,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
                 key={m}
                 onClick={() => setMode(m)}
                 style={{
-                  fontFamily: "Work Sans, sans-serif",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontSize: 13,
                   fontWeight: mode === m ? 600 : 400,
                   padding: "7px 20px",

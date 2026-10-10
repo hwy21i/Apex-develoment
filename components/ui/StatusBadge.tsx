@@ -1,26 +1,29 @@
+import React from "react";
+
 type StatusTone = "green" | "blue" | "amber" | "red" | "slate";
 
 const toneFor = (value: string): StatusTone => {
   const normalized = value.toLowerCase();
-  if (normalized.includes("complete") || normalized.includes("track") || normalized.includes("paid")) return "green";
-  if (normalized.includes("delay") || normalized.includes("critical") || normalized.includes("block")) return "red";
-  if (normalized.includes("hold") || normalized.includes("risk") || normalized.includes("low")) return "amber";
-  if (normalized.includes("active") || normalized.includes("progress") || normalized.includes("planning")) return "blue";
+  if (normalized.includes("complete") || normalized.includes("track") || normalized.includes("paid") || normalized.includes("verified")) return "green";
+  if (normalized.includes("delay") || normalized.includes("critical") || normalized.includes("block") || normalized.includes("discrepancy")) return "red";
+  if (normalized.includes("hold") || normalized.includes("risk") || normalized.includes("low") || normalized.includes("pending")) return "amber";
+  if (normalized.includes("active") || normalized.includes("progress") || normalized.includes("planning") || normalized.includes("approved")) return "blue";
   return "slate";
 };
 
+// Restrained architectural status badges aligned with the steel/slate palette
 const styles: Record<StatusTone, string> = {
-  green: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 ring-emerald-200 dark:ring-emerald-800/40",
-  blue: "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 ring-sky-200 dark:ring-sky-800/40",
-  amber: "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 ring-amber-200 dark:ring-amber-800/40",
-  red: "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 ring-rose-200 dark:ring-rose-800/40",
-  slate: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 ring-slate-200 dark:ring-slate-700",
+  green: "bg-[#2E4156]/40 dark:bg-[#2E4156] text-[#A8C5B5] dark:text-[#A8C5B5] border border-[#6E9E88]/40",
+  blue: "bg-[#2E4156]/50 dark:bg-[#1A2D42] text-[#D4D8DD] dark:text-[#C0C8CA] border border-[#AAB7B7]/40",
+  amber: "bg-[#2E4156]/30 dark:bg-[#2E4156] text-[#D5BC95] dark:text-[#D5BC95] border border-[#C49F6A]/40",
+  red: "bg-[#2E4156]/40 dark:bg-[#2E4156] text-[#D29F9F] dark:text-[#D29F9F] border border-[#B56B6B]/40",
+  slate: "bg-[#C0C8CA]/40 dark:bg-[#2E4156] text-[#1A2D42] dark:text-[#D4D8DD] border border-[#AAB7B7]/30",
 };
 
 export function StatusBadge({ value, className = "" }: { value: string; className?: string }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold capitalize ring-1 ${styles[toneFor(value)]} ${className}`}
+      className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold tracking-wide capitalize ${styles[toneFor(value)]} ${className}`}
     >
       {value.replaceAll("_", " ").replaceAll("-", " ")}
     </span>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
+import { exportCsv, csvSlug } from "@/lib/exportCsv";
 import {
   FileText,
   Download,
@@ -55,6 +56,15 @@ export default function ReportsPage() {
     },
   ];
 
+  const handleExportReport = (rep: { title: string; category: string; desc: string }) => {
+    exportCsv(`report-${csvSlug(rep.title)}.csv`, [
+      ["Report", rep.title],
+      ["Category", rep.category],
+      ["Description", rep.desc],
+      ["Format", "PDF / XLSX"],
+    ]);
+  };
+
   return (
     <AppShell>
       <div className="space-y-6">
@@ -98,7 +108,11 @@ export default function ReportsPage() {
 
                 <div className="mt-5 pt-3 border-t border-[#1F2330] flex items-center justify-between">
                   <span className="text-[11px] text-slate-500 font-mono">Format: PDF / XLSX</span>
-                  <button className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300">
+                  <button
+                    type="button"
+                    onClick={() => handleExportReport(rep)}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300"
+                  >
                     <Download className="w-3.5 h-3.5" /> Export Report
                   </button>
                 </div>

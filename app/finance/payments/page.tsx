@@ -3,108 +3,84 @@
 import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
-  Plus, Search, ArrowDownLeft, ArrowUpRight, CheckCircle,
-  Clock, Filter, Eye, DollarSign, Building2, CreditCard
+  Plus, Search, ArrowDownLeft, ArrowUpRight,
+  Loader2, X, DollarSign,
 } from "lucide-react";
+import { useRecords, type OperationalRecord } from "@/hooks/useRecords";
+import { formatCurrency } from "@/lib/formatters/currency";
+
+type PaymentType = "Inflow" | "Outflow";
+
+const METHODS = ["CBE Birr / Telebirr", "CBE Bank Transfer", "Awash Bank", "Dashen Bank", "Check"] as const;
+const REF_TYPES = ["Client IPC", "Supplier PO", "Subcontractor", "Payroll"] as const;
+const STATUSES = ["Completed", "Pending Clearing", "Reversed"];
 
 interface PaymentRecord {
   _id: string;
   transactionRef: string;
-  type: "Inflow" | "Outflow";
+  type: PaymentType;
   sourceOrDestination: string;
-  projectName: string;
+  projectId: string;
   bankAccount: string;
   amount: number;
   paymentDate: string;
-  method: "CBE Birr / Telebirr" | "CBE Bank Transfer" | "Awash Bank" | "Dashen Bank" | "Check";
-  status: "Completed" | "Pending Clearing" | "Reversed";
-  referenceType: "Client IPC" | "Supplier PO" | "Subcontractor" | "Payroll";
+  method: string;
+  status: string;
+  referenceType: string;
 }
 
-const MOCK_PAYMENTS: PaymentRecord[] = [
-  {
-    _id: "pay1",
-    transactionRef: "TRX-ETB-2024-881",
-    type: "Inflow",
-    sourceOrDestination: "Zemen Real Estate S.C.",
-    projectName: "Addis Heights Tower",
-    bankAccount: "Commercial Bank of Ethiopia - 1000234891",
-    amount: 10625000,
-    paymentDate: "2024-02-01",
-    method: "CBE Bank Transfer",
-    status: "Completed",
-    referenceType: "Client IPC",
-  },
-  {
-    _id: "pay2",
-    transactionRef: "TRX-ETB-2024-882",
-    type: "Outflow",
-    sourceOrDestination: "Addis Construction Supply Co.",
-    projectName: "Addis Heights Tower",
-    bankAccount: "Commercial Bank of Ethiopia - 1000234891",
-    amount: 750000,
-    paymentDate: "2024-02-02",
-    method: "CBE Bank Transfer",
-    status: "Completed",
-    referenceType: "Supplier PO",
-  },
-  {
-    _id: "pay3",
-    transactionRef: "TRX-ETB-2024-883",
-    type: "Outflow",
-    sourceOrDestination: "Tekle Steel Works Plc",
-    projectName: "Bole Business Park",
-    bankAccount: "Awash Bank - 01320045892",
-    amount: 975000,
-    paymentDate: "2024-02-05",
-    method: "Awash Bank",
-    status: "Completed",
-    referenceType: "Supplier PO",
-  },
-  {
-    _id: "pay4",
-    type: "Outflow",
-    transactionRef: "TRX-ETB-2024-884",
-    sourceOrDestination: "Monthly Site Workforce & Staff",
-    projectName: "Portfolio Wide",
-    bankAccount: "Commercial Bank of Ethiopia - 1000234891",
-    amount: 1840000,
-    paymentDate: "2024-01-31",
-    method: "CBE Bank Transfer",
-    status: "Completed",
-    referenceType: "Payroll",
-  },
-  {
-    _id: "pay5",
-    transactionRef: "TRX-ETB-2024-885",
-    type: "Inflow",
-    sourceOrDestination: "Midroc Investment Group",
-    projectName: "Bole Business Park",
-    bankAccount: "Dashen Bank - 5500129841",
-    amount: 5000000,
-    paymentDate: "2024-02-06",
-    method: "Dashen Bank",
-    status: "Pending Clearing",
-    referenceType: "Client IPC",
-  },
-];
+function mapRecord(r: OperationalRecord): PaymentRecord {
+  const d = r.data || {};
+  return {
+    _id: r._id,
+    transactionRef: d.transactionRef || d.paymentRef || r.title || r._id.slice(-6),
+    type: d.type === "Inflow" ? "Inflow" : "Outflow",
+    sourceOrDestination: d.sourceOrDestination || d.payer || d.source || "—",
+    projectId: r.projectId,
+    bankAccount: d.bankAccount || "—",
+    amount: Number(d.amount) || 0,
+    paymentDate: d.paymentDate || r.createdAt,
+    method: d.method || "CBE Bank Transfer",
+    status: r.status || d.status || "Pending Clearing",
+    referenceType: d.referenceType || d.reference || "—",
+  };
+}
+
+const EMPTY_FORM = {
+  projectId: "",
+  transactionRef: "",
+  type: "Outflow" as PaymentType,
+  sourceOrDestination: "",
+  bankAccount: "",
+  amount: "",
+  paymentDate: "",
+  method: "CBE Bank Transfer" as (typeof METHODS)[number],
+  status: "Completed",
+  referenceType: "Supplier PO" as (typeof REF_TYPES)[number],
+};
 
 export default function FinancePaymentsPage() {
-  const [payments, setPayments] = useState<PaymentRecord[]>(MOCK_PAYMENTS);
+  const { records, projects, projectName, loading, error, reload, create } = useRecords("payments");
+  const payments = records.map(mapRecord);
+
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
+
+  const [formOpen, setFormOpen] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const filtered = payments.filter((p) => {
     const matchSearch =
       p.transactionRef.toLowerCase().includes(search.toLowerCase()) ||
       p.sourceOrDestination.toLowerCase().includes(search.toLowerCase()) ||
-      p.projectName.toLowerCase().includes(search.toLowerCase());
+      projectName(p.projectId).toLowerCase().includes(search.toLowerCase());
     const matchType = typeFilter === "All" || p.type === typeFilter;
     return matchSearch && matchType;
   });
 
-  const fmt = (n: number) =>
-    `ETB ${n.toLocaleString("en-ET", { minimumFractionDigits: 2 })}`;
+  const fmt = (n: number) => formatCurrency(n);
 
   const totalInflow = payments
     .filter((p) => p.type === "Inflow" && p.status === "Completed")
@@ -113,6 +89,46 @@ export default function FinancePaymentsPage() {
   const totalOutflow = payments
     .filter((p) => p.type === "Outflow" && p.status === "Completed")
     .reduce((sum, p) => sum + p.amount, 0);
+
+  const openForm = () => {
+    setForm({ ...EMPTY_FORM, projectId: projects[0]?._id || "" });
+    setFormError(null);
+    setFormOpen(true);
+  };
+
+  const submit = async () => {
+    if (!form.projectId) {
+      setFormError("Please select a project.");
+      return;
+    }
+    setBusy(true);
+    setFormError(null);
+    try {
+      await create({
+        projectId: form.projectId,
+        title: form.transactionRef || undefined,
+        status: form.status,
+        data: {
+          transactionRef: form.transactionRef || undefined,
+          type: form.type,
+          sourceOrDestination: form.sourceOrDestination,
+          bankAccount: form.bankAccount,
+          amount: Number(form.amount) || 0,
+          paymentDate: form.paymentDate || undefined,
+          method: form.method,
+          referenceType: form.referenceType,
+        },
+      });
+      setFormOpen(false);
+    } catch (e) {
+      setFormError(e instanceof Error ? e.message : "Failed to record payment");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const inputCls =
+    "w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500";
 
   return (
     <AppShell>
@@ -124,7 +140,10 @@ export default function FinancePaymentsPage() {
               Bank receipts, vendor disbursements, payroll funding, and cash clearing ledger
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          <button
+            onClick={openForm}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
             <Plus size={16} />
             Record Payment
           </button>
@@ -175,72 +194,176 @@ export default function FinancePaymentsPage() {
 
         {/* Payments table */}
         <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-900/50 border-b border-gray-700">
-                <tr>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Ref & Type</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Entity & Category</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Project</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Bank Account & Method</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Date</th>
-                  <th className="text-right text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Amount</th>
-                  <th className="text-center text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-700">
-                {filtered.map((p) => (
-                  <tr key={p._id} className="hover:bg-gray-700/30 transition-colors">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        {p.type === "Inflow" ? (
-                          <span className="p-1 bg-green-500/20 text-green-400 rounded">
-                            <ArrowDownLeft size={14} />
-                          </span>
-                        ) : (
-                          <span className="p-1 bg-red-500/20 text-red-400 rounded">
-                            <ArrowUpRight size={14} />
-                          </span>
-                        )}
-                        <span className="font-mono text-blue-400 font-medium text-xs">
-                          {p.transactionRef}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="text-white font-medium">{p.sourceOrDestination}</p>
-                      <p className="text-gray-400 text-xs mt-0.5">{p.referenceType}</p>
-                    </td>
-                    <td className="px-4 py-3 text-gray-300 text-xs">{p.projectName}</td>
-                    <td className="px-4 py-3">
-                      <p className="text-gray-200 text-xs font-medium">{p.bankAccount}</p>
-                      <p className="text-gray-400 text-xs">{p.method}</p>
-                    </td>
-                    <td className="px-4 py-3 text-gray-300 text-xs">
-                      {new Date(p.paymentDate).toLocaleDateString("en-ET")}
-                    </td>
-                    <td className={`px-4 py-3 text-right font-bold ${p.type === "Inflow" ? "text-green-400" : "text-white"}`}>
-                      {p.type === "Inflow" ? "+" : "-"}{fmt(p.amount)}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span
-                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                          p.status === "Completed"
-                            ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                            : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
-                        }`}
-                      >
-                        {p.status}
-                      </span>
-                    </td>
+          {loading ? (
+            <div className="flex items-center justify-center py-16 text-gray-400">
+              <Loader2 size={24} className="animate-spin" />
+            </div>
+          ) : error ? (
+            <div className="p-6 text-center">
+              <p className="text-sm text-red-300">{error}</p>
+              <button onClick={() => reload()} className="mt-3 text-xs font-medium text-blue-400 hover:text-blue-300">
+                Retry
+              </button>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="p-12 text-center text-gray-400">
+              <DollarSign size={32} className="mx-auto mb-2 opacity-40" />
+              <p className="text-sm">
+                {payments.length === 0 ? "No payment transactions recorded yet." : "No transactions match your filters."}
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-900/50 border-b border-gray-700">
+                  <tr>
+                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Ref & Type</th>
+                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Entity & Category</th>
+                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Project</th>
+                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Bank Account & Method</th>
+                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Date</th>
+                    <th className="text-right text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Amount</th>
+                    <th className="text-center text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-700">
+                  {filtered.map((p) => (
+                    <tr key={p._id} className="hover:bg-gray-700/30 transition-colors">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          {p.type === "Inflow" ? (
+                            <span className="p-1 bg-green-500/20 text-green-400 rounded">
+                              <ArrowDownLeft size={14} />
+                            </span>
+                          ) : (
+                            <span className="p-1 bg-red-500/20 text-red-400 rounded">
+                              <ArrowUpRight size={14} />
+                            </span>
+                          )}
+                          <span className="font-mono text-blue-400 font-medium text-xs">
+                            {p.transactionRef}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="text-white font-medium">{p.sourceOrDestination}</p>
+                        <p className="text-gray-400 text-xs mt-0.5">{p.referenceType}</p>
+                      </td>
+                      <td className="px-4 py-3 text-gray-300 text-xs">{projectName(p.projectId)}</td>
+                      <td className="px-4 py-3">
+                        <p className="text-gray-200 text-xs font-medium">{p.bankAccount}</p>
+                        <p className="text-gray-400 text-xs">{p.method}</p>
+                      </td>
+                      <td className="px-4 py-3 text-gray-300 text-xs">
+                        {p.paymentDate ? new Date(p.paymentDate).toLocaleDateString("en-ET") : "—"}
+                      </td>
+                      <td className={`px-4 py-3 text-right font-bold ${p.type === "Inflow" ? "text-green-400" : "text-white"}`}>
+                        {p.type === "Inflow" ? "+" : "-"}{fmt(p.amount)}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                            p.status === "Completed"
+                              ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                              : "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
+                          }`}
+                        >
+                          {p.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Create modal */}
+      {formOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-gray-700 pb-4">
+              <h2 className="text-lg font-bold text-white">Record Payment</h2>
+              <button onClick={() => setFormOpen(false)} className="text-gray-400 hover:text-white"><X size={18} /></button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs text-gray-400 block mb-1">Project</label>
+                <select className={inputCls} value={form.projectId} onChange={(e) => setForm({ ...form, projectId: e.target.value })}>
+                  {projects.length === 0 && <option value="">No accessible projects</option>}
+                  {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
+                </select>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Transaction ref</label>
+                  <input className={inputCls} value={form.transactionRef} onChange={(e) => setForm({ ...form, transactionRef: e.target.value })} placeholder="TRX-ETB-2026-001" />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Cash flow type</label>
+                  <select className={inputCls} value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as PaymentType })}>
+                    <option value="Inflow">Inflow (Receipt)</option>
+                    <option value="Outflow">Outflow (Disbursement)</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-gray-400 block mb-1">Payer / source or destination</label>
+                <input className={inputCls} value={form.sourceOrDestination} onChange={(e) => setForm({ ...form, sourceOrDestination: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Bank account</label>
+                  <input className={inputCls} value={form.bankAccount} onChange={(e) => setForm({ ...form, bankAccount: e.target.value })} placeholder="Commercial Bank of Ethiopia - 10002..." />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Amount (ETB)</label>
+                  <input type="number" min="0" className={inputCls} value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Payment date</label>
+                  <input type="date" className={inputCls} value={form.paymentDate} onChange={(e) => setForm({ ...form, paymentDate: e.target.value })} />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Method</label>
+                  <select className={inputCls} value={form.method} onChange={(e) => setForm({ ...form, method: e.target.value as (typeof METHODS)[number] })}>
+                    {METHODS.map((m) => <option key={m} value={m}>{m}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Reference category</label>
+                  <select className={inputCls} value={form.referenceType} onChange={(e) => setForm({ ...form, referenceType: e.target.value as (typeof REF_TYPES)[number] })}>
+                    {REF_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Status</label>
+                  <select className={inputCls} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
+                    {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {formError && <p className="text-xs text-red-300">{formError}</p>}
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button onClick={() => setFormOpen(false)} className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">Cancel</button>
+              <button onClick={submit} disabled={busy} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
+                {busy && <Loader2 size={14} className="animate-spin" />}
+                Record Payment
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }
-

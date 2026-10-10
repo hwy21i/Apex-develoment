@@ -75,3 +75,90 @@ export async function POST(request: Request) {
     return handleError(error);
   }
 }
+
+export async function PATCH(request: Request) {
+  const guard = await requirePermission("TASK_UPDATE", request);
+  if (guard.error) return guard.error;
+
+  try {
+    const json = await request.json();
+    const { taskId, status, progress, priority } = json;
+    if (!taskId) {
+      return fail("BAD_REQUEST", "taskId is required", 400);
+    }
+
+    await connectToDatabase();
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return fail("NOT_FOUND", "Task not found", 404);
+    }
+
+    if (!(await canAccessProject(guard.user, String(task.projectId)))) {
+      return fail("FORBIDDEN", "You do not have access to this project", 403);
+    }
+
+    const updates: Record<string, unknown> = {};
+    if (status) updates.status = status;
+    if (typeof progress === "number") updates.progress = progress;
+    if (priority) updates.priority = priority;
+    if (status === "COMPLETED") updates.completedDate = new Date();
+
+    const updated = await Task.findByIdAndUpdate(taskId, { $set: updates }, { new: true });
+
+    await logAudit({
+      userId: guard.user.id,
+      userName: guard.user.fullName,
+      userRole: guard.user.role,
+      action: "TASK_UPDATED",
+      entity: "Task",
+      entityId: taskId,
+      projectId: String(task.projectId),
+      newValue: updates,
+    });
+
+    return ok(updated, "Task updated successfully");
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function DELETE(request: Request) {
+  const guard = await requirePermission("TASK_DELETE", request);
+  if (guard.error) return guard.error;
+
+  try {
+    const { searchParams } = new URL(request.url);
+    const taskId = searchParams.get("taskId");
+    if (!taskId) {
+      return fail("BAD_REQUEST", "taskId is required", 400);
+    }
+
+    await connectToDatabase();
+    const task = await Task.findById(taskId);
+    if (!task) {
+      return fail("NOT_FOUND", "Task not found", 404);
+    }
+
+    if (!(await canAccessProject(guard.user, String(task.projectId)))) {
+      return fail("FORBIDDEN", "You do not have access to this project", 403);
+    }
+
+    await Task.findByIdAndDelete(taskId);
+
+    await logAudit({
+      userId: guard.user.id,
+      userName: guard.user.fullName,
+      userRole: guard.user.role,
+      action: "TASK_DELETED",
+      entity: "Task",
+      entityId: taskId,
+      projectId: String(task.projectId),
+      previousValue: { title: task.title },
+    });
+
+    return ok({ success: true }, "Task deleted successfully");
+  } catch (error) {
+    return handleError(error);
+  }
+}
+

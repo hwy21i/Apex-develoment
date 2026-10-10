@@ -4,7 +4,7 @@ import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
   Plus, Search, Truck, CheckCircle, Clock, AlertTriangle,
-  Eye, FileText, PackageCheck, Warehouse, ArrowUpRight
+  Eye, FileText, PackageCheck, Warehouse, ArrowUpRight, X
 } from "lucide-react";
 
 interface GoodsReceipt {
@@ -81,6 +81,57 @@ export default function GoodsReceiptsPage() {
   const [receipts, setReceipts] = useState<GoodsReceipt[]>(MOCK_RECEIPTS);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [selectedReceipt, setSelectedReceipt] = useState<GoodsReceipt | null>(null);
+
+  const [form, setForm] = useState({
+    grnNumber: `GRN-2024-00${Math.floor(92 + Math.random() * 50)}`,
+    poNumber: "PO-2024-0004",
+    supplierName: "",
+    projectName: "Addis Heights Tower",
+    warehouseName: "Addis Heights Main Store",
+    receivedDate: new Date().toISOString().split("T")[0],
+    receivedBy: "Solomon Worku (Site Engineer)",
+    deliveryNoteNumber: `DN-${Math.floor(1000 + Math.random() * 9000)}`,
+    totalReceivedQty: "",
+    totalValue: "",
+    status: "Verified" as GoodsReceipt["status"],
+  });
+
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.supplierName || !form.totalValue) return;
+    const newGrn: GoodsReceipt = {
+      _id: `grn-${Date.now()}`,
+      grnNumber: form.grnNumber,
+      poNumber: form.poNumber,
+      supplierName: form.supplierName,
+      projectName: form.projectName,
+      warehouseName: form.warehouseName,
+      receivedDate: form.receivedDate,
+      receivedBy: form.receivedBy,
+      status: form.status,
+      itemsCount: 1,
+      totalReceivedQty: parseFloat(form.totalReceivedQty) || 100,
+      totalValue: parseFloat(form.totalValue) || 0,
+      deliveryNoteNumber: form.deliveryNoteNumber,
+    };
+    setReceipts([newGrn, ...receipts]);
+    setIsCreateOpen(false);
+    setForm({
+      grnNumber: `GRN-2024-00${Math.floor(92 + Math.random() * 50)}`,
+      poNumber: "PO-2024-0004",
+      supplierName: "",
+      projectName: "Addis Heights Tower",
+      warehouseName: "Addis Heights Main Store",
+      receivedDate: new Date().toISOString().split("T")[0],
+      receivedBy: "Solomon Worku (Site Engineer)",
+      deliveryNoteNumber: `DN-${Math.floor(1000 + Math.random() * 9000)}`,
+      totalReceivedQty: "",
+      totalValue: "",
+      status: "Verified",
+    });
+  };
 
   const filtered = receipts.filter((r) => {
     const matchSearch =
@@ -105,7 +156,11 @@ export default function GoodsReceiptsPage() {
               Confirm material deliveries, update inventory ledgers, and match purchase orders
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          <button
+            type="button"
+            onClick={() => setIsCreateOpen(true)}
+            className="flex items-center gap-2 bg-[#C9A15A] hover:bg-[#B89248] text-slate-950 px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+          >
             <Plus size={16} />
             Receive Delivery
           </button>
@@ -205,7 +260,12 @@ export default function GoodsReceiptsPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <button className="text-blue-400 hover:text-blue-300 p-1" title="View GRN Document">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedReceipt(r)}
+                        className="text-[#C9A15A] hover:text-[#d4b06f] p-1.5 rounded transition-colors"
+                        title="View GRN Document"
+                      >
                         <Eye size={16} />
                       </button>
                     </td>
@@ -215,6 +275,254 @@ export default function GoodsReceiptsPage() {
             </table>
           </div>
         </div>
+
+        {/* Receive Delivery Modal */}
+        {isCreateOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+            <div className="bg-[#16181D] border border-[#2F333A] rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#2F333A]">
+                <div>
+                  <h3 className="text-lg font-bold text-white">Receive Material Delivery (GRN)</h3>
+                  <p className="text-xs text-slate-400">Inspect inbound items, match delivery note and update inventory</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsCreateOpen(false)}
+                  className="p-1 rounded text-slate-400 hover:text-white"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreate} className="space-y-4 text-xs">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">GRN #</label>
+                    <input
+                      required
+                      value={form.grnNumber}
+                      onChange={(e) => setForm({ ...form, grnNumber: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white font-mono focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">PO #</label>
+                    <input
+                      required
+                      value={form.poNumber}
+                      onChange={(e) => setForm({ ...form, poNumber: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white font-mono focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Supplier Name</label>
+                    <input
+                      required
+                      placeholder="e.g. Tekle Steel Works"
+                      value={form.supplierName}
+                      onChange={(e) => setForm({ ...form, supplierName: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Delivery Note #</label>
+                    <input
+                      required
+                      value={form.deliveryNoteNumber}
+                      onChange={(e) => setForm({ ...form, deliveryNoteNumber: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white font-mono focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Project Site</label>
+                    <input
+                      required
+                      value={form.projectName}
+                      onChange={(e) => setForm({ ...form, projectName: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Warehouse / Depot</label>
+                    <input
+                      required
+                      value={form.warehouseName}
+                      onChange={(e) => setForm({ ...form, warehouseName: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Received Quantity (Units)</label>
+                    <input
+                      required
+                      type="number"
+                      placeholder="e.g. 250"
+                      value={form.totalReceivedQty}
+                      onChange={(e) => setForm({ ...form, totalReceivedQty: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Total Value (ETB)</label>
+                    <input
+                      required
+                      type="number"
+                      placeholder="e.g. 450000"
+                      value={form.totalValue}
+                      onChange={(e) => setForm({ ...form, totalValue: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Inspection Status</label>
+                    <select
+                      value={form.status}
+                      onChange={(e) => setForm({ ...form, status: e.target.value as GoodsReceipt["status"] })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    >
+                      <option value="Verified">Verified & Accepted</option>
+                      <option value="Pending Inspection">Pending Inspection</option>
+                      <option value="Discrepancy">Discrepancy Flagged</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Inspector / Receiver</label>
+                    <input
+                      required
+                      value={form.receivedBy}
+                      onChange={(e) => setForm({ ...form, receivedBy: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-3 border-t border-[#2F333A]">
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateOpen(false)}
+                    className="px-4 py-2 rounded-lg bg-[#2A2D34] hover:bg-[#343842] text-slate-300 font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-lg bg-[#C9A15A] hover:bg-[#B89248] text-slate-950 font-bold"
+                  >
+                    Accept & Register GRN
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* View Receipt Details Modal */}
+        {selectedReceipt && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+            <div className="bg-[#16181D] border border-[#2F333A] rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#2F333A]">
+                <div>
+                  <h3 className="text-lg font-bold text-white font-mono">{selectedReceipt.grnNumber}</h3>
+                  <p className="text-xs text-slate-400">Goods Receipt Note & Stock Intake Slip</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedReceipt(null)}
+                  className="p-1 rounded text-slate-400 hover:text-white"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                <div className="grid grid-cols-2 gap-3 p-3 bg-[#1C1F26] rounded-xl border border-[#2F333A]">
+                  <div>
+                    <p className="text-slate-400">Supplier</p>
+                    <p className="font-semibold text-white mt-0.5">{selectedReceipt.supplierName}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Delivery Note #</p>
+                    <p className="font-mono text-[#C9A15A] mt-0.5">{selectedReceipt.deliveryNoteNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Associated PO</p>
+                    <p className="font-mono text-slate-200 mt-0.5">{selectedReceipt.poNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Warehouse Location</p>
+                    <p className="text-slate-200 mt-0.5">{selectedReceipt.warehouseName}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3 p-3 bg-[#1C1F26] rounded-xl border border-[#2F333A] text-center">
+                  <div>
+                    <p className="text-slate-400">Received Qty</p>
+                    <p className="font-bold text-white text-sm mt-0.5">{selectedReceipt.totalReceivedQty} units</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Total Value</p>
+                    <p className="font-bold text-[#C9A15A] text-sm mt-0.5">{fmt(selectedReceipt.totalValue)}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Status</p>
+                    <span className={`inline-block px-2 py-0.5 rounded-full mt-1 text-[11px] font-semibold ${STATUS_BADGES[selectedReceipt.status]}`}>
+                      {selectedReceipt.status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-[#1C1F26]/70 rounded-xl border border-[#2F333A] space-y-1">
+                  <div className="flex justify-between text-slate-300">
+                    <span className="text-slate-400">Received By:</span>
+                    <span>{selectedReceipt.receivedBy}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-300">
+                    <span className="text-slate-400">Receipt Date:</span>
+                    <span>{new Date(selectedReceipt.receivedDate).toLocaleDateString("en-ET")}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#2F333A]">
+                {selectedReceipt.status !== "Verified" && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setReceipts(receipts.map((rec) =>
+                        rec._id === selectedReceipt._id
+                          ? { ...rec, status: "Verified" }
+                          : rec
+                      ));
+                      setSelectedReceipt(null);
+                    }}
+                    className="px-3.5 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 text-white font-bold text-xs"
+                  >
+                    Mark Verified & Post to Ledger
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setSelectedReceipt(null)}
+                  className="px-4 py-1.5 rounded-lg bg-[#2A2D34] hover:bg-[#343842] text-slate-300 font-medium text-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AppShell>
   );

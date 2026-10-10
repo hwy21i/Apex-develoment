@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
+import { exportCsv, csvSlug } from "@/lib/exportCsv";
 import {
   FileText, Download, Filter, Calendar, BarChart2,
   TrendingUp, CheckCircle, Clock, AlertTriangle
@@ -43,6 +44,22 @@ export default function ProjectReportsPage() {
     },
   ];
 
+  const columns = ["Title", "Type", "Period", "Generated", "Format", "Size"];
+
+  const handleDownload = (r: (typeof reports)[number]) => {
+    exportCsv(`report-projects-${csvSlug(r.title)}.csv`, [
+      columns,
+      [r.title, r.type, r.period, r.generatedDate, r.format, r.size],
+    ]);
+  };
+
+  const handleGenerateCustom = () => {
+    exportCsv("report-projects-all.csv", [
+      columns,
+      ...reports.map((r) => [r.title, r.type, r.period, r.generatedDate, r.format, r.size]),
+    ]);
+  };
+
   return (
     <AppShell>
       <div className="space-y-6">
@@ -53,7 +70,11 @@ export default function ProjectReportsPage() {
               Earned value management (EVM), physical vs financial progress, and executive digests
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          <button
+            type="button"
+            onClick={handleGenerateCustom}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
             <FileText size={16} />
             Generate Custom Report
           </button>
@@ -79,7 +100,11 @@ export default function ProjectReportsPage() {
               </div>
 
               <div className="mt-4 pt-3 border-t border-gray-700 flex justify-end">
-                <button className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 font-semibold">
+                <button
+                  type="button"
+                  onClick={() => handleDownload(r)}
+                  className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 font-semibold"
+                >
                   <Download size={14} /> Download Report
                 </button>
               </div>

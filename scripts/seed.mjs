@@ -1,13 +1,26 @@
+import dns from "node:dns";
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 
-// ============ Initialize Database ============
-const uri = process.env.MONGODB_URI;
-if (!uri) {
-  throw new Error("MONGODB_URI is required. Add it to .env.local before seeding.");
-}
+try {
+  dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
+} catch {}
 
-await mongoose.connect(uri);
+const FALLBACK_DIRECT_URI =
+  "mongodb://hawariyayohannes52_db_user:yohatli@ac-smcmcr5-shard-00-00.zm7lnui.mongodb.net:27017,ac-smcmcr5-shard-00-01.zm7lnui.mongodb.net:27017,ac-smcmcr5-shard-00-02.zm7lnui.mongodb.net:27017/construction_management?ssl=true&replicaSet=atlas-relbq0-shard-0&authSource=admin&appName=Cluster0";
+
+const uri = process.env.MONGODB_URI || FALLBACK_DIRECT_URI;
+
+try {
+  await mongoose.connect(uri, { serverSelectionTimeoutMS: 15000 });
+} catch (e) {
+  if (uri !== FALLBACK_DIRECT_URI) {
+    console.warn("Primary URI failed. Retrying with direct replica set...");
+    await mongoose.connect(FALLBACK_DIRECT_URI, { serverSelectionTimeoutMS: 15000 });
+  } else {
+    throw e;
+  }
+}
 
 // ============ Define Core Mongoose Schemas ============
 const User =

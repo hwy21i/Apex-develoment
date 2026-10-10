@@ -3,73 +3,22 @@
 import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
-  Plus, Search, FileText, Download, Eye, Layers,
-  Calendar, CheckCircle, ShieldCheck, Tag, Filter
+  Plus, Search, Layers, X, Loader2, Eye,
 } from "lucide-react";
+import { useRecords, type OperationalRecord } from "@/hooks/useRecords";
 
 interface ProjectDrawing {
   _id: string;
   docCode: string;
   title: string;
-  discipline: "Architectural" | "Structural" | "MEP" | "Geotechnical" | "Landscape";
-  projectName: string;
+  discipline: string;
+  projectId: string;
   revision: string;
   fileSize: string;
   uploadDate: string;
   approvedBy: string;
-  status: "Issued for Construction (IFC)" | "Under Review" | "Superseded";
+  status: string;
 }
-
-const MOCK_DOCS: ProjectDrawing[] = [
-  {
-    _id: "d1",
-    docCode: "DWG-ARC-0104",
-    title: "Typical Tower Floor Architectural Layout & Partition Details",
-    discipline: "Architectural",
-    projectName: "Addis Heights Tower",
-    revision: "Rev C",
-    fileSize: "14.2 MB",
-    uploadDate: "2024-01-20",
-    approvedBy: "Arch. Selamawit Bekele",
-    status: "Issued for Construction (IFC)",
-  },
-  {
-    _id: "d2",
-    docCode: "DWG-STR-0201",
-    title: "Level 10-15 Post-Tensioned Slab Reinforcement & Tendon Layout",
-    discipline: "Structural",
-    projectName: "Addis Heights Tower",
-    revision: "Rev B",
-    fileSize: "22.8 MB",
-    uploadDate: "2024-02-01",
-    approvedBy: "Eng. Dawit Haile",
-    status: "Issued for Construction (IFC)",
-  },
-  {
-    _id: "d3",
-    docCode: "DWG-MEP-0050",
-    title: "HVAC Ductwork & Chilled Water Riser Schematics",
-    discipline: "MEP",
-    projectName: "Bole Business Park",
-    revision: "Rev A",
-    fileSize: "18.5 MB",
-    uploadDate: "2024-01-15",
-    approvedBy: "Eng. Yonas Tulu",
-    status: "Under Review",
-  },
-  {
-    _id: "d4",
-    docCode: "DWG-CIV-0012",
-    title: "Outer Ring Road Kilometer 0-10 Geometric Alignment & Cross Sections",
-    discipline: "Geotechnical",
-    projectName: "Ring Road Expansion",
-    revision: "Rev D",
-    fileSize: "38.1 MB",
-    uploadDate: "2023-11-10",
-    approvedBy: "ERA Chief Surveyor",
-    status: "Issued for Construction (IFC)",
-  },
-];
 
 const STATUS_BADGES: Record<string, string> = {
   "Issued for Construction (IFC)": "bg-green-500/20 text-green-400 border border-green-500/30",
@@ -77,21 +26,96 @@ const STATUS_BADGES: Record<string, string> = {
   Superseded: "bg-gray-500/20 text-gray-400 border border-gray-500/30",
 };
 
+const DISCIPLINES = ["Architectural", "Structural", "MEP", "Geotechnical", "Landscape"];
+const DRAWING_STATUSES = ["Issued for Construction (IFC)", "Under Review", "Superseded"];
+
+function mapRecord(r: OperationalRecord): ProjectDrawing {
+  const d = r.data || {};
+  return {
+    _id: r._id,
+    docCode: d.docCode || r.title || r._id.slice(-6),
+    title: d.title || "Untitled drawing",
+    discipline: d.discipline || "—",
+    projectId: r.projectId,
+    revision: d.revision || "—",
+    fileSize: d.fileSize || "—",
+    uploadDate: d.uploadDate || r.createdAt,
+    approvedBy: d.approvedBy || "—",
+    status: r.status || d.status || "Under Review",
+  };
+}
+
 export default function ProjectDocumentsPage() {
-  const [docs, setDocs] = useState<ProjectDrawing[]>(MOCK_DOCS);
+  const { records, projects, projectName, loading, error, reload, create } = useRecords("documents");
+  const docs = records
+    .filter((r) => (r.data?.vault || "drawings") === "drawings")
+    .map(mapRecord);
+
   const [search, setSearch] = useState("");
   const [disciplineFilter, setDisciplineFilter] = useState("All");
+  const [viewing, setViewing] = useState<ProjectDrawing | null>(null);
 
-  const disciplines = ["All", "Architectural", "Structural", "MEP", "Geotechnical"];
+  const [formOpen, setFormOpen] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [form, setForm] = useState({
+    projectId: "",
+    docCode: "",
+    title: "",
+    discipline: "Architectural",
+    revision: "",
+    fileSize: "",
+    approvedBy: "",
+    status: "Under Review",
+  });
 
   const filtered = docs.filter((d) => {
     const matchSearch =
       d.title.toLowerCase().includes(search.toLowerCase()) ||
       d.docCode.toLowerCase().includes(search.toLowerCase()) ||
-      d.projectName.toLowerCase().includes(search.toLowerCase());
+      projectName(d.projectId).toLowerCase().includes(search.toLowerCase());
     const matchDisc = disciplineFilter === "All" || d.discipline === disciplineFilter;
     return matchSearch && matchDisc;
   });
+
+  const openForm = () => {
+    setForm((f) => ({ ...f, projectId: projects[0]?._id || "" }));
+    setFormError(null);
+    setFormOpen(true);
+  };
+
+  const submit = async () => {
+    if (!form.projectId) {
+      setFormError("Please select a project.");
+      return;
+    }
+    setBusy(true);
+    setFormError(null);
+    try {
+      await create({
+        projectId: form.projectId,
+        title: form.docCode || form.title || undefined,
+        status: form.status,
+        data: {
+          vault: "drawings",
+          docCode: form.docCode || undefined,
+          title: form.title,
+          discipline: form.discipline,
+          revision: form.revision,
+          fileSize: form.fileSize || undefined,
+          approvedBy: form.approvedBy,
+        },
+      });
+      setFormOpen(false);
+    } catch (e) {
+      setFormError(e instanceof Error ? e.message : "Failed to register drawing");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const inputCls =
+    "w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500";
 
   return (
     <AppShell>
@@ -103,9 +127,12 @@ export default function ProjectDocumentsPage() {
               Architectural blueprints, structural CAD revisions, MEP schematics, and site specifications
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          <button
+            onClick={openForm}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
             <Plus size={16} />
-            Upload Drawing
+            Register Drawing
           </button>
         </div>
 
@@ -126,61 +153,161 @@ export default function ProjectDocumentsPage() {
             onChange={(e) => setDisciplineFilter(e.target.value)}
             className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
           >
-            {disciplines.map((disc) => (
-              <option key={disc} value={disc}>{disc}</option>
-            ))}
+            <option value="All">All</option>
+            {DISCIPLINES.map((disc) => <option key={disc} value={disc}>{disc}</option>)}
           </select>
         </div>
 
         {/* Drawings table */}
         <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-900/50 border-b border-gray-700">
-                <tr>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Code & Revision</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Drawing Title</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Discipline</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Project</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Approved By</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Status</th>
-                  <th className="text-right text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Download</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-700">
-                {filtered.map((d) => (
-                  <tr key={d._id} className="hover:bg-gray-700/30 transition-colors">
-                    <td className="px-4 py-3">
-                      <span className="font-mono text-blue-400 font-semibold text-xs">{d.docCode}</span>
-                      <span className="ml-2 bg-blue-500/20 text-blue-300 text-[11px] px-1.5 py-0.5 rounded font-bold">
-                        {d.revision}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="text-white font-medium">{d.title}</p>
-                      <p className="text-gray-500 text-xs">{d.fileSize}</p>
-                    </td>
-                    <td className="px-4 py-3 text-gray-300 text-xs">{d.discipline}</td>
-                    <td className="px-4 py-3 text-gray-300 text-xs">{d.projectName}</td>
-                    <td className="px-4 py-3 text-gray-300 text-xs">{d.approvedBy}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_BADGES[d.status]}`}>
-                        {d.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <button className="text-blue-400 hover:text-blue-300 p-1" title="Download PDF Drawing">
-                        <Download size={16} />
-                      </button>
-                    </td>
+          {loading ? (
+            <div className="flex items-center justify-center py-16 text-gray-400"><Loader2 size={24} className="animate-spin" /></div>
+          ) : error ? (
+            <div className="p-6 text-center">
+              <p className="text-sm text-red-300">{error}</p>
+              <button onClick={() => reload()} className="mt-3 text-xs font-medium text-blue-400 hover:text-blue-300">Retry</button>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="p-12 text-center text-gray-400">
+              <Layers size={32} className="mx-auto mb-2 opacity-40" />
+              <p className="text-sm">{docs.length === 0 ? "No drawings registered yet." : "No drawings match your filters."}</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-900/50 border-b border-gray-700">
+                  <tr>
+                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Code &amp; Revision</th>
+                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Drawing Title</th>
+                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Discipline</th>
+                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Project</th>
+                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Approved By</th>
+                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Status</th>
+                    <th className="text-right text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-700">
+                  {filtered.map((d) => (
+                    <tr key={d._id} className="hover:bg-gray-700/30 transition-colors">
+                      <td className="px-4 py-3">
+                        <span className="font-mono text-blue-400 font-semibold text-xs">{d.docCode}</span>
+                        <span className="ml-2 bg-blue-500/20 text-blue-300 text-[11px] px-1.5 py-0.5 rounded font-bold">{d.revision}</span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="text-white font-medium">{d.title}</p>
+                        <p className="text-gray-500 text-xs">{d.fileSize}</p>
+                      </td>
+                      <td className="px-4 py-3 text-gray-300 text-xs">{d.discipline}</td>
+                      <td className="px-4 py-3 text-gray-300 text-xs">{projectName(d.projectId)}</td>
+                      <td className="px-4 py-3 text-gray-300 text-xs">{d.approvedBy}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_BADGES[d.status] || STATUS_BADGES["Under Review"]}`}>{d.status}</span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button onClick={() => setViewing(d)} className="text-blue-400 hover:text-blue-300 p-1" title="View details"><Eye size={16} /></button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Details modal */}
+      {viewing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl">
+            <div className="flex items-start justify-between border-b border-gray-700 pb-4">
+              <div>
+                <h2 className="text-lg font-bold text-white">{viewing.title}</h2>
+                <p className="text-gray-400 text-xs font-mono">{viewing.docCode} · {viewing.revision}</p>
+              </div>
+              <button onClick={() => setViewing(null)} className="text-gray-400 hover:text-white"><X size={18} /></button>
+            </div>
+            <dl className="grid grid-cols-2 gap-3 text-sm">
+              <div><dt className="text-gray-400 text-xs">Discipline</dt><dd className="text-white">{viewing.discipline}</dd></div>
+              <div><dt className="text-gray-400 text-xs">Project</dt><dd className="text-white">{projectName(viewing.projectId)}</dd></div>
+              <div><dt className="text-gray-400 text-xs">Approved by</dt><dd className="text-white">{viewing.approvedBy}</dd></div>
+              <div><dt className="text-gray-400 text-xs">Status</dt><dd className="text-white">{viewing.status}</dd></div>
+              <div><dt className="text-gray-400 text-xs">File size</dt><dd className="text-white">{viewing.fileSize}</dd></div>
+              <div><dt className="text-gray-400 text-xs">Uploaded</dt><dd className="text-white">{viewing.uploadDate ? new Date(viewing.uploadDate).toLocaleDateString("en-ET") : "—"}</dd></div>
+            </dl>
+            <p className="text-[11px] text-gray-500">File storage is not yet provisioned; this record stores drawing metadata only.</p>
+            <div className="flex justify-end">
+              <button onClick={() => setViewing(null)} className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create modal */}
+      {formOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-gray-700 pb-4">
+              <h2 className="text-lg font-bold text-white">Register Drawing</h2>
+              <button onClick={() => setFormOpen(false)} className="text-gray-400 hover:text-white"><X size={18} /></button>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs text-gray-400 block mb-1">Project</label>
+                <select className={inputCls} value={form.projectId} onChange={(e) => setForm({ ...form, projectId: e.target.value })}>
+                  {projects.length === 0 && <option value="">No accessible projects</option>}
+                  {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
+                </select>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Drawing code</label>
+                  <input className={inputCls} value={form.docCode} onChange={(e) => setForm({ ...form, docCode: e.target.value })} placeholder="DWG-ARC-0104" />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Revision</label>
+                  <input className={inputCls} value={form.revision} onChange={(e) => setForm({ ...form, revision: e.target.value })} placeholder="Rev A" />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-gray-400 block mb-1">Drawing title</label>
+                <input className={inputCls} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Discipline</label>
+                  <select className={inputCls} value={form.discipline} onChange={(e) => setForm({ ...form, discipline: e.target.value })}>
+                    {DISCIPLINES.map((d) => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Status</label>
+                  <select className={inputCls} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
+                    {DRAWING_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Approved by</label>
+                  <input className={inputCls} value={form.approvedBy} onChange={(e) => setForm({ ...form, approvedBy: e.target.value })} />
+                </div>
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">File size</label>
+                  <input className={inputCls} value={form.fileSize} onChange={(e) => setForm({ ...form, fileSize: e.target.value })} placeholder="e.g. 14.2 MB" />
+                </div>
+              </div>
+            </div>
+            {formError && <p className="text-xs text-red-300">{formError}</p>}
+            <div className="flex justify-end gap-2 pt-2">
+              <button onClick={() => setFormOpen(false)} className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">Cancel</button>
+              <button onClick={submit} disabled={busy} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
+                {busy && <Loader2 size={14} className="animate-spin" />}
+                Save Drawing
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }
-

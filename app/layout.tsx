@@ -1,6 +1,7 @@
 import "./index.css";
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { UserProvider } from "@/components/auth/UserProvider";
 
 export const metadata: Metadata = {
   title: "Apex Build | Construction Project Management ERP",
@@ -11,7 +12,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased min-h-screen">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <UserProvider>
+            {children}
+          </UserProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

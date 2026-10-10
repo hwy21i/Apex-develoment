@@ -1,6 +1,7 @@
 "use client";
 
 import AppShell from "@/components/layout/AppShell";
+import { exportCsv, csvSlug } from "@/lib/exportCsv";
 import { FileText, Download, DollarSign, BarChart3, TrendingUp } from "lucide-react";
 
 export default function FinancialReportsPage() {
@@ -39,6 +40,22 @@ export default function FinancialReportsPage() {
     },
   ];
 
+  const columns = ["Title", "Type", "Period", "Generated", "Format", "Size"];
+
+  const handleDownload = (r: (typeof reports)[number]) => {
+    exportCsv(`report-financial-${csvSlug(r.title)}.csv`, [
+      columns,
+      [r.title, r.type, r.period, r.generatedDate, r.format, r.size],
+    ]);
+  };
+
+  const handleExportLedger = () => {
+    exportCsv("report-financial-all.csv", [
+      columns,
+      ...reports.map((r) => [r.title, r.type, r.period, r.generatedDate, r.format, r.size]),
+    ]);
+  };
+
   return (
     <AppShell>
       <div className="space-y-6">
@@ -49,7 +66,11 @@ export default function FinancialReportsPage() {
               Project profitability statements, cash flow forecasts, cost accounting, and tax filings
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          <button
+            type="button"
+            onClick={handleExportLedger}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
             <FileText size={16} />
             Export Ledger
           </button>
@@ -74,7 +95,11 @@ export default function FinancialReportsPage() {
               </div>
 
               <div className="mt-4 pt-3 border-t border-gray-700 flex justify-end">
-                <button className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 font-semibold">
+                <button
+                  type="button"
+                  onClick={() => handleDownload(r)}
+                  className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 font-semibold"
+                >
                   <Download size={14} /> Download Report
                 </button>
               </div>

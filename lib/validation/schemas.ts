@@ -112,6 +112,13 @@ export const operationalSchema = z.object({
   data: z.record(z.string(), z.unknown()).default({}),
 });
 
+export const operationalUpdateSchema = z.object({
+  recordId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Record ID"),
+  status: z.string().max(64).optional(),
+  title: z.string().min(2).max(200).optional(),
+  data: z.record(z.string(), z.unknown()).optional(),
+});
+
 // ================= LOCATION HIERARCHY VALIDATIONS =================
 export const countrySchema = z.object({
   name: z.string().min(2, "Country name is required").max(100),

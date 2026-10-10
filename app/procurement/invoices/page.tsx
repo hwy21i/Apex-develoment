@@ -4,7 +4,7 @@ import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
   Plus, Search, Receipt, CheckCircle, Clock, AlertCircle,
-  Eye, FileText, ArrowDownLeft, DollarSign, Calendar
+  Eye, FileText, ArrowDownLeft, DollarSign, Calendar, X
 } from "lucide-react";
 
 interface SupplierInvoice {
@@ -89,6 +89,50 @@ export default function SupplierInvoicesPage() {
   const [invoices, setInvoices] = useState<SupplierInvoice[]>(MOCK_INVOICES);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<SupplierInvoice | null>(null);
+
+  const [form, setForm] = useState({
+    invoiceNumber: `INV-SUP-${Math.floor(1000 + Math.random() * 9000)}`,
+    poNumber: "PO-2024-0004",
+    supplierName: "",
+    projectName: "Addis Heights Tower",
+    issueDate: new Date().toISOString().split("T")[0],
+    dueDate: new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0],
+    amount: "",
+    status: "Pending Approval" as SupplierInvoice["status"],
+  });
+
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.supplierName || !form.amount) return;
+    const numAmount = parseFloat(form.amount) || 0;
+    const newInv: SupplierInvoice = {
+      _id: `inv-${Date.now()}`,
+      invoiceNumber: form.invoiceNumber,
+      poNumber: form.poNumber,
+      supplierName: form.supplierName,
+      projectName: form.projectName,
+      issueDate: form.issueDate,
+      dueDate: form.dueDate,
+      amount: numAmount,
+      paidAmount: 0,
+      taxAmount: Math.round(numAmount * 0.15 * 100) / 100,
+      status: form.status,
+    };
+    setInvoices([newInv, ...invoices]);
+    setIsCreateOpen(false);
+    setForm({
+      invoiceNumber: `INV-SUP-${Math.floor(1000 + Math.random() * 9000)}`,
+      poNumber: "PO-2024-0004",
+      supplierName: "",
+      projectName: "Addis Heights Tower",
+      issueDate: new Date().toISOString().split("T")[0],
+      dueDate: new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0],
+      amount: "",
+      status: "Pending Approval",
+    });
+  };
 
   const filtered = invoices.filter((i) => {
     const matchSearch =
@@ -116,7 +160,11 @@ export default function SupplierInvoicesPage() {
               Accounts payable, supplier billing vouchers, and payment disbursement tracking
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          <button
+            type="button"
+            onClick={() => setIsCreateOpen(true)}
+            className="flex items-center gap-2 bg-[#C9A15A] hover:bg-[#B89248] text-slate-950 px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+          >
             <Plus size={16} />
             Record Invoice
           </button>
@@ -216,7 +264,12 @@ export default function SupplierInvoicesPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <button className="text-blue-400 hover:text-blue-300 p-1" title="View Invoice">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedInvoice(i)}
+                          className="text-[#C9A15A] hover:text-[#d4b06f] p-1.5 rounded transition-colors"
+                          title="View Invoice"
+                        >
                           <Eye size={16} />
                         </button>
                       </td>
@@ -227,6 +280,231 @@ export default function SupplierInvoicesPage() {
             </table>
           </div>
         </div>
+
+        {/* Record Invoice Modal */}
+        {isCreateOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+            <div className="bg-[#16181D] border border-[#2F333A] rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#2F333A]">
+                <div>
+                  <h3 className="text-lg font-bold text-white">Record Supplier Invoice</h3>
+                  <p className="text-xs text-slate-400">Log incoming voucher for PO matching & payment disbursement</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsCreateOpen(false)}
+                  className="p-1 rounded text-slate-400 hover:text-white"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreate} className="space-y-4 text-xs">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Invoice Voucher #</label>
+                    <input
+                      required
+                      value={form.invoiceNumber}
+                      onChange={(e) => setForm({ ...form, invoiceNumber: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white font-mono focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Associated PO #</label>
+                    <input
+                      required
+                      value={form.poNumber}
+                      onChange={(e) => setForm({ ...form, poNumber: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white font-mono focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-slate-300 font-medium block mb-1">Supplier Name</label>
+                  <input
+                    required
+                    placeholder="e.g. Tekle Steel Works Plc"
+                    value={form.supplierName}
+                    onChange={(e) => setForm({ ...form, supplierName: e.target.value })}
+                    className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-slate-300 font-medium block mb-1">Project Site</label>
+                  <input
+                    required
+                    value={form.projectName}
+                    onChange={(e) => setForm({ ...form, projectName: e.target.value })}
+                    className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Total Amount (ETB)</label>
+                    <input
+                      required
+                      type="number"
+                      step="0.01"
+                      placeholder="e.g. 500000"
+                      value={form.amount}
+                      onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden font-semibold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Initial Status</label>
+                    <select
+                      value={form.status}
+                      onChange={(e) => setForm({ ...form, status: e.target.value as SupplierInvoice["status"] })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    >
+                      <option value="Pending Approval">Pending Approval</option>
+                      <option value="Approved">Approved</option>
+                      <option value="Draft">Draft</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Issue Date</label>
+                    <input
+                      type="date"
+                      value={form.issueDate}
+                      onChange={(e) => setForm({ ...form, issueDate: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Due Date</label>
+                    <input
+                      type="date"
+                      value={form.dueDate}
+                      onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-3 border-t border-[#2F333A]">
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateOpen(false)}
+                    className="px-4 py-2 rounded-lg bg-[#2A2D34] hover:bg-[#343842] text-slate-300 font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-lg bg-[#C9A15A] hover:bg-[#B89248] text-slate-950 font-bold"
+                  >
+                    Save Invoice
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* View Invoice Modal */}
+        {selectedInvoice && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+            <div className="bg-[#16181D] border border-[#2F333A] rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#2F333A]">
+                <div>
+                  <h3 className="text-lg font-bold text-white font-mono">{selectedInvoice.invoiceNumber}</h3>
+                  <p className="text-xs text-slate-400">Supplier Billing Voucher Details</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedInvoice(null)}
+                  className="p-1 rounded text-slate-400 hover:text-white"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="space-y-3 text-xs">
+                <div className="grid grid-cols-2 gap-3 p-3 bg-[#1C1F26] rounded-xl border border-[#2F333A]">
+                  <div>
+                    <p className="text-slate-400">Supplier</p>
+                    <p className="font-semibold text-white mt-0.5">{selectedInvoice.supplierName}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Purchase Order</p>
+                    <p className="font-mono text-[#C9A15A] mt-0.5">{selectedInvoice.poNumber}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Project</p>
+                    <p className="text-slate-200 mt-0.5">{selectedInvoice.projectName}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Status</p>
+                    <span className={`inline-block px-2 py-0.5 rounded-full mt-0.5 text-[11px] font-semibold ${STATUS_BADGES[selectedInvoice.status]}`}>
+                      {selectedInvoice.status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-3 p-3 bg-[#1C1F26] rounded-xl border border-[#2F333A] text-center">
+                  <div>
+                    <p className="text-slate-400">Total Billed</p>
+                    <p className="font-bold text-white text-sm mt-0.5">{fmt(selectedInvoice.amount)}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Paid Amount</p>
+                    <p className="font-bold text-green-400 text-sm mt-0.5">{fmt(selectedInvoice.paidAmount)}</p>
+                  </div>
+                  <div>
+                    <p className="text-slate-400">Outstanding</p>
+                    <p className="font-bold text-yellow-400 text-sm mt-0.5">{fmt(selectedInvoice.amount - selectedInvoice.paidAmount)}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-slate-300">
+                  <div className="flex justify-between border-b border-[#2F333A]/50 py-1">
+                    <span className="text-slate-400">Issue Date:</span>
+                    <span>{new Date(selectedInvoice.issueDate).toLocaleDateString("en-ET")}</span>
+                  </div>
+                  <div className="flex justify-between border-b border-[#2F333A]/50 py-1">
+                    <span className="text-slate-400">Due Date:</span>
+                    <span>{new Date(selectedInvoice.dueDate).toLocaleDateString("en-ET")}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#2F333A]">
+                {selectedInvoice.status !== "Paid" && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInvoices(invoices.map((inv) =>
+                        inv._id === selectedInvoice._id
+                          ? { ...inv, status: "Paid", paidAmount: inv.amount }
+                          : inv
+                      ));
+                      setSelectedInvoice(null);
+                    }}
+                    className="px-3.5 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 text-white font-bold text-xs"
+                  >
+                    Mark as Paid
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setSelectedInvoice(null)}
+                  className="px-4 py-1.5 rounded-lg bg-[#2A2D34] hover:bg-[#343842] text-slate-300 font-medium text-xs"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </AppShell>
   );

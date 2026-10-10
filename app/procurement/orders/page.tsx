@@ -4,7 +4,7 @@ import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
   Plus, Search, Eye, ShoppingCart, CheckCircle, Clock,
-  Truck, Package, AlertCircle, FileText, ChevronDown
+  Truck, Package, AlertCircle, FileText, ChevronDown, X
 } from "lucide-react";
 
 interface PurchaseOrder {
@@ -127,6 +127,64 @@ export default function PurchaseOrdersPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [selected, setSelected] = useState<PurchaseOrder | null>(null);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+  const [form, setForm] = useState({
+    poNumber: `PO-2024-000${orders.length + 1}`,
+    supplierName: "",
+    supplierContact: "+251-911-000000",
+    projectName: "Addis Heights Tower",
+    itemDescription: "High-Tensile Reinforcement Rebar 16mm",
+    quantity: "50",
+    unit: "tons",
+    unitPrice: "85000",
+    deliveryDate: new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0],
+    paymentTerms: "Net 30",
+  });
+
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.supplierName || !form.itemDescription) return;
+    const qty = parseFloat(form.quantity) || 1;
+    const price = parseFloat(form.unitPrice) || 0;
+    const total = qty * price;
+
+    const newOrder: PurchaseOrder = {
+      _id: `po-${Date.now()}`,
+      poNumber: form.poNumber,
+      supplier: { name: form.supplierName, contact: form.supplierContact },
+      project: { name: form.projectName },
+      status: "Sent",
+      items: [
+        {
+          description: form.itemDescription,
+          quantity: qty,
+          unit: form.unit,
+          unitPrice: price,
+          totalPrice: total,
+        },
+      ],
+      orderDate: new Date().toISOString().split("T")[0],
+      expectedDelivery: form.deliveryDate,
+      totalAmount: total,
+      paymentTerms: form.paymentTerms,
+    };
+
+    setOrders([newOrder, ...orders]);
+    setIsCreateOpen(false);
+    setForm({
+      poNumber: `PO-2024-000${orders.length + 2}`,
+      supplierName: "",
+      supplierContact: "+251-911-000000",
+      projectName: "Addis Heights Tower",
+      itemDescription: "High-Tensile Reinforcement Rebar 16mm",
+      quantity: "50",
+      unit: "tons",
+      unitPrice: "85000",
+      deliveryDate: new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0],
+      paymentTerms: "Net 30",
+    });
+  };
 
   const filtered = orders.filter((o) => {
     const matchSearch =
@@ -158,7 +216,11 @@ export default function PurchaseOrdersPage() {
               Track and manage all procurement purchase orders
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          <button
+            type="button"
+            onClick={() => setIsCreateOpen(true)}
+            className="flex items-center gap-2 bg-[#C9A15A] hover:bg-[#B89248] text-slate-950 px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+          >
             <Plus size={16} />
             Create PO
           </button>
@@ -304,6 +366,155 @@ export default function PurchaseOrdersPage() {
                   </tr>
                 </tfoot>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* Create PO Modal */}
+        {isCreateOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+            <div className="bg-[#16181D] border border-[#2F333A] rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#2F333A]">
+                <div>
+                  <h3 className="text-lg font-bold text-white">Generate Purchase Order</h3>
+                  <p className="text-xs text-slate-400">Issue commercial contract order for material procurement</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsCreateOpen(false)}
+                  className="p-1 rounded text-slate-400 hover:text-white"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <form onSubmit={handleCreate} className="space-y-4 text-xs">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">PO #</label>
+                    <input
+                      required
+                      value={form.poNumber}
+                      onChange={(e) => setForm({ ...form, poNumber: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white font-mono focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Target Project</label>
+                    <input
+                      required
+                      value={form.projectName}
+                      onChange={(e) => setForm({ ...form, projectName: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Supplier Company</label>
+                    <input
+                      required
+                      placeholder="e.g. Tekle Steel Works Plc"
+                      value={form.supplierName}
+                      onChange={(e) => setForm({ ...form, supplierName: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Contact Phone</label>
+                    <input
+                      value={form.supplierContact}
+                      onChange={(e) => setForm({ ...form, supplierContact: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-slate-300 font-medium block mb-1">Item Description / Spec</label>
+                  <input
+                    required
+                    value={form.itemDescription}
+                    onChange={(e) => setForm({ ...form, itemDescription: e.target.value })}
+                    className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                  />
+                </div>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Quantity</label>
+                    <input
+                      required
+                      type="number"
+                      value={form.quantity}
+                      onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Unit</label>
+                    <input
+                      value={form.unit}
+                      onChange={(e) => setForm({ ...form, unit: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Unit Price (ETB)</label>
+                    <input
+                      required
+                      type="number"
+                      value={form.unitPrice}
+                      onChange={(e) => setForm({ ...form, unitPrice: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden font-semibold"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Expected Delivery</label>
+                    <input
+                      type="date"
+                      value={form.deliveryDate}
+                      onChange={(e) => setForm({ ...form, deliveryDate: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-slate-300 font-medium block mb-1">Payment Terms</label>
+                    <input
+                      value={form.paymentTerms}
+                      onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })}
+                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <div className="p-3 bg-[#1C1F26] rounded-xl border border-[#2F333A] flex justify-between items-center">
+                  <span className="text-slate-400">Total Purchase Order Value:</span>
+                  <span className="text-sm font-bold text-[#C9A15A]">
+                    {fmt((parseFloat(form.quantity) || 0) * (parseFloat(form.unitPrice) || 0))}
+                  </span>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-3 border-t border-[#2F333A]">
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateOpen(false)}
+                    className="px-4 py-2 rounded-lg bg-[#2A2D34] hover:bg-[#343842] text-slate-300 font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-lg bg-[#C9A15A] hover:bg-[#B89248] text-slate-950 font-bold"
+                  >
+                    Issue Purchase Order
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}

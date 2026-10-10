@@ -6,5 +6,12 @@ import AuthPage from "./authpage";
 export default function Page() {
   const router = useRouter();
 
-  return <AuthPage onEnter={() => router.push("/")} />;
+  return (
+    <AuthPage
+      onEnter={() => {
+        router.refresh();
+        router.replace("/dashboard");
+      }}
+    />
+  );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import AppShell from "@/components/layout/AppShell";
 import {
   ShoppingBag,
@@ -80,9 +81,12 @@ export default function ProcurementPage() {
             </p>
           </div>
 
-          <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0">
+          <Link
+            href="/procurement/requests"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0"
+          >
             <Plus className="w-4 h-4" /> New Material Request
-          </button>
+          </Link>
         </div>
 
         {/* Procurement Pipeline Tabs */}

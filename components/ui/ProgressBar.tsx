@@ -1,23 +1,28 @@
+import React from "react";
+
 export function ProgressBar({
   value,
-  tone = "amber",
+  tone = "steel",
   className = "",
 }: {
   value: number;
-  tone?: "amber" | "sky" | "emerald" | "rose";
+  tone?: "steel" | "cool" | "light" | "amber" | "sky" | "emerald" | "rose";
   className?: string;
 }) {
   const safeValue = Math.max(0, Math.min(100, value));
-  const colors = {
-    amber: "bg-[#C9A15A]",
-    sky: "bg-sky-500",
-    emerald: "bg-emerald-500",
-    rose: "bg-rose-500",
+  const colors: Record<string, string> = {
+    steel: "bg-[#2E4156] dark:bg-[#C0C8CA]",
+    cool: "bg-[#C0C8CA]",
+    light: "bg-[#D4D8DD]",
+    amber: "bg-[#C0C8CA] dark:bg-[#D4D8DD]",
+    sky: "bg-[#AAB7B7]",
+    emerald: "bg-[#A8C5B5]",
+    rose: "bg-[#D29F9F]",
   };
   return (
-    <div className={`h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-[#252A34] ${className}`}>
+    <div className={`h-1.5 overflow-hidden rounded-full bg-[#AAB7B7]/30 dark:bg-[#1A2D42] ${className}`}>
       <div
-        className={`h-full rounded-full transition-all duration-300 ${colors[tone]}`}
+        className={`h-full rounded-full transition-all duration-300 ${colors[tone] || colors.steel}`}
         style={{ width: `${safeValue}%` }}
       />
     </div>

@@ -1,19 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
   DollarSign,
   Plus,
-  Search,
-  Filter,
-  CreditCard,
-  Receipt,
-  Banknote,
-  PieChart,
-  ArrowUpRight,
-  ArrowDownRight,
+  X,
+  Loader2,
 } from "lucide-react";
+import { useRecords, type OperationalRecord } from "@/hooks/useRecords";
 
 interface ExpenseItem {
   _id: string;
@@ -26,40 +21,88 @@ interface ExpenseItem {
   status: string;
 }
 
+const STATUSES = ["PENDING", "APPROVED", "PAID", "REJECTED"];
+
+function mapRecord(r: OperationalRecord, projectName: (id: string) => string): ExpenseItem {
+  const d = r.data || {};
+  return {
+    _id: r._id,
+    expenseNumber: d.expenseNumber || d.voucherNumber || "EXP-" + r._id.slice(-4).toUpperCase(),
+    projectName: projectName(r.projectId),
+    category: d.category || "Materials",
+    amount: Number(d.amount) || 0,
+    date: d.date || d.expenseDate || (r.createdAt ? r.createdAt.slice(0, 10) : "—"),
+    payee: d.payee || "—",
+    status: r.status || "PENDING",
+  };
+}
+
+const EMPTY_FORM = {
+  projectId: "",
+  expenseNumber: "",
+  category: "",
+  payee: "",
+  date: "",
+  amount: "",
+  status: "PENDING",
+  description: "",
+};
+
 export default function FinancePage() {
-  const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("expenses");
+  const { records, projects, projectName, loading, error, reload, create } = useRecords("expenses");
+  const expenses = records.map((r) => mapRecord(r, projectName));
 
-  async function fetchExpenses() {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/records/expenses");
-      const json = await res.json();
-      if (json.success && json.data?.items) {
-        setExpenses(
-          json.data.items.map((e: any) => ({
-            _id: e._id,
-            expenseNumber: e.data?.expenseNumber || "EXP-2026-" + e._id.slice(-4).toUpperCase(),
-            projectName: e.title || "Addis Heights Mixed-Use Tower",
-            category: e.data?.category || "Materials",
-            amount: e.data?.amount || 185000,
-            date: e.data?.date || "2026-09-01",
-            payee: e.data?.payee || "National Cement Share Company",
-            status: e.status || "APPROVED",
-          }))
-        );
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+  const [formOpen, setFormOpen] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const openForm = () => {
+    setForm({ ...EMPTY_FORM, projectId: projects[0]?._id || "" });
+    setFormError(null);
+    setFormOpen(true);
+  };
+
+  const submit = async () => {
+    if (!form.projectId) {
+      setFormError("Please select a project.");
+      return;
     }
-  }
+    if (!form.payee.trim()) {
+      setFormError("Payee / vendor is required.");
+      return;
+    }
+    if (!form.amount || Number(form.amount) <= 0) {
+      setFormError("Amount must be greater than zero.");
+      return;
+    }
+    setBusy(true);
+    setFormError(null);
+    try {
+      await create({
+        projectId: form.projectId,
+        title: form.expenseNumber.trim() || form.payee.trim(),
+        status: form.status,
+        data: {
+          expenseNumber: form.expenseNumber || undefined,
+          category: form.category,
+          payee: form.payee.trim(),
+          amount: Number(form.amount) || 0,
+          date: form.date || undefined,
+          expenseDate: form.date || undefined,
+          description: form.description,
+        },
+      });
+      setFormOpen(false);
+    } catch (e) {
+      setFormError(e instanceof Error ? e.message : "Failed to record expense");
+    } finally {
+      setBusy(false);
+    }
+  };
 
-  useEffect(() => {
-    fetchExpenses();
-  }, []);
+  const inputCls =
+    "w-full bg-[#141720] border border-[#262C3D] rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-blue-500";
 
   return (
     <AppShell>
@@ -78,7 +121,10 @@ export default function FinancePage() {
             </p>
           </div>
 
-          <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0">
+          <button
+            onClick={openForm}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0"
+          >
             <Plus className="w-4 h-4" /> Record Expense
           </button>
         </div>
@@ -100,9 +146,9 @@ export default function FinancePage() {
               Actual Expenditure
             </span>
             <div className="text-2xl font-bold text-amber-400 mt-1 font-mono">
-              ETB 35,200,000.00
+              ETB {expenses.reduce((s, e) => s + e.amount, 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">42.9% budget utilization</span>
+            <span className="text-[11px] text-slate-500 mt-1 block">Sum of recorded expenses</span>
           </div>
 
           <div className="bg-[#141720] border border-[#232733] rounded-xl p-5 shadow-sm">
@@ -150,13 +196,27 @@ export default function FinancePage() {
                 {loading ? (
                   <tr>
                     <td colSpan={7} className="px-5 py-8 text-center text-slate-500">
-                      Loading financial ledger entries...
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" /> Loading financial ledger entries...
+                      </span>
+                    </td>
+                  </tr>
+                ) : error ? (
+                  <tr>
+                    <td colSpan={7} className="px-5 py-8 text-center">
+                      <p className="text-slate-400">{error}</p>
+                      <button
+                        onClick={() => reload()}
+                        className="mt-2 text-xs font-semibold text-blue-400 hover:text-blue-300"
+                      >
+                        Retry
+                      </button>
                     </td>
                   </tr>
                 ) : expenses.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-5 py-8 text-center text-slate-500">
-                      No expense records logged yet.
+                      No expense records logged yet. Click &quot;Record Expense&quot; above.
                     </td>
                   </tr>
                 ) : (
@@ -193,7 +253,123 @@ export default function FinancePage() {
           </div>
         </div>
       </div>
+
+      {/* Create modal */}
+      {formOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-[#111420] border border-[#262C3D] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-[#232733] pb-4">
+              <h2 className="text-base font-bold text-white">Record Expense</h2>
+              <button onClick={() => setFormOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Project</label>
+                <select
+                  className={inputCls}
+                  value={form.projectId}
+                  onChange={(e) => setForm({ ...form, projectId: e.target.value })}
+                >
+                  {projects.length === 0 && <option value="">No accessible projects</option>}
+                  {projects.map((p) => (
+                    <option key={p._id} value={p._id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] text-slate-400 block mb-1">Expense ID</label>
+                  <input
+                    className={inputCls}
+                    value={form.expenseNumber}
+                    onChange={(e) => setForm({ ...form, expenseNumber: e.target.value })}
+                    placeholder="EXP-2026-0001"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] text-slate-400 block mb-1">Category</label>
+                  <input
+                    className={inputCls}
+                    value={form.category}
+                    onChange={(e) => setForm({ ...form, category: e.target.value })}
+                    placeholder="Materials"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Payee / Vendor *</label>
+                <input
+                  className={inputCls}
+                  value={form.payee}
+                  onChange={(e) => setForm({ ...form, payee: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] text-slate-400 block mb-1">Date</label>
+                  <input
+                    type="date"
+                    className={inputCls}
+                    value={form.date}
+                    onChange={(e) => setForm({ ...form, date: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] text-slate-400 block mb-1">Amount (ETB) *</label>
+                  <input
+                    type="number"
+                    min="0"
+                    className={inputCls}
+                    value={form.amount}
+                    onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Approval Status</label>
+                <select
+                  className={inputCls}
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                >
+                  {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Description</label>
+                <textarea
+                  className={inputCls}
+                  rows={2}
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                />
+              </div>
+            </div>
+
+            {formError && <p className="text-xs text-rose-300">{formError}</p>}
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setFormOpen(false)}
+                className="bg-[#1A1E29] hover:bg-[#232733] text-white px-4 py-2 rounded-lg text-xs font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submit}
+                disabled={busy}
+                className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-semibold disabled:opacity-50 flex items-center gap-2"
+              >
+                {busy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                Save Expense
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }
-

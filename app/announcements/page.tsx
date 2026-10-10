@@ -3,139 +3,315 @@
 import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
-  Megaphone, Plus, Search, Calendar, Tag, User,
-  CheckCircle, AlertCircle, Pin, ShieldCheck
+  Megaphone, Plus, Search, User, Pin, X, Loader2,
 } from "lucide-react";
+import { useRecords, type OperationalRecord } from "@/hooks/useRecords";
+import { useCurrentUser } from "@/components/auth/UserProvider";
 
 interface Announcement {
   _id: string;
+  projectId: string;
   title: string;
-  category: "Company Wide" | "HSE Safety Alert" | "Procurement Notice" | "HR Directive";
+  category: string;
   author: string;
   publishDate: string;
   isPinned: boolean;
-  priority: "High" | "Normal" | "Urgent";
+  priority: string;
   content: string;
 }
 
-const MOCK_ANNOUNCEMENTS: Announcement[] = [
-  {
-    _id: "anc1",
-    title: "Mandatory Safety Stand-Down: High Elevation Fall Protection Protocol",
-    category: "HSE Safety Alert",
-    author: "Dr. Aster Kebede (HSE Superintendent)",
-    publishDate: "2024-02-05",
-    isPinned: true,
-    priority: "Urgent",
-    content: "All site teams at Addis Heights Tower must halt overhead deck casting until 100% inspection of perimeter safety netting, toe-boards, and static lifeline anchorage points is completed and signed off by the site HSE officer.",
-  },
-  {
-    _id: "anc2",
-    title: "Updated Ethiopian Birr Vendor Withholding Tax Certificate Submission Guidelines",
-    category: "Procurement Notice",
-    author: "Henok Tadesse (Finance Director)",
-    publishDate: "2024-02-01",
-    isPinned: false,
-    priority: "High",
-    content: "In compliance with Ministry of Revenues circular, all purchase order payments exceeding ETB 50,000 are subject to 2% withholding at source. Vendors must submit their official TIN receipts prior to final balance disbursement.",
-  },
-  {
-    _id: "anc3",
-    title: "Annual Labor Day & Public Holiday Operational Roster Guidelines",
-    category: "HR Directive",
-    author: "Human Resources Directorate",
-    publishDate: "2024-01-25",
-    isPinned: false,
-    priority: "Normal",
-    content: "Critical concrete pours and continuous road excavation work over the upcoming holiday weekend will be compensated at 2.0x overtime rate. Site engineers must submit shift rosters by Thursday 17:00.",
-  },
-];
+const CATEGORIES = ["Company Wide", "HSE Safety Alert", "Procurement Notice", "HR Directive"];
+const PRIORITIES = ["Normal", "High", "Urgent"];
 
 const CATEGORY_COLORS: Record<string, string> = {
-  "Company Wide": "bg-blue-500/20 text-blue-400 border border-blue-500/30",
-  "HSE Safety Alert": "bg-red-500/20 text-red-400 border border-red-500/30",
-  "Procurement Notice": "bg-purple-500/20 text-purple-400 border border-purple-500/30",
-  "HR Directive": "bg-green-500/20 text-green-400 border border-green-500/30",
+  "Company Wide": "bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30",
+  "HSE Safety Alert": "bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30",
+  "Procurement Notice": "bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-500/30",
+  "HR Directive": "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30",
+};
+
+const PRIORITY_COLORS: Record<string, string> = {
+  High: "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30",
+  Urgent: "bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30",
+};
+
+function mapRecord(r: OperationalRecord): Announcement {
+  const d = r.data || {};
+  return {
+    _id: r._id,
+    projectId: r.projectId,
+    title: r.title || d.title || "Untitled announcement",
+    category: d.category || "Company Wide",
+    author: d.author || "—",
+    publishDate: d.publishDate || r.createdAt,
+    isPinned: Boolean(d.isPinned),
+    priority: d.priority || "Normal",
+    content: d.content || d.message || "",
+  };
+}
+
+const EMPTY_FORM = {
+  projectId: "",
+  title: "",
+  category: "Company Wide",
+  priority: "Normal",
+  publishDate: "",
+  isPinned: false,
+  content: "",
 };
 
 export default function AnnouncementsPage() {
-  const [announcements, setAnnouncements] = useState<Announcement[]>(MOCK_ANNOUNCEMENTS);
+  const { records, projects, projectName, loading, error, reload, create } = useRecords("announcements");
+  const { user } = useCurrentUser();
+  const announcements = records.map(mapRecord);
+
   const [search, setSearch] = useState("");
+
+  const [formOpen, setFormOpen] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const filtered = announcements.filter(
     (a) =>
       a.title.toLowerCase().includes(search.toLowerCase()) ||
       a.content.toLowerCase().includes(search.toLowerCase()) ||
-      a.category.toLowerCase().includes(search.toLowerCase())
+      a.category.toLowerCase().includes(search.toLowerCase()) ||
+      projectName(a.projectId).toLowerCase().includes(search.toLowerCase())
   );
+
+  const openForm = () => {
+    setForm({ ...EMPTY_FORM, projectId: projects[0]?._id || "" });
+    setFormError(null);
+    setFormOpen(true);
+  };
+
+  const submit = async () => {
+    if (!form.projectId) {
+      setFormError("Please select a project.");
+      return;
+    }
+    if (!form.title.trim()) {
+      setFormError("Please enter a title.");
+      return;
+    }
+    setBusy(true);
+    setFormError(null);
+    try {
+      await create({
+        projectId: form.projectId,
+        title: form.title.trim(),
+        data: {
+          category: form.category,
+          priority: form.priority,
+          publishDate: form.publishDate || undefined,
+          isPinned: form.isPinned,
+          content: form.content,
+          author: user?.fullName || undefined,
+        },
+      });
+      setFormOpen(false);
+    } catch (e) {
+      setFormError(e instanceof Error ? e.message : "Failed to post announcement");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const inputCls =
+    "w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C9A15A]";
 
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Company Announcements & Bulletins</h1>
-            <p className="text-gray-400 text-sm mt-1">
-              Executive directives, HSE safety stand-downs, commercial memos, and holiday rosters
+            <div className="flex items-center gap-2 text-[#C9A15A] font-mono text-xs font-bold uppercase tracking-wider mb-1">
+              <Megaphone className="w-4 h-4" /> Operations Communications
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#F4F4F5] tracking-tight">
+              Company Announcements &amp; Bulletins
+            </h1>
+            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#A7ABB3] mt-1">
+              Executive directives, HSE safety stand-downs, commercial memos, and site updates
             </p>
           </div>
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          <button
+            onClick={openForm}
+            className="inline-flex items-center justify-center gap-2 bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-amber-500/20 transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
+          >
             <Plus size={16} />
-            Post Announcement
+            <span>Post Announcement</span>
           </button>
         </div>
 
         {/* Search */}
         <div className="relative max-w-md">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
           <input
             type="text"
             placeholder="Search announcements and safety notices..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            className="w-full bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:border-[#C9A15A] shadow-xs transition-colors"
           />
         </div>
 
         {/* Announcements list */}
-        <div className="space-y-4">
-          {filtered.map((a) => (
-            <div
-              key={a._id}
-              className={`bg-gray-800 border rounded-xl p-5 hover:border-gray-600 transition-colors ${
-                a.isPinned ? "border-yellow-500/50" : "border-gray-700"
-              }`}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    {a.isPinned && (
-                      <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-bold border border-yellow-500/30">
-                        <Pin size={12} /> Pinned
+        {loading ? (
+          <div className="flex items-center justify-center py-16 text-slate-400">
+            <Loader2 size={24} className="animate-spin text-[#C9A15A]" />
+          </div>
+        ) : error ? (
+          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-6 text-center">
+            <p className="text-sm text-rose-500">{error}</p>
+            <button onClick={() => reload()} className="mt-3 text-xs font-semibold text-[#C9A15A] hover:underline">
+              Retry
+            </button>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-12 text-center text-slate-400">
+            <Megaphone size={32} className="mx-auto mb-2 opacity-40 text-[#C9A15A]" />
+            <p className="text-sm">
+              {announcements.length === 0 ? "No announcements posted yet." : "No announcements match your search."}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filtered.map((a) => (
+              <div
+                key={a._id}
+                className={`glass-card border rounded-2xl p-5 transition-all hover:scale-[1.005] ${
+                  a.isPinned
+                    ? "border-[#C9A15A]/60 shadow-md shadow-amber-500/5"
+                    : "border-slate-200 dark:border-[#2F333A]"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {a.isPinned && (
+                        <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-[#C9A15A] font-bold border border-[#C9A15A]/30">
+                          <Pin size={11} /> Pinned
+                        </span>
+                      )}
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${CATEGORY_COLORS[a.category] || CATEGORY_COLORS["Company Wide"]}`}>
+                        {a.category}
                       </span>
-                    )}
-                    <span className={`text-xs px-2 py-0.5 rounded font-medium ${CATEGORY_COLORS[a.category]}`}>
-                      {a.category}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {new Date(a.publishDate).toLocaleDateString("en-ET")}
-                    </span>
+                      {a.priority !== "Normal" && (
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${PRIORITY_COLORS[a.priority] || ""}`}>
+                          {a.priority}
+                        </span>
+                      )}
+                      <span className="text-xs text-slate-400 font-mono">
+                        {new Date(a.publishDate).toLocaleDateString("en-ET")}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">{a.title}</h3>
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-4xl whitespace-pre-wrap">{a.content}</p>
                   </div>
-                  <h3 className="text-base font-bold text-white">{a.title}</h3>
-                  <p className="text-sm text-gray-300 leading-relaxed max-w-4xl">{a.content}</p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-[#2F333A]/60 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <User size={13} className="text-[#C9A15A]" /> {a.author}
+                  </span>
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">{projectName(a.projectId)}</span>
                 </div>
               </div>
+            ))}
+          </div>
+        )}
+      </div>
 
-              <div className="mt-4 pt-3 border-t border-gray-700/60 flex items-center justify-between text-xs text-gray-400">
-                <span className="flex items-center gap-1">
-                  <User size={13} className="text-gray-500" /> {a.author}
-                </span>
+      {/* Create modal */}
+      {formOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-slate-100 dark:border-[#2F333A] pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-[#C9A15A]/15 text-[#C9A15A]">
+                  <Megaphone className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900 dark:text-white">Post Announcement</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Broadcast directives or safety bulletins</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setFormOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Project *</label>
+                <select className={inputCls} value={form.projectId} onChange={(e) => setForm({ ...form, projectId: e.target.value })}>
+                  {projects.length === 0 && <option value="">No accessible projects</option>}
+                  {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Title *</label>
+                <input className={inputCls} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Announcement headline" />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Audience / Category</label>
+                  <select className={inputCls} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+                    {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Priority</label>
+                  <select className={inputCls} value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })}>
+                    {PRIORITIES.map((p) => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Publish date</label>
+                <input type="date" className={inputCls} value={form.publishDate} onChange={(e) => setForm({ ...form, publishDate: e.target.value })} />
+              </div>
+              <label className="flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer pt-1">
+                <input
+                  type="checkbox"
+                  checked={form.isPinned}
+                  onChange={(e) => setForm({ ...form, isPinned: e.target.checked })}
+                  className="rounded border-slate-300 dark:border-slate-600 text-[#C9A15A] focus:ring-[#C9A15A]"
+                />
+                Pin this announcement to top of list
+              </label>
+              <div>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Message</label>
+                <textarea className={inputCls} rows={4} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder="Full announcement body..." />
               </div>
             </div>
-          ))}
+
+            {formError && <p className="text-xs text-rose-500 font-medium">{formError}</p>}
+
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#2F333A]">
+              <button
+                onClick={() => setFormOpen(false)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#2F333A] text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submit}
+                disabled={busy}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 text-xs font-bold shadow-md shadow-amber-500/20 transition-all disabled:opacity-60"
+              >
+                {busy && <Loader2 size={14} className="animate-spin" />}
+                Publish
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </AppShell>
   );
 }
-

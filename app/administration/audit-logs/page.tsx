@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
-  ShieldAlert, Search, Filter, Clock, User, Globe,
-  FileCode, CheckCircle, RefreshCw, Eye
+  Search, ShieldCheck, Eye, Loader2,
 } from "lucide-react";
 
 interface AuditLogEntry {
@@ -21,96 +20,46 @@ interface AuditLogEntry {
   newValue?: Record<string, unknown>;
 }
 
-const FALLBACK_LOGS: AuditLogEntry[] = [
-  {
-    _id: "log1",
-    userName: "System Super Administrator",
-    userRole: "Admin",
-    action: "UPDATE",
-    entity: "Project",
-    entityId: "65c3b12389e1a",
-    ipAddress: "197.156.104.22",
-    createdAt: "2024-02-07T11:20:00Z",
-    newValue: { status: "Active", budgetETB: 48000000 },
-  },
-  {
-    _id: "log2",
-    userName: "Abebe Kebede",
-    userRole: "Project Manager",
-    action: "APPROVE",
-    entity: "MaterialRequest",
-    entityId: "MR-2024-001",
-    ipAddress: "197.156.104.45",
-    createdAt: "2024-02-07T09:42:00Z",
-    newValue: { status: "Approved", totalValueETB: 1350000 },
-  },
-  {
-    _id: "log3",
-    userName: "Henok Tadesse",
-    userRole: "Accountant",
-    action: "CREATE",
-    entity: "Payment",
-    entityId: "TRX-ETB-2024-881",
-    ipAddress: "197.156.105.12",
-    createdAt: "2024-02-06T15:30:00Z",
-    newValue: { amountETB: 10625000, type: "Inflow" },
-  },
-  {
-    _id: "log4",
-    userName: "Tigist Alemu",
-    userRole: "Procurement Officer",
-    action: "DISPATCH",
-    entity: "PurchaseOrder",
-    entityId: "PO-2024-0001",
-    ipAddress: "197.156.104.78",
-    createdAt: "2024-02-06T11:15:00Z",
-    newValue: { status: "Sent", totalAmountETB: 1350000 },
-  },
-  {
-    _id: "log5",
-    userName: "Kassahun Bekele",
-    userRole: "Warehouse Manager",
-    action: "CREATE",
-    entity: "InventoryTransaction",
-    entityId: "GRN-2024-0089",
-    ipAddress: "197.156.105.80",
-    createdAt: "2024-02-05T16:00:00Z",
-    newValue: { type: "Inbound (GRN)", quantity: 150 },
-  },
-];
-
 const ACTION_COLORS: Record<string, string> = {
   CREATE: "bg-green-500/20 text-green-400 border border-green-500/30",
   UPDATE: "bg-blue-500/20 text-blue-400 border border-blue-500/30",
   DELETE: "bg-red-500/20 text-red-400 border border-red-500/30",
   APPROVE: "bg-purple-500/20 text-purple-400 border border-purple-500/30",
   DISPATCH: "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
+  LOGIN: "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30",
+  USER_REGISTERED: "bg-green-500/20 text-green-400 border border-green-500/30",
 };
 
 export default function AuditLogsPage() {
-  const [logs, setLogs] = useState<AuditLogEntry[]>(FALLBACK_LOGS);
+  const [logs, setLogs] = useState<AuditLogEntry[]>([]);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedLog, setSelectedLog] = useState<AuditLogEntry | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     async function fetchLogs() {
       try {
         setLoading(true);
-        const res = await fetch("/api/audit-logs");
-        if (res.ok) {
-          const json = await res.json();
-          if (json.success && json.data && json.data.length > 0) {
-            setLogs(json.data);
-          }
+        setError(null);
+        const res = await fetch("/api/audit-logs?limit=100", { cache: "no-store" });
+        const json = await res.json();
+        if (cancelled) return;
+        if (!res.ok || !json.success) {
+          throw new Error(json.error?.message || json.error || "Failed to load audit logs");
         }
+        setLogs(json.data || []);
       } catch (err) {
-        // Fallback already in place
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Failed to load audit logs");
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     }
     fetchLogs();
+    return () => { cancelled = true; };
   }, []);
 
   const filtered = logs.filter(
@@ -147,6 +96,22 @@ export default function AuditLogsPage() {
 
         {/* Audit logs table */}
         <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+          {loading ? (
+            <div className="flex items-center justify-center py-16 text-gray-400">
+              <Loader2 size={24} className="animate-spin" />
+            </div>
+          ) : error ? (
+            <div className="p-6 text-center">
+              <p className="text-sm text-red-300">{error}</p>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="p-12 text-center text-gray-400">
+              <ShieldCheck size={32} className="mx-auto mb-2 opacity-40" />
+              <p className="text-sm">
+                {search ? "No audit entries match your search." : "No audit entries recorded yet."}
+              </p>
+            </div>
+          ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-900/50 border-b border-gray-700">
@@ -191,6 +156,7 @@ export default function AuditLogsPage() {
               </tbody>
             </table>
           </div>
+          )}
         </div>
 
         {/* JSON Inspector modal */}

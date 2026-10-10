@@ -4,6 +4,7 @@ import React, { useState, useEffect, createContext, useContext } from "react";
 import AppSidebar from "./AppSidebar";
 import AppHeader from "./AppHeader";
 import { RoleType } from "@/types/erp";
+import { useCurrentUser } from "@/components/auth/UserProvider";
 
 interface SearchContextType {
   searchQuery: string;
@@ -19,24 +20,36 @@ export const useSearch = () => useContext(SearchContext);
 
 interface AppShellProps {
   children: React.ReactNode;
+  /** When provided (e.g. from Workspace), override the context user name */
   userName?: string;
+  /** When provided (e.g. from Workspace), override the context user role */
   userRole?: RoleType;
   userEmail?: string;
   onRoleChange?: (role: RoleType) => void;
   onLogout?: () => void;
 }
 
+import { LogOut, AlertTriangle, X, Loader2 } from "lucide-react";
+
 export default function AppShell({
   children,
-  userName = "Abebe Bekele",
-  userRole = "Admin",
+  userName: nameProp,
+  userRole: roleProp,
   userEmail,
   onRoleChange,
-  onLogout,
+  onLogout: onLogoutProp,
 }: AppShellProps) {
+  const { user, logout } = useCurrentUser();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Resolve user identity: explicit prop → context → undefined (never hardcode a name/role)
+  const userName = nameProp || user?.fullName || "";
+  const userRole = roleProp || user?.role;
+  const resolvedEmail = userEmail || user?.email;
 
   // Responsive sidebar auto-collapse on tablet (768px - 1023px)
   useEffect(() => {
@@ -50,20 +63,39 @@ export default function AppShell({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Close mobile sidebar on Escape key
+  // Close modals on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isMobileOpen) {
-        setIsMobileOpen(false);
+      if (e.key === "Escape") {
+        if (showLogoutModal) setShowLogoutModal(false);
+        if (isMobileOpen) setIsMobileOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isMobileOpen]);
+  }, [isMobileOpen, showLogoutModal]);
+
+  const handleTriggerLogout = () => {
+    if (onLogoutProp) {
+      onLogoutProp();
+    } else {
+      setShowLogoutModal(true);
+    }
+  };
+
+  const handleConfirmLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      setIsLoggingOut(false);
+      setShowLogoutModal(false);
+    }
+  };
 
   return (
     <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
-      <div className="min-h-screen w-full overflow-x-hidden bg-[#F5F6F7] dark:bg-[#0F1115] font-sans text-[#1C1E22] dark:text-[#E4E5E7] transition-colors">
+      <div className="min-h-screen w-full overflow-x-hidden bg-[#D4D8DD] dark:bg-[#1A2D42] font-sans text-[#1A2D42] dark:text-[#D4D8DD] transition-colors relative">
         <AppSidebar
           isMobileOpen={isMobileOpen}
           onMobileClose={() => setIsMobileOpen(false)}
@@ -72,13 +104,10 @@ export default function AppShell({
           userName={userName}
           userRole={userRole}
           onRoleChange={onRoleChange}
-          onLogout={onLogout}
+          onLogout={handleTriggerLogout}
         />
 
-        {/* Main Content Area:
-            - Mobile (<768px): 0px left offset
-            - Tablet (768px-1023px): 80px left offset (md:pl-20)
-            - Desktop (>=1024px): 80px if collapsed, 256px if expanded (lg:pl-64 / lg:pl-20) */}
+        {/* Main Content Area */}
         <div
           className={`flex-1 flex flex-col min-w-0 overflow-x-hidden transition-all duration-300 ease-in-out
             md:pl-20
@@ -91,17 +120,75 @@ export default function AppShell({
             onToggleMobileSidebar={() => setIsMobileOpen(!isMobileOpen)}
             userName={userName}
             userRole={userRole}
-            userEmail={userEmail}
-            onLogout={onLogout}
+            userEmail={resolvedEmail}
+            onLogout={handleTriggerLogout}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
           />
 
           {/* Dynamic Page Content */}
-          <main className="mx-auto w-full max-w-[1800px] flex-1 overflow-x-hidden p-3.5 sm:p-5 lg:p-7">
+          <main className="mx-auto w-full max-w-[1800px] flex-1 overflow-x-hidden p-3.5 sm:p-5 lg:p-7 relative z-1">
             {children}
           </main>
         </div>
+
+        {/* Logout Confirmation Modal */}
+        {showLogoutModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
+            <div className="w-full max-w-sm glass-card bg-[#E3E6E9] dark:bg-[#2E4156] border border-[#AAB7B7]/50 dark:border-[#AAB7B7]/25 rounded-2xl p-6 shadow-2xl space-y-4">
+              <div className="flex items-start justify-between">
+                <div className="w-10 h-10 rounded-xl bg-[#1A2D42]/10 dark:bg-[#1A2D42]/60 border border-[#AAB7B7]/30 text-[#1A2D42] dark:text-[#C0C8CA] flex items-center justify-center shrink-0">
+                  <LogOut className="w-5 h-5" />
+                </div>
+                <button
+                  onClick={() => setShowLogoutModal(false)}
+                  disabled={isLoggingOut}
+                  className="p-1.5 rounded-lg text-[#2E4156] dark:text-[#AAB7B7] hover:bg-[#C0C8CA]/50 dark:hover:bg-[#1A2D42]/50 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div>
+                <h3 className="text-base font-bold text-[#1A2D42] dark:text-[#D4D8DD]">
+                  Confirm Sign Out
+                </h3>
+                <p className="mt-1 text-xs text-[#2E4156] dark:text-[#AAB7B7] leading-relaxed">
+                  Are you sure you want to log out of Apex Build ERP{userName ? `, ${userName}` : ""}? All active tokens and role permissions will be revoked.
+                </p>
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowLogoutModal(false)}
+                  disabled={isLoggingOut}
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#1A2D42] dark:text-[#D4D8DD] hover:bg-[#C0C8CA] dark:hover:bg-[#1A2D42] border border-[#AAB7B7] dark:border-[#AAB7B7]/30 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmLogout}
+                  disabled={isLoggingOut}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-[#D4D8DD] bg-[#1A2D42] hover:bg-[#122030] border border-[#AAB7B7]/40 transition-colors shadow-md shadow-[#1A2D42]/30"
+                >
+                  {isLoggingOut ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Signing Out...</span>
+                    </>
+                  ) : (
+                    <>
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Log Out</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </SearchContext.Provider>
   );

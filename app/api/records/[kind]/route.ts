@@ -1,7 +1,7 @@
 import { connectToDatabase } from "@/lib/db/mongodb";
 import { body, fail, handleError, ok } from "@/lib/api";
 import { requirePermission } from "@/lib/auth/guard";
-import { operationalSchema } from "@/lib/validation/schemas";
+import { operationalSchema, operationalUpdateSchema } from "@/lib/validation/schemas";
 import { canAccessProject } from "@/lib/services/access";
 import { Operational } from "@/models/Operational";
 import { Project } from "@/models/Project";
@@ -33,6 +33,20 @@ const permissionsMap: Record<string, Permission> = {
   safety: "PROGRESS_LOG",
   clients: "CLIENT_VIEW",
   reports: "REPORT_VIEW",
+};
+
+// Mutating an existing record often needs a stronger permission than reading it
+// (e.g. approving a material request vs. merely viewing the queue).
+const mutatePermissionsMap: Record<string, Permission> = {
+  procurement: "MATERIAL_REQUEST_APPROVE",
+  expenses: "EXPENSE_APPROVE",
+  inventory: "INVENTORY_ADJUST",
+  tasks: "TASK_UPDATE",
+  milestones: "MILESTONE_MANAGE",
+  progress: "PROGRESS_LOG",
+  maintenance: "MAINTENANCE_LOG",
+  issues: "PROJECT_UPDATE",
+  safety: "PROGRESS_LOG",
 };
 
 export const runtime = "nodejs";
@@ -106,6 +120,58 @@ export async function POST(
     });
 
     return ok(record, "Record created successfully", 201);
+  } catch (error) {
+    return handleError(error);
+  }
+}
+
+export async function PATCH(
+  request: Request,
+  context: { params: Promise<{ kind: string }> }
+) {
+  const { kind } = await context.params;
+  const permission = mutatePermissionsMap[kind] || permissionsMap[kind] || "PROJECT_UPDATE";
+  const guard = await requirePermission(permission, request);
+  if (guard.error) return guard.error;
+
+  try {
+    const input = await body(request, operationalUpdateSchema);
+    await connectToDatabase();
+
+    const existing = await Operational.findOne({ _id: input.recordId, kind });
+    if (!existing) {
+      return fail("NOT_FOUND", "Record not found", 404);
+    }
+
+    if (!(await canAccessProject(guard.user, String(existing.projectId)))) {
+      return fail("FORBIDDEN", "You do not have access to this project", 403);
+    }
+
+    const set: Record<string, unknown> = {};
+    if (input.status !== undefined) set.status = input.status;
+    if (input.title !== undefined) set.title = input.title;
+    if (input.data !== undefined) set.data = { ...existing.data, ...input.data };
+
+    const previousStatus = existing.status;
+    const record = await Operational.findByIdAndUpdate(
+      input.recordId,
+      { $set: set },
+      { new: true, runValidators: true }
+    );
+
+    await logAudit({
+      userId: guard.user.id,
+      userName: guard.user.fullName,
+      userRole: guard.user.role,
+      action: `RECORD_${kind.toUpperCase()}_UPDATED`,
+      entity: "Operational",
+      entityId: record.id,
+      projectId: String(existing.projectId),
+      previousValue: { status: previousStatus },
+      newValue: { status: record.status },
+    });
+
+    return ok(record, "Record updated successfully");
   } catch (error) {
     return handleError(error);
   }

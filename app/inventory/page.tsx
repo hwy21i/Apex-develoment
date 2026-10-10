@@ -1,18 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
   Boxes,
   Plus,
-  Search,
-  ArrowRightLeft,
-  Warehouse,
-  AlertCircle,
-  CheckCircle2,
+  X,
+  Loader2,
   TrendingDown,
   TrendingUp,
 } from "lucide-react";
+import { useRecords, type OperationalRecord } from "@/hooks/useRecords";
 
 interface InventoryRecord {
   _id: string;
@@ -25,39 +23,94 @@ interface InventoryRecord {
   status: string;
 }
 
-export default function InventoryPage() {
-  const [items, setItems] = useState<InventoryRecord[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+const STATUSES = ["IN_STOCK", "LOW_STOCK", "OUT_OF_STOCK", "ON_ORDER"];
 
-  useEffect(() => {
-    async function fetchInventory() {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/records/inventory");
-        const json = await res.json();
-        if (json.success && json.data?.items) {
-          setItems(
-            json.data.items.map((i: any) => ({
-              _id: i._id,
-              materialName: i.title || "Dangote OPC Cement Grade 42.5N",
-              sku: i.data?.sku || "MAT-CEM-001",
-              warehouseName: i.data?.warehouseName || "Central Logistics Yard (Modjo)",
-              quantityOnHand: i.data?.quantityOnHand || 1250,
-              unitCost: i.data?.unitCost || 780,
-              totalValue: (i.data?.quantityOnHand || 1250) * (i.data?.unitCost || 780),
-              status: i.status || "IN_STOCK",
-            }))
-          );
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+const STATUS_BADGES: Record<string, string> = {
+  IN_STOCK: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+  LOW_STOCK: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
+  OUT_OF_STOCK: "bg-rose-500/10 text-rose-400 border border-rose-500/20",
+  ON_ORDER: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
+};
+
+function mapRecord(r: OperationalRecord): InventoryRecord {
+  const d = r.data || {};
+  const quantityOnHand = Number(d.quantityOnHand ?? d.quantity) || 0;
+  const unitCost = Number(d.unitCost) || 0;
+  return {
+    _id: r._id,
+    materialName: r.title || d.materialName || "Unnamed Material",
+    sku: d.sku || "MAT-" + r._id.slice(-4).toUpperCase(),
+    warehouseName: d.warehouseName || d.warehouse || "—",
+    quantityOnHand,
+    unitCost,
+    totalValue: quantityOnHand * unitCost,
+    status: r.status || "IN_STOCK",
+  };
+}
+
+const EMPTY_FORM = {
+  projectId: "",
+  materialName: "",
+  sku: "",
+  warehouseName: "",
+  quantityOnHand: "",
+  unitCost: "",
+  reorderLevel: "",
+  status: "IN_STOCK",
+};
+
+export default function InventoryPage() {
+  const { records, projects, loading, error, reload, create } = useRecords("inventory");
+  const items = records.map(mapRecord);
+
+  const [formOpen, setFormOpen] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const openForm = () => {
+    setForm({ ...EMPTY_FORM, projectId: projects[0]?._id || "" });
+    setFormError(null);
+    setFormOpen(true);
+  };
+
+  const submit = async () => {
+    if (!form.projectId) {
+      setFormError("Please select a project.");
+      return;
     }
-    fetchInventory();
-  }, []);
+    if (!form.materialName.trim()) {
+      setFormError("Material name is required.");
+      return;
+    }
+    setBusy(true);
+    setFormError(null);
+    try {
+      await create({
+        projectId: form.projectId,
+        title: form.materialName.trim(),
+        status: form.status,
+        data: {
+          materialName: form.materialName.trim(),
+          sku: form.sku,
+          warehouseName: form.warehouseName,
+          quantityOnHand: Number(form.quantityOnHand) || 0,
+          unitCost: Number(form.unitCost) || 0,
+          reorderLevel: Number(form.reorderLevel) || 0,
+        },
+      });
+      setFormOpen(false);
+    } catch (e) {
+      setFormError(e instanceof Error ? e.message : "Failed to add stock item");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const totalValuation = items.reduce((s, it) => s + it.totalValue, 0);
+
+  const inputCls =
+    "w-full bg-[#141720] border border-[#262C3D] rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-blue-500";
 
   return (
     <AppShell>
@@ -75,8 +128,11 @@ export default function InventoryPage() {
             </p>
           </div>
 
-          <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0">
-            <ArrowRightLeft className="w-4 h-4" /> Stock Movement / Transfer
+          <button
+            onClick={openForm}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0"
+          >
+            <Plus className="w-4 h-4" /> Add Stock Item
           </button>
         </div>
 
@@ -87,7 +143,7 @@ export default function InventoryPage() {
               Total Stock Valuation
             </span>
             <div className="text-2xl font-bold text-white mt-1 font-mono">
-              ETB 28,450,000.00
+              ETB {totalValuation.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
             <span className="text-[11px] text-slate-500 mt-1 block">Live moving average cost</span>
           </div>
@@ -131,13 +187,27 @@ export default function InventoryPage() {
                 {loading ? (
                   <tr>
                     <td colSpan={6} className="px-5 py-8 text-center text-slate-500">
-                      Loading inventory records...
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" /> Loading inventory records...
+                      </span>
+                    </td>
+                  </tr>
+                ) : error ? (
+                  <tr>
+                    <td colSpan={6} className="px-5 py-8 text-center">
+                      <p className="text-slate-400">{error}</p>
+                      <button
+                        onClick={() => reload()}
+                        className="mt-2 text-xs font-semibold text-blue-400 hover:text-blue-300"
+                      >
+                        Retry
+                      </button>
                     </td>
                   </tr>
                 ) : items.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-5 py-8 text-center text-slate-500">
-                      No stock items in storage.
+                      No stock items in storage. Click &quot;Add Stock Item&quot; above.
                     </td>
                   </tr>
                 ) : (
@@ -162,8 +232,12 @@ export default function InventoryPage() {
                         ETB {it.totalValue.toLocaleString()}
                       </td>
                       <td className="px-5 py-3.5">
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                          {it.status}
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                            STATUS_BADGES[it.status] || STATUS_BADGES.IN_STOCK
+                          }`}
+                        >
+                          {it.status.replace("_", " ")}
                         </span>
                       </td>
                     </tr>
@@ -174,7 +248,126 @@ export default function InventoryPage() {
           </div>
         </div>
       </div>
+
+      {/* Create modal */}
+      {formOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-[#111420] border border-[#262C3D] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-[#232733] pb-4">
+              <h2 className="text-base font-bold text-white">Add Stock Item</h2>
+              <button onClick={() => setFormOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Project</label>
+                <select
+                  className={inputCls}
+                  value={form.projectId}
+                  onChange={(e) => setForm({ ...form, projectId: e.target.value })}
+                >
+                  {projects.length === 0 && <option value="">No accessible projects</option>}
+                  {projects.map((p) => (
+                    <option key={p._id} value={p._id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] text-slate-400 block mb-1">Material Name *</label>
+                  <input
+                    className={inputCls}
+                    value={form.materialName}
+                    onChange={(e) => setForm({ ...form, materialName: e.target.value })}
+                    placeholder="e.g. OPC Cement 42.5N"
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] text-slate-400 block mb-1">SKU</label>
+                  <input
+                    className={inputCls}
+                    value={form.sku}
+                    onChange={(e) => setForm({ ...form, sku: e.target.value })}
+                    placeholder="MAT-CEM-001"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Warehouse / Depot</label>
+                <input
+                  className={inputCls}
+                  value={form.warehouseName}
+                  onChange={(e) => setForm({ ...form, warehouseName: e.target.value })}
+                  placeholder="Central Logistics Yard"
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="text-[11px] text-slate-400 block mb-1">Quantity on Hand</label>
+                  <input
+                    type="number"
+                    min="0"
+                    className={inputCls}
+                    value={form.quantityOnHand}
+                    onChange={(e) => setForm({ ...form, quantityOnHand: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] text-slate-400 block mb-1">Unit Cost (ETB)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    className={inputCls}
+                    value={form.unitCost}
+                    onChange={(e) => setForm({ ...form, unitCost: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-[11px] text-slate-400 block mb-1">Reorder Level</label>
+                  <input
+                    type="number"
+                    min="0"
+                    className={inputCls}
+                    value={form.reorderLevel}
+                    onChange={(e) => setForm({ ...form, reorderLevel: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-[11px] text-slate-400 block mb-1">Status</label>
+                <select
+                  className={inputCls}
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                >
+                  {STATUSES.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {formError && <p className="text-xs text-rose-300">{formError}</p>}
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setFormOpen(false)}
+                className="bg-[#1A1E29] hover:bg-[#232733] text-white px-4 py-2 rounded-lg text-xs font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submit}
+                disabled={busy}
+                className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-semibold disabled:opacity-50 flex items-center gap-2"
+              >
+                {busy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                Save Item
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }
-

@@ -1,18 +1,17 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
   Wrench,
   Plus,
   Search,
-  Cog,
-  AlertTriangle,
-  HardHat,
-  Calendar,
-  CheckCircle2,
-  Clock,
+  X,
+  Loader2,
 } from "lucide-react";
+import { useRecords, type OperationalRecord } from "@/hooks/useRecords";
+
+type EquipmentStatus = "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "DAMAGED" | "RETIRED";
 
 interface EquipmentItem {
   _id: string;
@@ -21,118 +20,240 @@ interface EquipmentItem {
   category: string;
   assignedProject: string;
   hourlyOperatingRate: number;
-  status: "AVAILABLE" | "IN_USE" | "MAINTENANCE" | "DAMAGED" | "RETIRED";
+  status: EquipmentStatus;
 }
 
-export default function EquipmentPage() {
-  const [equipmentList, setEquipmentList] = useState<EquipmentItem[]>([]);
-  const [loading, setLoading] = useState(true);
+const STATUSES: EquipmentStatus[] = ["AVAILABLE", "IN_USE", "MAINTENANCE", "DAMAGED", "RETIRED"];
 
-  useEffect(() => {
-    async function fetchEquipment() {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/records/equipment");
-        const json = await res.json();
-        if (json.success && json.data?.items) {
-          setEquipmentList(
-            json.data.items.map((eq: any) => ({
-              _id: eq._id,
-              name: eq.title || "Caterpillar 320D Hydraulic Excavator",
-              equipmentCode: eq.data?.equipmentCode || "EQ-EXC-001",
-              category: eq.data?.category || "Earthmoving",
-              assignedProject: eq.data?.assignedProject || "Addis Heights Tower (Site A)",
-              hourlyOperatingRate: eq.data?.hourlyOperatingRate || 2400,
-              status: eq.status || "IN_USE",
-            }))
-          );
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchEquipment();
-  }, []);
-
-  const statusColors = {
-    AVAILABLE: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-    IN_USE: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    MAINTENANCE: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-    DAMAGED: "bg-rose-500/10 text-rose-400 border-rose-500/20",
-    RETIRED: "bg-slate-500/10 text-slate-400 border-slate-500/20",
+function mapRecord(r: OperationalRecord, projectName: (id: string) => string): EquipmentItem {
+  const d = r.data || {};
+  return {
+    _id: r._id,
+    name: r.title || d.equipmentName || "Unregistered Equipment",
+    equipmentCode: d.equipmentCode || "EQ-" + r._id.slice(-4).toUpperCase(),
+    category: d.category || "General",
+    assignedProject: projectName(r.projectId),
+    hourlyOperatingRate: Number(d.hourlyOperatingRate) || 0,
+    status: (STATUSES.includes(r.status as EquipmentStatus) ? (r.status as EquipmentStatus) : "IN_USE"),
   };
+}
+
+const EMPTY_FORM = {
+  projectId: "",
+  name: "",
+  equipmentCode: "",
+  category: "",
+  hourlyOperatingRate: "",
+  status: "AVAILABLE" as EquipmentStatus,
+};
+
+export default function EquipmentPage() {
+  const { records, projects, projectName, loading, error, reload, create } = useRecords("equipment");
+  const equipmentList = records.map((r) => mapRecord(r, projectName));
+
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [formOpen, setFormOpen] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const filtered = equipmentList.filter((eq) => {
+    const matchSearch =
+      eq.name.toLowerCase().includes(search.toLowerCase()) ||
+      eq.equipmentCode.toLowerCase().includes(search.toLowerCase()) ||
+      eq.category.toLowerCase().includes(search.toLowerCase()) ||
+      eq.assignedProject.toLowerCase().includes(search.toLowerCase());
+    const matchStatus = statusFilter === "ALL" || eq.status === statusFilter;
+    return matchSearch && matchStatus;
+  });
+
+  const openForm = () => {
+    setForm({ ...EMPTY_FORM, projectId: projects[0]?._id || "" });
+    setFormError(null);
+    setFormOpen(true);
+  };
+
+  const submit = async () => {
+    if (!form.projectId) {
+      setFormError("Please select a project.");
+      return;
+    }
+    if (!form.name.trim()) {
+      setFormError("Equipment name is required.");
+      return;
+    }
+    setBusy(true);
+    setFormError(null);
+    try {
+      await create({
+        projectId: form.projectId,
+        title: form.name.trim(),
+        status: form.status,
+        data: {
+          equipmentName: form.name.trim(),
+          equipmentCode: form.equipmentCode,
+          category: form.category,
+          hourlyOperatingRate: Number(form.hourlyOperatingRate) || 0,
+        },
+      });
+      setFormOpen(false);
+    } catch (e) {
+      setFormError(e instanceof Error ? e.message : "Failed to register equipment");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const statusColors: Record<EquipmentStatus, string> = {
+    AVAILABLE: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30",
+    IN_USE: "bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/30",
+    MAINTENANCE: "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30",
+    DAMAGED: "bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30",
+    RETIRED: "bg-slate-500/15 text-slate-600 dark:text-slate-400 border border-slate-500/30",
+  };
+
+  const inputCls =
+    "w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C9A15A]";
 
   return (
     <AppShell>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-blue-400 font-mono text-xs font-semibold uppercase tracking-wider mb-1">
-              <Wrench className="w-4 h-4" /> Plant & Heavy Machinery Operations
+            <div className="flex items-center gap-2 text-[#C9A15A] font-mono text-xs font-bold uppercase tracking-wider mb-1">
+              <Wrench className="w-4 h-4" /> Plant &amp; Heavy Machinery Operations
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
-              Heavy Equipment & Machinery
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#F4F4F5] tracking-tight">
+              Heavy Equipment &amp; Machinery
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
-              Track machinery locations, project assignments, hourly rates, and maintenance intervals.
+            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#A7ABB3] mt-1">
+              Track machinery locations, project assignments, hourly rates, and maintenance intervals
             </p>
           </div>
 
-          <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0">
-            <Plus className="w-4 h-4" /> Register Equipment
+          <button
+            onClick={openForm}
+            className="inline-flex items-center justify-center gap-2 bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-amber-500/20 transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Register Equipment</span>
           </button>
         </div>
 
+        {/* Top metrics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Fleet Units</p>
+            <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{equipmentList.length}</p>
+          </div>
+          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Available Units</p>
+            <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">
+              {equipmentList.filter((e) => e.status === "AVAILABLE").length}
+            </p>
+          </div>
+          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">In Operation / On Site</p>
+            <p className="text-2xl font-extrabold text-sky-600 dark:text-sky-400 mt-1">
+              {equipmentList.filter((e) => e.status === "IN_USE").length}
+            </p>
+          </div>
+          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">In Maintenance / Repair</p>
+            <p className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">
+              {equipmentList.filter((e) => e.status === "MAINTENANCE" || e.status === "DAMAGED").length}
+            </p>
+          </div>
+        </div>
+
+        {/* Search & Filter Bar */}
+        <div className="flex flex-wrap gap-3">
+          <div className="relative flex-1 min-w-[220px]">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+            <input
+              type="text"
+              placeholder="Search by equipment code, name, category, or project..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:border-[#C9A15A] shadow-xs transition-colors"
+            />
+          </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#C9A15A]"
+          >
+            <option value="ALL">All Statuses</option>
+            {STATUSES.map((s) => (
+              <option key={s} value={s}>{s.replace("_", " ")}</option>
+            ))}
+          </select>
+        </div>
+
         {/* Equipment Register Table */}
-        <div className="bg-[#141720] border border-[#232733] rounded-xl overflow-hidden shadow-sm">
+        <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-[#181B24] text-slate-400 uppercase tracking-wider font-mono text-[11px] border-b border-[#232733]">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50/80 dark:bg-[#121418]/80 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono text-[10px] border-b border-slate-200 dark:border-[#2F333A]">
                 <tr>
                   <th className="px-5 py-3">Equipment Code</th>
                   <th className="px-5 py-3">Equipment Name</th>
                   <th className="px-5 py-3">Category</th>
                   <th className="px-5 py-3">Current Assignment</th>
-                  <th className="px-5 py-3">Operating Rate (ETB/Hr)</th>
-                  <th className="px-5 py-3">Operating Status</th>
+                  <th className="px-5 py-3 text-right">Operating Rate (ETB/Hr)</th>
+                  <th className="px-5 py-3 text-center">Operating Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#202432]">
+              <tbody className="divide-y divide-slate-100 dark:divide-[#2F333A]">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-8 text-center text-slate-500">
-                      Loading equipment registry...
+                    <td colSpan={6} className="px-5 py-12 text-center text-slate-400">
+                      <span className="inline-flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin text-[#C9A15A]" /> Loading equipment registry...
+                      </span>
                     </td>
                   </tr>
-                ) : equipmentList.length === 0 ? (
+                ) : error ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-8 text-center text-slate-500">
-                      No equipment records found. Click &quot;Register Equipment&quot; above.
+                    <td colSpan={6} className="px-5 py-8 text-center">
+                      <p className="text-sm text-rose-500">{error}</p>
+                      <button
+                        onClick={() => reload()}
+                        className="mt-2 text-xs font-semibold text-[#C9A15A] hover:underline"
+                      >
+                        Retry
+                      </button>
+                    </td>
+                  </tr>
+                ) : filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-5 py-12 text-center text-slate-400">
+                      <Wrench className="w-8 h-8 mx-auto mb-2 opacity-40 text-[#C9A15A]" />
+                      <p className="text-sm">{equipmentList.length === 0 ? "No equipment records found. Click \"Register Equipment\" above." : "No equipment matches your filter."}</p>
                     </td>
                   </tr>
                 ) : (
-                  equipmentList.map((eq) => (
-                    <tr key={eq._id} className="hover:bg-[#1A1E29] transition-colors">
-                      <td className="px-5 py-3.5 font-mono font-semibold text-blue-400">
+                  filtered.map((eq) => (
+                    <tr key={eq._id} className="hover:bg-slate-50/70 dark:hover:bg-[#1A1D24]/60 transition-colors">
+                      <td className="px-5 py-3.5 font-mono font-bold text-[#C9A15A]">
                         {eq.equipmentCode}
                       </td>
-                      <td className="px-5 py-3.5 font-semibold text-white">
+                      <td className="px-5 py-3.5 font-bold text-slate-900 dark:text-white">
                         {eq.name}
                       </td>
-                      <td className="px-5 py-3.5 text-slate-400">
+                      <td className="px-5 py-3.5 text-slate-600 dark:text-slate-400">
                         {eq.category}
                       </td>
-                      <td className="px-5 py-3.5 text-slate-300">
+                      <td className="px-5 py-3.5 text-slate-800 dark:text-slate-200 font-medium">
                         {eq.assignedProject}
                       </td>
-                      <td className="px-5 py-3.5 font-mono text-white">
+                      <td className="px-5 py-3.5 font-mono font-bold text-slate-900 dark:text-white text-right">
                         ETB {eq.hourlyOperatingRate.toLocaleString()} / hr
                       </td>
-                      <td className="px-5 py-3.5">
+                      <td className="px-5 py-3.5 text-center">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
                             statusColors[eq.status] || statusColors.AVAILABLE
                           }`}
                         >
@@ -147,7 +268,117 @@ export default function EquipmentPage() {
           </div>
         </div>
       </div>
+
+      {/* Create modal */}
+      {formOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-slate-100 dark:border-[#2F333A] pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-[#C9A15A]/15 text-[#C9A15A]">
+                  <Wrench className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900 dark:text-white">Register Equipment</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Plant machinery and heavy asset intake</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setFormOpen(false)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Assigned Project *</label>
+                <select
+                  className={inputCls}
+                  value={form.projectId}
+                  onChange={(e) => setForm({ ...form, projectId: e.target.value })}
+                >
+                  {projects.length === 0 && <option value="">No accessible projects</option>}
+                  {projects.map((p) => (
+                    <option key={p._id} value={p._id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Equipment Name *</label>
+                  <input
+                    className={inputCls}
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    placeholder="e.g. Caterpillar 320D Excavator"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Equipment Code</label>
+                  <input
+                    className={inputCls}
+                    value={form.equipmentCode}
+                    onChange={(e) => setForm({ ...form, equipmentCode: e.target.value })}
+                    placeholder="EQ-EXC-001"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Category</label>
+                  <input
+                    className={inputCls}
+                    value={form.category}
+                    onChange={(e) => setForm({ ...form, category: e.target.value })}
+                    placeholder="Earthmoving"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Operating Rate (ETB/Hr)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    className={inputCls}
+                    value={form.hourlyOperatingRate}
+                    onChange={(e) => setForm({ ...form, hourlyOperatingRate: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Operating Status</label>
+                <select
+                  className={inputCls}
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value as EquipmentStatus })}
+                >
+                  {STATUSES.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {formError && <p className="text-xs text-rose-500 font-medium">{formError}</p>}
+
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#2F333A]">
+              <button
+                onClick={() => setFormOpen(false)}
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#2F333A] text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={submit}
+                disabled={busy}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 text-xs font-bold shadow-md shadow-amber-500/20 transition-all disabled:opacity-60"
+              >
+                {busy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                Save Equipment
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }
-

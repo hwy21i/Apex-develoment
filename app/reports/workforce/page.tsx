@@ -1,6 +1,7 @@
 "use client";
 
 import AppShell from "@/components/layout/AppShell";
+import { exportCsv, csvSlug } from "@/lib/exportCsv";
 import { FileText, Download, Users, HardHat, ShieldCheck } from "lucide-react";
 
 export default function WorkforceReportsPage() {
@@ -30,6 +31,15 @@ export default function WorkforceReportsPage() {
       size: "1.4 MB",
     },
   ];
+
+  const columns = ["Title", "Type", "Period", "Generated", "Format", "Size"];
+
+  const handleDownload = (r: (typeof reports)[number]) => {
+    exportCsv(`report-workforce-${csvSlug(r.title)}.csv`, [
+      columns,
+      [r.title, r.type, r.period, r.generatedDate, r.format, r.size],
+    ]);
+  };
 
   return (
     <AppShell>
@@ -62,7 +72,11 @@ export default function WorkforceReportsPage() {
               </div>
 
               <div className="mt-4 pt-3 border-t border-gray-700 flex justify-end">
-                <button className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 font-semibold">
+                <button
+                  type="button"
+                  onClick={() => handleDownload(r)}
+                  className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 font-semibold"
+                >
                   <Download size={14} /> Download Report
                 </button>
               </div>
