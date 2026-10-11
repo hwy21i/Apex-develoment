@@ -10,7 +10,8 @@
     "seed": "node --env-file=.env.local scripts/seed.mjs",
     "seed:projects": "node --env-file=.env.local scripts/add-sample-projects.mjs",
     "format": "oxfmt",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "node --experimental-strip-types --test tests/**/*.test.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

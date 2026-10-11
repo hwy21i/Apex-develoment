@@ -150,13 +150,24 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 3. Update PurchaseOrder status if needed
+    // 3. Update PurchaseOrder status and received quantities accurately
     try {
       const po = await PurchaseOrder.findById(purchaseOrderId);
-      if (po && po.status !== "Received") {
-        await PurchaseOrder.findByIdAndUpdate(purchaseOrderId, {
-          status: "Received",
-        });
+      if (po) {
+        let allCompleted = true;
+        for (const item of items) {
+          const poItem = po.items.find(
+            (pi: any) => pi.materialId.toString() === item.materialId.toString()
+          );
+          if (poItem) {
+            poItem.receivedQuantity = (poItem.receivedQuantity || 0) + item.receivedQuantity;
+            if (poItem.receivedQuantity < poItem.quantity) {
+              allCompleted = false;
+            }
+          }
+        }
+        po.status = allCompleted ? "COMPLETED" : "PARTIALLY_DELIVERED";
+        await po.save();
       }
     } catch {
       // PO update non-fatal

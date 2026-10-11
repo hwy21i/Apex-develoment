@@ -11,6 +11,8 @@ export interface IUser {
   department?: string;
   position?: string;
   profileImage?: string;
+  organizationId?: mongoose.Types.ObjectId;
+  customPermissions?: string[];
   assignedProjects: mongoose.Types.ObjectId[];
   isActive: boolean;
   lastLogin?: Date;
@@ -78,6 +80,17 @@ const UserSchema = new Schema<IUserDocument>(
     profileImage: {
       type: String,
     },
+    organizationId: {
+      type: Schema.Types.ObjectId,
+      ref: "Organization",
+      index: true,
+    },
+    customPermissions: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
     assignedProjects: [
       {
         type: Schema.Types.ObjectId,

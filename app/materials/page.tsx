@@ -178,20 +178,20 @@ export default function MaterialsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[#C9A15A] font-mono text-xs font-bold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#C0C8CA] font-mono text-xs font-bold uppercase tracking-wider mb-1">
               <Boxes className="w-4 h-4" /> Materials &amp; Inventory Catalog
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#F4F4F5] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#D4D8DD] tracking-tight">
               Materials Master Catalog
             </h1>
-            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#A7ABB3] mt-1">
+            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#AAB7B7] mt-1">
               Live stock levels, reorder thresholds, unit prices (ETB), and category tracking across construction sites.
             </p>
           </div>
 
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 text-xs sm:text-sm font-bold shadow-md shadow-amber-500/20 transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#C0C8CA] hover:bg-white text-[#1A2D42] text-xs sm:text-sm font-bold shadow-md shadow-black/10 transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
           >
             <Plus className="w-4 h-4" />
             <span>Add Material</span>
@@ -227,13 +227,13 @@ export default function MaterialsPage() {
         {/* Toolbar & Filter */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#AAB7B7]" />
             <input
               type="text"
               placeholder="Search by SKU, material name, category..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] text-slate-900 dark:text-slate-100 text-xs rounded-xl pl-9 pr-3 py-2.5 outline-none focus:border-[#C9A15A] focus:ring-1 focus:ring-[#C9A15A]/30 transition-all shadow-xs"
+              className="w-full bg-white dark:bg-[#1A2D42]/80 border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 text-xs rounded-xl pl-9 pr-3 py-2.5 outline-none focus:border-[#C0C8CA] focus:ring-1 focus:ring-[#C0C8CA]/30 transition-all shadow-xs"
             />
           </div>
 
@@ -244,8 +244,8 @@ export default function MaterialsPage() {
                 onClick={() => setCategoryFilter(cat)}
                 className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   categoryFilter === cat
-                    ? "bg-[#C9A15A] text-slate-950 font-bold shadow-xs"
-                    : "bg-white dark:bg-[#16181D] text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-[#2F333A]"
+                    ? "bg-[#C0C8CA] text-[#1A2D42] font-bold shadow-xs"
+                    : "bg-white dark:bg-[#1A2D42]/80 text-slate-600 dark:text-[#AAB7B7] hover:text-slate-900 dark:hover:text-[#D4D8DD] border border-slate-200 dark:border-[#AAB7B7]/25"
                 }`}
               >
                 {cat}
@@ -255,10 +255,10 @@ export default function MaterialsPage() {
         </div>
 
         {/* Materials Table Card */}
-        <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl overflow-hidden shadow-xs">
+        <div className="glass-card border border-slate-200 dark:border-[#AAB7B7]/20 rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50/80 dark:bg-[#121418]/80 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono text-[10px] border-b border-slate-200 dark:border-[#2F333A]">
+              <thead className="bg-slate-50/80 dark:bg-[#1A2D42]/90 text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider font-mono text-[10px] border-b border-slate-200 dark:border-[#AAB7B7]/20">
                 <tr>
                   <th className="px-5 py-3">SKU</th>
                   <th className="px-5 py-3">Material Name</th>
@@ -270,12 +270,12 @@ export default function MaterialsPage() {
                   <th className="px-5 py-3">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-[#2F333A]">
+              <tbody className="divide-y divide-slate-100 dark:divide-[#AAB7B7]/15">
                 {loading ? (
                   <tr>
                     <td colSpan={8} className="px-5 py-12 text-center text-slate-500">
                       <div className="flex items-center justify-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin text-[#C9A15A]" />
+                        <Loader2 className="w-4 h-4 animate-spin text-[#C0C8CA]" />
                         <span>Loading materials catalog...</span>
                       </div>
                     </td>
@@ -292,21 +292,21 @@ export default function MaterialsPage() {
                     return (
                       <tr
                         key={m._id}
-                        className="hover:bg-slate-50/70 dark:hover:bg-[#1A1D24]/60 transition-colors"
+                        className="hover:bg-slate-50/70 dark:hover:bg-[#2E4156]/30 transition-colors"
                       >
-                        <td className="px-5 py-3.5 font-mono text-[#C9A15A] font-bold">
+                        <td className="px-5 py-3.5 font-mono text-[#C0C8CA] font-bold">
                           {m.sku}
                         </td>
-                        <td className="px-5 py-3.5 font-bold text-slate-900 dark:text-[#F4F4F5]">
+                        <td className="px-5 py-3.5 font-bold text-slate-900 dark:text-[#D4D8DD]">
                           {m.name}
                         </td>
-                        <td className="px-5 py-3.5 text-slate-600 dark:text-slate-400">
+                        <td className="px-5 py-3.5 text-slate-600 dark:text-[#AAB7B7]">
                           {m.category}
                         </td>
-                        <td className="px-5 py-3.5 font-mono text-slate-600 dark:text-slate-400">
+                        <td className="px-5 py-3.5 font-mono text-slate-600 dark:text-[#AAB7B7]">
                           {m.unitOfMeasure}
                         </td>
-                        <td className="px-5 py-3.5 font-mono font-semibold text-slate-800 dark:text-slate-200">
+                        <td className="px-5 py-3.5 font-mono font-semibold text-slate-800 dark:text-[#D4D8DD]">
                           {formatCurrency(m.unitCost, true)}
                         </td>
                         <td className="px-5 py-3.5 font-bold">
@@ -321,7 +321,7 @@ export default function MaterialsPage() {
                             {m.currentStock.toLocaleString()}
                           </span>
                         </td>
-                        <td className="px-5 py-3.5 font-mono text-slate-500 dark:text-slate-400">
+                        <td className="px-5 py-3.5 font-mono text-slate-500 dark:text-[#AAB7B7]">
                           {m.minimumStockLevel}
                         </td>
                         <td className="px-5 py-3.5">
@@ -347,24 +347,24 @@ export default function MaterialsPage() {
         {/* Modal: Add Material Dialog */}
         {showAddModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-            <div className="bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-2xl w-full max-w-lg shadow-2xl p-6 space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#2F333A]">
+            <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl w-full max-w-lg shadow-2xl p-6 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#AAB7B7]/20">
                 <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-xl bg-[#C9A15A]/15 text-[#C9A15A]">
+                  <div className="p-2 rounded-xl bg-[#2E4156] text-[#C0C8CA] border border-[#AAB7B7]/20">
                     <Boxes className="w-5 h-5" />
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                    <h2 className="text-base font-bold text-slate-900 dark:text-[#D4D8DD]">
                       Add Material to Catalog
                     </h2>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-slate-500 dark:text-[#AAB7B7]">
                       Register site building materials and inventory SKU
                     </p>
                   </div>
                 </div>
                 <button
                   onClick={() => setShowAddModal(false)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -372,7 +372,7 @@ export default function MaterialsPage() {
 
               <form onSubmit={handleAddMaterial} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] mb-1">
                     Material Name *
                   </label>
                   <input
@@ -381,13 +381,13 @@ export default function MaterialsPage() {
                     placeholder="e.g., Portland Cement Type I"
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C9A15A]"
+                    className="w-full bg-slate-50 dark:bg-[#2E4156]/50 border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C0C8CA]"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] mb-1">
                       SKU / Code
                     </label>
                     <input
@@ -395,19 +395,19 @@ export default function MaterialsPage() {
                       placeholder="e.g., CEM-001 (auto if empty)"
                       value={formSku}
                       onChange={(e) => setFormSku(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C9A15A]"
+                      className="w-full bg-slate-50 dark:bg-[#2E4156]/50 border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C0C8CA]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] mb-1">
                       Target Project / Site *
                     </label>
                     <select
                       required
                       value={formProjectId}
                       onChange={(e) => setFormProjectId(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C9A15A]"
+                      className="w-full bg-slate-50 dark:bg-[#2E4156]/50 border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-900 dark:text-[#D4D8DD] text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C0C8CA]"
                     >
                       {projects.map((p) => (
                         <option key={p._id} value={p._id}>
@@ -420,13 +420,13 @@ export default function MaterialsPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] mb-1">
                       Category
                     </label>
                     <select
                       value={formCategory}
                       onChange={(e) => setFormCategory(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C9A15A]"
+                      className="w-full bg-slate-50 dark:bg-[#2E4156]/50 border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-900 dark:text-[#D4D8DD] text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C0C8CA]"
                     >
                       {CATEGORIES.filter((c) => c !== "ALL").map((c) => (
                         <option key={c} value={c}>
@@ -437,7 +437,7 @@ export default function MaterialsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] mb-1">
                       Unit of Measure
                     </label>
                     <input
@@ -445,14 +445,14 @@ export default function MaterialsPage() {
                       placeholder="e.g., bags, tons, pcs, m³"
                       value={formUnitOfMeasure}
                       onChange={(e) => setFormUnitOfMeasure(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C9A15A]"
+                      className="w-full bg-slate-50 dark:bg-[#2E4156]/50 border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C0C8CA]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] mb-1">
                       Initial Stock
                     </label>
                     <input
@@ -460,12 +460,12 @@ export default function MaterialsPage() {
                       min="0"
                       value={formCurrentStock}
                       onChange={(e) => setFormCurrentStock(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C9A15A]"
+                      className="w-full bg-slate-50 dark:bg-[#2E4156]/50 border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-900 dark:text-[#D4D8DD] text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C0C8CA]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] mb-1">
                       Min Threshold
                     </label>
                     <input
@@ -473,12 +473,12 @@ export default function MaterialsPage() {
                       min="0"
                       value={formMinStock}
                       onChange={(e) => setFormMinStock(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C9A15A]"
+                      className="w-full bg-slate-50 dark:bg-[#2E4156]/50 border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-900 dark:text-[#D4D8DD] text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C0C8CA]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] mb-1">
                       Unit Cost (ETB)
                     </label>
                     <input
@@ -487,27 +487,27 @@ export default function MaterialsPage() {
                       step="0.01"
                       value={formUnitCost}
                       onChange={(e) => setFormUnitCost(e.target.value)}
-                      className="w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] text-slate-900 dark:text-white text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C9A15A]"
+                      className="w-full bg-slate-50 dark:bg-[#2E4156]/50 border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-900 dark:text-[#D4D8DD] text-xs rounded-xl px-3.5 py-2.5 outline-none focus:border-[#C0C8CA]"
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-[#2F333A]">
+                <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-[#AAB7B7]/20">
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#2F333A] text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-700 dark:text-[#D4D8DD] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 text-xs font-bold shadow-md shadow-amber-500/20 transition-all disabled:opacity-60"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C0C8CA] hover:bg-white text-[#1A2D42] text-xs font-bold shadow-md shadow-black/10 transition-all disabled:opacity-60"
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin text-[#1A2D42]" />
                         <span>Saving Material...</span>
                       </>
                     ) : (

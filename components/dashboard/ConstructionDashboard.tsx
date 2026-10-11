@@ -669,7 +669,7 @@ export default function ConstructionDashboard({
                           {project.progress}%
                         </span>
                       </div>
-                      <ProgressBar value={project.progress} tone="blue" className="h-1.5" />
+                      <ProgressBar value={project.progress} tone="cool" className="h-1.5" />
                     </div>
                   </div>
                 ))

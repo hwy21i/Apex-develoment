@@ -119,26 +119,26 @@ export default function AnnouncementsPage() {
   };
 
   const inputCls =
-    "w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C9A15A]";
+    "w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 focus:outline-none focus:border-[#C0C8CA]";
 
   return (
     <AppShell>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[#C9A15A] font-mono text-xs font-bold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#C0C8CA] font-mono text-xs font-bold uppercase tracking-wider mb-1">
               <Megaphone className="w-4 h-4" /> Operations Communications
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#F4F4F5] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#D4D8DD] tracking-tight">
               Company Announcements &amp; Bulletins
             </h1>
-            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#A7ABB3] mt-1">
+            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#AAB7B7] mt-1">
               Executive directives, HSE safety stand-downs, commercial memos, and site updates
             </p>
           </div>
           <button
             onClick={openForm}
-            className="inline-flex items-center justify-center gap-2 bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-amber-500/20 transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
+            className="inline-flex items-center justify-center gap-2 bg-[#C0C8CA] hover:bg-white text-[#1A2D42] font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-black/10 transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
           >
             <Plus size={16} />
             <span>Post Announcement</span>
@@ -147,31 +147,31 @@ export default function AnnouncementsPage() {
 
         {/* Search */}
         <div className="relative max-w-md">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#AAB7B7]" />
           <input
             type="text"
             placeholder="Search announcements and safety notices..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:border-[#C9A15A] shadow-xs transition-colors"
+            className="w-full bg-white dark:bg-[#1A2D42]/80 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 outline-none focus:border-[#C0C8CA] shadow-xs transition-colors"
           />
         </div>
 
         {/* Announcements list */}
         {loading ? (
           <div className="flex items-center justify-center py-16 text-slate-400">
-            <Loader2 size={24} className="animate-spin text-[#C9A15A]" />
+            <Loader2 size={24} className="animate-spin text-[#C0C8CA]" />
           </div>
         ) : error ? (
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-6 text-center">
+          <div className="glass-card border border-slate-200 dark:border-[#AAB7B7]/20 rounded-2xl p-6 text-center">
             <p className="text-sm text-rose-500">{error}</p>
-            <button onClick={() => reload()} className="mt-3 text-xs font-semibold text-[#C9A15A] hover:underline">
+            <button onClick={() => reload()} className="mt-3 text-xs font-semibold text-[#C0C8CA] hover:underline">
               Retry
             </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-12 text-center text-slate-400">
-            <Megaphone size={32} className="mx-auto mb-2 opacity-40 text-[#C9A15A]" />
+          <div className="glass-card border border-slate-200 dark:border-[#AAB7B7]/20 rounded-2xl p-12 text-center text-slate-400">
+            <Megaphone size={32} className="mx-auto mb-2 opacity-40 text-[#C0C8CA]" />
             <p className="text-sm">
               {announcements.length === 0 ? "No announcements posted yet." : "No announcements match your search."}
             </p>
@@ -183,15 +183,15 @@ export default function AnnouncementsPage() {
                 key={a._id}
                 className={`glass-card border rounded-2xl p-5 transition-all hover:scale-[1.005] ${
                   a.isPinned
-                    ? "border-[#C9A15A]/60 shadow-md shadow-amber-500/5"
-                    : "border-slate-200 dark:border-[#2F333A]"
+                    ? "border-[#C0C8CA]/60 shadow-md shadow-cyan-950/20 bg-[#2E4156]/50"
+                    : "border-slate-200 dark:border-[#AAB7B7]/25 bg-white dark:bg-[#2E4156]/30"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
                       {a.isPinned && (
-                        <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-[#C9A15A] font-bold border border-[#C9A15A]/30">
+                        <span className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-[#1A2D42] text-[#C0C8CA] font-bold border border-[#C0C8CA]/40">
                           <Pin size={11} /> Pinned
                         </span>
                       )}
@@ -203,20 +203,20 @@ export default function AnnouncementsPage() {
                           {a.priority}
                         </span>
                       )}
-                      <span className="text-xs text-slate-400 font-mono">
+                      <span className="text-xs text-[#AAB7B7] font-mono">
                         {new Date(a.publishDate).toLocaleDateString("en-ET")}
                       </span>
                     </div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">{a.title}</h3>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-w-4xl whitespace-pre-wrap">{a.content}</p>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-[#D4D8DD]">{a.title}</h3>
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-[#D4D8DD]/90 leading-relaxed max-w-4xl whitespace-pre-wrap">{a.content}</p>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-[#2F333A]/60 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-[#AAB7B7]/20 flex items-center justify-between text-xs text-slate-500 dark:text-[#AAB7B7]">
                   <span className="flex items-center gap-1.5 font-medium">
-                    <User size={13} className="text-[#C9A15A]" /> {a.author}
+                    <User size={13} className="text-[#C0C8CA]" /> {a.author}
                   </span>
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">{projectName(a.projectId)}</span>
+                  <span className="font-semibold text-slate-700 dark:text-[#D4D8DD]">{projectName(a.projectId)}</span>
                 </div>
               </div>
             ))}
@@ -227,20 +227,20 @@ export default function AnnouncementsPage() {
       {/* Create modal */}
       {formOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-slate-100 dark:border-[#2F333A] pb-3">
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-slate-100 dark:border-[#AAB7B7]/20 pb-3">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-[#C9A15A]/15 text-[#C9A15A]">
+                <div className="p-2 rounded-xl bg-[#2E4156] text-[#C0C8CA] border border-[#AAB7B7]/20">
                   <Megaphone className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-slate-900 dark:text-white">Post Announcement</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Broadcast directives or safety bulletins</p>
+                  <h2 className="text-base font-bold text-slate-900 dark:text-[#D4D8DD]">Post Announcement</h2>
+                  <p className="text-xs text-slate-500 dark:text-[#AAB7B7]">Broadcast directives or safety bulletins</p>
                 </div>
               </div>
               <button
                 onClick={() => setFormOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
               >
                 <X size={16} />
               </button>
@@ -248,64 +248,64 @@ export default function AnnouncementsPage() {
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Project *</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] block mb-1">Project *</label>
                 <select className={inputCls} value={form.projectId} onChange={(e) => setForm({ ...form, projectId: e.target.value })}>
                   {projects.length === 0 && <option value="">No accessible projects</option>}
                   {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Title *</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] block mb-1">Title *</label>
                 <input className={inputCls} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Announcement headline" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Audience / Category</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] block mb-1">Audience / Category</label>
                   <select className={inputCls} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
                     {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Priority</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] block mb-1">Priority</label>
                   <select className={inputCls} value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })}>
                     {PRIORITIES.map((p) => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Publish date</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] block mb-1">Publish date</label>
                 <input type="date" className={inputCls} value={form.publishDate} onChange={(e) => setForm({ ...form, publishDate: e.target.value })} />
               </div>
-              <label className="flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer pt-1">
+              <label className="flex items-center gap-2 text-xs font-medium text-slate-700 dark:text-[#D4D8DD] cursor-pointer pt-1">
                 <input
                   type="checkbox"
                   checked={form.isPinned}
                   onChange={(e) => setForm({ ...form, isPinned: e.target.checked })}
-                  className="rounded border-slate-300 dark:border-slate-600 text-[#C9A15A] focus:ring-[#C9A15A]"
+                  className="rounded border-slate-300 dark:border-[#AAB7B7]/40 text-[#C0C8CA] focus:ring-[#C0C8CA]"
                 />
                 Pin this announcement to top of list
               </label>
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Message</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] block mb-1">Message</label>
                 <textarea className={inputCls} rows={4} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} placeholder="Full announcement body..." />
               </div>
             </div>
 
             {formError && <p className="text-xs text-rose-500 font-medium">{formError}</p>}
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#2F333A]">
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#AAB7B7]/20">
               <button
                 onClick={() => setFormOpen(false)}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#2F333A] text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-700 dark:text-[#D4D8DD] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={submit}
                 disabled={busy}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 text-xs font-bold shadow-md shadow-amber-500/20 transition-all disabled:opacity-60"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C0C8CA] hover:bg-white text-[#1A2D42] text-xs font-bold shadow-md shadow-black/10 transition-all disabled:opacity-60"
               >
-                {busy && <Loader2 size={14} className="animate-spin" />}
+                {busy && <Loader2 size={14} className="animate-spin text-[#1A2D42]" />}
                 Publish
               </button>
             </div>

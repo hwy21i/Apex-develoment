@@ -42,6 +42,29 @@ export async function GET(request: Request) {
   }
 }
 
+import { refreshProjectMetrics } from "@/lib/calculations/project";
+
+async function hasCircularDependency(taskId: string, newDependencies: string[]): Promise<boolean> {
+  const visited = new Set<string>();
+  const queue = [...newDependencies];
+
+  while (queue.length > 0) {
+    const current = queue.shift()!;
+    if (current === taskId) return true;
+    if (visited.has(current)) continue;
+    visited.add(current);
+
+    const depTask = await Task.findById(current).select("dependencies").lean();
+    if (depTask && Array.isArray(depTask.dependencies)) {
+      for (const d of depTask.dependencies) {
+        queue.push(d.toString());
+      }
+    }
+  }
+
+  return false;
+}
+
 export async function POST(request: Request) {
   const guard = await requirePermission("TASK_CREATE", request);
   if (guard.error) return guard.error;
@@ -52,6 +75,16 @@ export async function POST(request: Request) {
 
     if (!(await canAccessProject(guard.user, input.projectId))) {
       return fail("FORBIDDEN", "You do not have access to this project", 403);
+    }
+
+    if (input.dependencies && input.dependencies.length > 0) {
+      const validDeps = await Task.countDocuments({
+        _id: { $in: input.dependencies },
+        projectId: input.projectId,
+      });
+      if (validDeps !== input.dependencies.length) {
+        return fail("VALIDATION_ERROR", "One or more dependencies are invalid or belong to another project", 422);
+      }
     }
 
     const task = await Task.create({
@@ -70,6 +103,11 @@ export async function POST(request: Request) {
       newValue: { title: task.title, status: task.status, priority: task.priority },
     });
 
+    // Auto-refresh project progress
+    try {
+      await refreshProjectMetrics(input.projectId);
+    } catch {}
+
     return ok(task, "Task created successfully", 201);
   } catch (error) {
     return handleError(error);
@@ -82,7 +120,7 @@ export async function PATCH(request: Request) {
 
   try {
     const json = await request.json();
-    const { taskId, status, progress, priority } = json;
+    const { taskId, status, progress, priority, dependencies } = json;
     if (!taskId) {
       return fail("BAD_REQUEST", "taskId is required", 400);
     }
@@ -97,10 +135,17 @@ export async function PATCH(request: Request) {
       return fail("FORBIDDEN", "You do not have access to this project", 403);
     }
 
+    if (dependencies && Array.isArray(dependencies)) {
+      if (await hasCircularDependency(taskId, dependencies)) {
+        return fail("CIRCULAR_DEPENDENCY", "Circular dependency detected between tasks", 422);
+      }
+    }
+
     const updates: Record<string, unknown> = {};
     if (status) updates.status = status;
     if (typeof progress === "number") updates.progress = progress;
     if (priority) updates.priority = priority;
+    if (dependencies && Array.isArray(dependencies)) updates.dependencies = dependencies;
     if (status === "COMPLETED") updates.completedDate = new Date();
 
     const updated = await Task.findByIdAndUpdate(taskId, { $set: updates }, { new: true });
@@ -115,6 +160,11 @@ export async function PATCH(request: Request) {
       projectId: String(task.projectId),
       newValue: updates,
     });
+
+    // Auto-refresh project progress
+    try {
+      await refreshProjectMetrics(String(task.projectId));
+    } catch {}
 
     return ok(updated, "Task updated successfully");
   } catch (error) {

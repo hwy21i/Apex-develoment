@@ -20,7 +20,9 @@ export async function GET(request: Request) {
       return fail("USER_NOT_FOUND", "User account not found or inactive", 404);
     }
 
-    const permissions = getRolePermissions(user.role);
+    const rolePermissions = getRolePermissions(user.role);
+    const customPermissions = (user.customPermissions || []) as any[];
+    const permissions = Array.from(new Set([...rolePermissions, ...customPermissions]));
 
     return ok({
       user: {
@@ -32,6 +34,8 @@ export async function GET(request: Request) {
         department: user.department,
         position: user.position,
         profileImage: user.profileImage,
+        organizationId: user.organizationId ? user.organizationId.toString() : undefined,
+        customPermissions: user.customPermissions || [],
         assignedProjects: user.assignedProjects || [],
         lastLogin: user.lastLogin,
         createdAt: user.createdAt,

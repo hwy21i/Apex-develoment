@@ -25,7 +25,7 @@ export function ApexLogo({
       {/* Icon Tile - guaranteed fixed size, never compressed by flexbox */}
       <div
         style={{ width: size, height: size, minWidth: size, minHeight: size }}
-        className="rounded-xl overflow-hidden shadow-sm shadow-amber-500/20 bg-[#C9A15A] flex items-center justify-center shrink-0"
+        className="rounded-xl overflow-hidden shadow-sm bg-[#C0C8CA] flex items-center justify-center shrink-0"
       >
         <svg
           viewBox="0 0 36 36"
@@ -36,12 +36,12 @@ export function ApexLogo({
           {/* Construction "A" / rooftop structure */}
           <path
             d="M18 5L6 29H11.5L14.2 23H21.8L24.5 29H30L18 5Z"
-            fill="#111317"
+            fill="#1A2D42"
             fillOpacity="0.95"
           />
           <path
             d="M18 12L15.3 18.5H20.7L18 12Z"
-            fill="#C9A15A"
+            fill="#C0C8CA"
           />
           <rect
             x="11"
@@ -49,7 +49,7 @@ export function ApexLogo({
             width="14"
             height="2.5"
             rx="1.25"
-            fill="#111317"
+            fill="#1A2D42"
             fillOpacity="0.85"
           />
         </svg>
@@ -58,15 +58,15 @@ export function ApexLogo({
       {showText && (
         <div className="flex flex-col min-w-0 leading-tight">
           <div className="flex items-center gap-1">
-            <span className="text-sm font-extrabold tracking-wider uppercase text-slate-900 dark:text-white">
+            <span className="text-sm font-extrabold tracking-wider uppercase text-slate-900 dark:text-[#D4D8DD]">
               Apex
             </span>
-            <span className="text-sm font-extrabold tracking-wider uppercase text-[#C9A15A]">
+            <span className="text-sm font-extrabold tracking-wider uppercase text-[#C0C8CA]">
               Build
             </span>
           </div>
           {subtitle && (
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono tracking-wider truncate uppercase">
+            <span className="text-[10px] text-slate-500 dark:text-[#AAB7B7] font-mono tracking-wider truncate uppercase">
               {subtitle}
             </span>
           )}

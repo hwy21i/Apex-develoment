@@ -119,6 +119,13 @@ export async function POST(
       projectId: input.projectId,
     });
 
+    if (["expenses", "progress", "milestones"].includes(kind)) {
+      try {
+        const { refreshProjectMetrics } = await import("@/lib/calculations/project");
+        await refreshProjectMetrics(input.projectId);
+      } catch {}
+    }
+
     return ok(record, "Record created successfully", 201);
   } catch (error) {
     return handleError(error);
@@ -170,6 +177,13 @@ export async function PATCH(
       previousValue: { status: previousStatus },
       newValue: { status: record.status },
     });
+
+    if (["expenses", "progress", "milestones"].includes(kind)) {
+      try {
+        const { refreshProjectMetrics } = await import("@/lib/calculations/project");
+        await refreshProjectMetrics(String(existing.projectId));
+      } catch {}
+    }
 
     return ok(record, "Record updated successfully");
   } catch (error) {

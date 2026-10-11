@@ -141,7 +141,7 @@ export default function CountriesAndLocationsPage() {
   }
 
   const inputCls =
-    "w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C9A15A]";
+    "w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 focus:outline-none focus:border-[#C0C8CA]";
 
   return (
     <AppShell>
@@ -149,13 +149,13 @@ export default function CountriesAndLocationsPage() {
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[#C9A15A] font-mono text-xs font-bold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#C0C8CA] font-mono text-xs font-bold uppercase tracking-wider mb-1">
               <Globe2 className="w-4 h-4" /> Administration &amp; Master Data
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#F4F4F5] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-[#D4D8DD] tracking-tight">
               Countries &amp; Locations Management
             </h1>
-            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#A7ABB3] mt-1">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-[#AAB7B7] mt-1">
               Multi-country hierarchy: Country → Region / State → City → Project Location
             </p>
           </div>
@@ -163,15 +163,15 @@ export default function CountriesAndLocationsPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowAddCountry(!showAddCountry)}
-              className="inline-flex items-center justify-center gap-2 bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-amber-500/20 transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
+              className="inline-flex items-center justify-center gap-2 bg-[#C0C8CA] hover:bg-white text-[#1A2D42] font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
             >
               <Plus className="w-4 h-4" /> Add Country
             </button>
             <button
               onClick={() => setShowAddLocation(!showAddLocation)}
-              className="inline-flex items-center justify-center gap-2 bg-white dark:bg-[#1C1F24] hover:bg-slate-100 dark:hover:bg-[#252A34] text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-[#2F333A] px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all hover:scale-[1.015] active:scale-[0.98] shadow-xs"
+              className="inline-flex items-center justify-center gap-2 bg-white dark:bg-[#1A2D42] hover:bg-slate-100 dark:hover:bg-[#2E4156] text-slate-800 dark:text-[#D4D8DD] border border-slate-200 dark:border-[#AAB7B7]/25 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all hover:scale-[1.015] active:scale-[0.98] shadow-xs"
             >
-              <MapPin className="w-4 h-4 text-[#C9A15A]" /> New Site Location
+              <MapPin className="w-4 h-4 text-[#C0C8CA]" /> New Site Location
             </button>
           </div>
         </div>
@@ -190,13 +190,13 @@ export default function CountriesAndLocationsPage() {
 
         {/* Add Country Drawer Form */}
         {showAddCountry && (
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-5 shadow-lg space-y-4 animate-in fade-in duration-150">
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono">
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-5 shadow-lg space-y-4 animate-in fade-in duration-150">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-[#D4D8DD] uppercase tracking-wider font-mono">
               Register New Country
             </h2>
             <form onSubmit={handleCreateCountry} className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Country Name *</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7]">Country Name *</label>
                 <input
                   type="text"
                   required
@@ -208,7 +208,7 @@ export default function CountriesAndLocationsPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Country Code (2-letter) *</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7]">Country Code (2-letter) *</label>
                 <input
                   type="text"
                   required
@@ -221,7 +221,7 @@ export default function CountriesAndLocationsPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Phone Code *</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7]">Phone Code *</label>
                 <input
                   type="text"
                   required
@@ -233,7 +233,7 @@ export default function CountriesAndLocationsPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Currency Name *</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7]">Currency Name *</label>
                 <input
                   type="text"
                   required
@@ -245,7 +245,7 @@ export default function CountriesAndLocationsPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Currency Code *</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7]">Currency Code *</label>
                 <input
                   type="text"
                   required
@@ -258,7 +258,7 @@ export default function CountriesAndLocationsPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Currency Symbol *</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7]">Currency Symbol *</label>
                 <input
                   type="text"
                   required
@@ -270,7 +270,7 @@ export default function CountriesAndLocationsPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Time Zone *</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7]">Time Zone *</label>
                 <input
                   type="text"
                   required
@@ -284,14 +284,14 @@ export default function CountriesAndLocationsPage() {
               <div className="flex items-end gap-2">
                 <button
                   type="submit"
-                  className="px-4 py-2.5 bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 text-xs font-bold rounded-xl shadow-md transition-all"
+                  className="px-4 py-2.5 bg-[#C0C8CA] hover:bg-white text-[#1A2D42] text-xs font-bold rounded-xl shadow-md transition-all"
                 >
                   Save Country
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowAddCountry(false)}
-                  className="px-4 py-2.5 bg-slate-100 dark:bg-[#1C1F24] hover:bg-slate-200 dark:hover:bg-[#252A34] text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl border border-slate-200 dark:border-[#2F333A] transition-colors"
+                  className="px-4 py-2.5 bg-slate-100 dark:bg-[#2E4156] hover:bg-slate-200 dark:hover:bg-[#2E4156]/80 text-slate-700 dark:text-[#D4D8DD] text-xs font-semibold rounded-xl border border-slate-200 dark:border-[#2E4156] transition-colors"
                 >
                   Cancel
                 </button>
@@ -302,13 +302,13 @@ export default function CountriesAndLocationsPage() {
 
         {/* Add Project Location Wizard */}
         {showAddLocation && (
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-5 shadow-lg space-y-4 animate-in fade-in duration-150">
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider font-mono flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-[#C9A15A]" /> Register Project Site Location
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-5 shadow-lg space-y-4 animate-in fade-in duration-150">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-[#D4D8DD] uppercase tracking-wider font-mono flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-[#C0C8CA]" /> Register Project Site Location
             </h2>
             <form onSubmit={handleCreateLocation} className="space-y-4">
               <div className="max-w-md flex flex-col gap-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Location / Site Name *</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7]">Location / Site Name *</label>
                 <input
                   type="text"
                   required
@@ -320,8 +320,8 @@ export default function CountriesAndLocationsPage() {
               </div>
 
               {/* Hierarchical Cascaded Selector */}
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#141720] border border-slate-200 dark:border-[#222736]">
-                <p className="text-xs font-mono uppercase text-[#C9A15A] mb-3 font-semibold">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#2E4156]/30 border border-slate-200 dark:border-[#2E4156]">
+                <p className="text-xs font-mono uppercase text-[#C0C8CA] mb-3 font-semibold">
                   Hierarchical Cascading Selector
                 </p>
                 <HierarchicalLocationSelector
@@ -335,13 +335,13 @@ export default function CountriesAndLocationsPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddLocation(false)}
-                  className="px-4 py-2.5 bg-slate-100 dark:bg-[#1C1F24] hover:bg-slate-200 dark:hover:bg-[#252A34] text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl border border-slate-200 dark:border-[#2F333A] transition-colors"
+                  className="px-4 py-2.5 bg-slate-100 dark:bg-[#2E4156] hover:bg-slate-200 dark:hover:bg-[#2E4156]/80 text-slate-700 dark:text-[#D4D8DD] text-xs font-semibold rounded-xl border border-slate-200 dark:border-[#2E4156] transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2.5 bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 text-xs font-bold rounded-xl shadow-md transition-all"
+                  className="px-4 py-2.5 bg-[#C0C8CA] hover:bg-white text-[#1A2D42] text-xs font-bold rounded-xl shadow-md transition-all"
                 >
                   Save Site Location
                 </button>
@@ -351,12 +351,12 @@ export default function CountriesAndLocationsPage() {
         )}
 
         {/* Countries Table */}
-        <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl overflow-hidden shadow-xs">
-          <div className="px-5 py-4 border-b border-slate-100 dark:border-[#2F333A] flex items-center justify-between">
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Active Operating Countries</h2>
+        <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl overflow-hidden shadow-xs">
+          <div className="px-5 py-4 border-b border-slate-100 dark:border-[#2E4156] flex items-center justify-between">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-[#D4D8DD]">Active Operating Countries</h2>
             <button
               onClick={fetchCountries}
-              className="text-xs font-semibold text-slate-500 hover:text-[#C9A15A] flex items-center gap-1 transition-colors"
+              className="text-xs font-semibold text-slate-500 hover:text-[#C0C8CA] dark:text-[#AAB7B7] dark:hover:text-[#D4D8DD] flex items-center gap-1 transition-colors"
             >
               <RefreshCw className="w-3.5 h-3.5" /> Refresh
             </button>
@@ -364,7 +364,7 @@ export default function CountriesAndLocationsPage() {
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50/80 dark:bg-[#121418]/80 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono text-[10px] border-b border-slate-200 dark:border-[#2F333A]">
+              <thead className="bg-slate-50/80 dark:bg-[#2E4156]/40 text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider font-mono text-[10px] border-b border-slate-200 dark:border-[#2E4156]">
                 <tr>
                   <th className="px-5 py-3">Country</th>
                   <th className="px-5 py-3">Code</th>
@@ -374,7 +374,7 @@ export default function CountriesAndLocationsPage() {
                   <th className="px-5 py-3">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-[#2F333A]">
+              <tbody className="divide-y divide-slate-100 dark:divide-[#2E4156]/50">
                 {loading ? (
                   <tr>
                     <td colSpan={6} className="px-5 py-8 text-center text-slate-400">
@@ -389,14 +389,14 @@ export default function CountriesAndLocationsPage() {
                   </tr>
                 ) : (
                   countries.map((c) => (
-                    <tr key={c._id} className="hover:bg-slate-50/70 dark:hover:bg-[#1A1D24]/60 transition-colors">
-                      <td className="px-5 py-3.5 font-bold text-slate-900 dark:text-white">{c.name}</td>
-                      <td className="px-5 py-3.5 font-mono text-[#C9A15A] font-semibold">{c.countryCode}</td>
-                      <td className="px-5 py-3.5 text-slate-700 dark:text-slate-300">
+                    <tr key={c._id} className="hover:bg-slate-50/70 dark:hover:bg-[#2E4156]/20 transition-colors">
+                      <td className="px-5 py-3.5 font-bold text-slate-900 dark:text-[#D4D8DD]">{c.name}</td>
+                      <td className="px-5 py-3.5 font-mono text-[#C0C8CA] font-semibold">{c.countryCode}</td>
+                      <td className="px-5 py-3.5 text-slate-700 dark:text-[#AAB7B7]">
                         {c.currency} ({c.currencySymbol} / {c.currencyCode})
                       </td>
-                      <td className="px-5 py-3.5 font-mono text-slate-500 dark:text-slate-400">{c.phoneCode}</td>
-                      <td className="px-5 py-3.5 font-mono text-slate-500 dark:text-slate-400">{c.timeZone}</td>
+                      <td className="px-5 py-3.5 font-mono text-slate-500 dark:text-[#AAB7B7]">{c.phoneCode}</td>
+                      <td className="px-5 py-3.5 font-mono text-slate-500 dark:text-[#AAB7B7]">{c.timeZone}</td>
                       <td className="px-5 py-3.5">
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                           {c.status}

@@ -23,6 +23,8 @@ export async function signSession(user: SessionUser): Promise<string> {
     email: user.email,
     role: user.role,
     department: user.department,
+    organizationId: user.organizationId,
+    customPermissions: user.customPermissions || [],
     assignedProjects: user.assignedProjects || [],
   })
     .setProtectedHeader({ alg: "HS256" })
@@ -42,6 +44,10 @@ export async function verifyToken(token: string): Promise<SessionUser | null> {
       email: String(payload.email),
       role: payload.role as RoleType,
       department: payload.department ? String(payload.department) : undefined,
+      organizationId: payload.organizationId ? String(payload.organizationId) : undefined,
+      customPermissions: Array.isArray(payload.customPermissions)
+        ? (payload.customPermissions as string[])
+        : [],
       assignedProjects: Array.isArray(payload.assignedProjects)
         ? (payload.assignedProjects as string[])
         : [],

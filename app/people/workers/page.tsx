@@ -134,26 +134,26 @@ export default function WorkersRosterPage() {
   };
 
   const inputCls =
-    "w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C9A15A]";
+    "w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 focus:outline-none focus:border-[#C0C8CA]";
 
   return (
     <AppShell>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[#C9A15A] font-mono text-xs font-bold uppercase tracking-wider mb-1">
-              <Users className="w-4 h-4" /> Site Labor & Force Management
+            <div className="flex items-center gap-2 text-[#C0C8CA] font-mono text-xs font-bold uppercase tracking-wider mb-1">
+              <Users className="w-4 h-4" /> Site Labor &amp; Force Management
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#F4F4F5] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-[#D4D8DD] tracking-tight">
               Daily Labor &amp; Craft Workers
             </h1>
-            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#A7ABB3] mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-[#AAB7B7] mt-1">
               Field trades, daily wage rates, safety certification, and site assignments
             </p>
           </div>
           <button
             onClick={openForm}
-            className="inline-flex items-center justify-center gap-2 bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-amber-500/20 transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
+            className="inline-flex items-center justify-center gap-2 bg-[#C0C8CA] hover:bg-white text-[#1A2D42] font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
           >
             <Plus size={16} />
             <span>Register Worker</span>
@@ -162,44 +162,44 @@ export default function WorkersRosterPage() {
 
         {/* Top metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Registered Trades</p>
-            <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{workers.length}</p>
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <p className="text-xs text-slate-500 dark:text-[#AAB7B7] font-semibold uppercase tracking-wider">Total Registered Trades</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-[#D4D8DD] mt-1">{workers.length}</p>
           </div>
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Active On Site</p>
-            <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <p className="text-xs text-slate-500 dark:text-[#AAB7B7] font-semibold uppercase tracking-wider">Active On Site</p>
+            <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
               {workers.filter((w) => w.status === "Active").length}
             </p>
           </div>
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Safety Certified</p>
-            <p className="text-2xl font-extrabold text-sky-600 dark:text-sky-400 mt-1">
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <p className="text-xs text-slate-500 dark:text-[#AAB7B7] font-semibold uppercase tracking-wider">Safety Certified</p>
+            <p className="text-2xl font-black text-sky-600 dark:text-sky-400 mt-1">
               {workers.filter((w) => w.safetyCertified).length} / {workers.length}
             </p>
           </div>
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Avg Daily Wage Rate</p>
-            <p className="text-2xl font-extrabold text-[#C9A15A] mt-1">{fmt(avgWage)}</p>
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <p className="text-xs text-slate-500 dark:text-[#AAB7B7] font-semibold uppercase tracking-wider">Avg Daily Wage Rate</p>
+            <p className="text-2xl font-black text-[#C0C8CA] mt-1">{fmt(avgWage)}</p>
           </div>
         </div>
 
         {/* Filter bar */}
         <div className="flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-[220px]">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#AAB7B7]" />
             <input
               type="text"
               placeholder="Search by worker name, ID, project..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:border-[#C9A15A] shadow-xs transition-colors"
+              className="w-full bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 outline-none focus:border-[#C0C8CA] shadow-xs transition-colors"
             />
           </div>
           <select
             value={tradeFilter}
             onChange={(e) => setTradeFilter(e.target.value)}
-            className="bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#C9A15A]"
+            className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:outline-none focus:border-[#C0C8CA] shadow-xs"
           >
             {trades.map((t) => (
               <option key={t} value={t}>{t}</option>
@@ -208,21 +208,21 @@ export default function WorkersRosterPage() {
         </div>
 
         {/* Workers table */}
-        <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl overflow-hidden shadow-xs">
+        <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl overflow-hidden shadow-xs">
           {loading ? (
-            <div className="flex items-center justify-center py-16 text-slate-400">
-              <Loader2 size={24} className="animate-spin text-[#C9A15A]" />
+            <div className="flex items-center justify-center py-16 text-slate-400 dark:text-[#AAB7B7]">
+              <Loader2 size={24} className="animate-spin text-[#C0C8CA]" />
             </div>
           ) : error ? (
             <div className="p-6 text-center">
               <p className="text-sm text-rose-500">{error}</p>
-              <button onClick={() => reload()} className="mt-3 text-xs font-semibold text-[#C9A15A] hover:underline">
+              <button onClick={() => reload()} className="mt-3 text-xs font-semibold text-[#C0C8CA] hover:underline">
                 Retry
               </button>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-12 text-center text-slate-400">
-              <Users size={32} className="mx-auto mb-2 opacity-40 text-[#C9A15A]" />
+            <div className="p-12 text-center text-slate-400 dark:text-[#AAB7B7]">
+              <Users size={32} className="mx-auto mb-2 opacity-40 text-[#C0C8CA]" />
               <p className="text-sm">
                 {workers.length === 0 ? "No workers registered yet." : "No workers match your filters."}
               </p>
@@ -230,32 +230,32 @@ export default function WorkersRosterPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50/80 dark:bg-[#121418]/80 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono text-[10px] border-b border-slate-200 dark:border-[#2F333A]">
+                <thead className="bg-slate-50 dark:bg-[#2E4156]/40 text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider font-mono text-[10px] border-b border-slate-200 dark:border-[#AAB7B7]/25">
                   <tr>
-                    <th className="px-5 py-3">Worker ID &amp; Name</th>
-                    <th className="px-5 py-3">Trade / Skill</th>
-                    <th className="px-5 py-3">Site Assignment</th>
-                    <th className="px-5 py-3">Phone &amp; Emergency</th>
-                    <th className="px-5 py-3 text-right">Daily Wage</th>
-                    <th className="px-5 py-3 text-center">Safety PPE</th>
-                    <th className="px-5 py-3">Status</th>
-                    <th className="px-5 py-3 text-right">Actions</th>
+                    <th className="px-5 py-3.5">Worker ID &amp; Name</th>
+                    <th className="px-5 py-3.5">Trade / Skill</th>
+                    <th className="px-5 py-3.5">Site Assignment</th>
+                    <th className="px-5 py-3.5">Phone &amp; Emergency</th>
+                    <th className="px-5 py-3.5 text-right">Daily Wage</th>
+                    <th className="px-5 py-3.5 text-center">Safety PPE</th>
+                    <th className="px-5 py-3.5">Status</th>
+                    <th className="px-5 py-3.5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-[#2F333A]">
+                <tbody className="divide-y divide-slate-100 dark:divide-[#2E4156]/50">
                   {filtered.map((w) => (
-                    <tr key={w._id} className="hover:bg-slate-50/70 dark:hover:bg-[#1A1D24]/60 transition-colors">
+                    <tr key={w._id} className="hover:bg-slate-50 dark:hover:bg-[#2E4156]/20 transition-colors">
                       <td className="px-5 py-3.5">
-                        <span className="font-mono text-[#C9A15A] text-xs font-bold">{w.workerId}</span>
-                        <p className="text-slate-900 dark:text-white font-bold">{w.fullName}</p>
+                        <span className="font-mono text-[#C0C8CA] text-xs font-bold">{w.workerId}</span>
+                        <p className="text-slate-900 dark:text-[#D4D8DD] font-bold">{w.fullName}</p>
                       </td>
-                      <td className="px-5 py-3.5 text-slate-700 dark:text-slate-300 font-medium">{w.trade}</td>
-                      <td className="px-5 py-3.5 text-slate-600 dark:text-slate-400">{projectName(w.projectId)}</td>
+                      <td className="px-5 py-3.5 text-slate-700 dark:text-[#D4D8DD] font-medium">{w.trade}</td>
+                      <td className="px-5 py-3.5 text-slate-600 dark:text-[#AAB7B7]">{projectName(w.projectId)}</td>
                       <td className="px-5 py-3.5">
-                        <p className="text-slate-800 dark:text-slate-200 font-medium">{w.phone}</p>
-                        <p className="text-slate-500 dark:text-slate-400 text-[11px]">{w.emergencyContact}</p>
+                        <p className="text-slate-800 dark:text-[#D4D8DD] font-medium">{w.phone}</p>
+                        <p className="text-slate-500 dark:text-[#AAB7B7] text-[11px]">{w.emergencyContact}</p>
                       </td>
-                      <td className="px-5 py-3.5 text-right font-mono font-bold text-slate-900 dark:text-white">{fmt(w.dailyWageETB)} / day</td>
+                      <td className="px-5 py-3.5 text-right font-mono font-bold text-slate-900 dark:text-[#D4D8DD]">{fmt(w.dailyWageETB)} / day</td>
                       <td className="px-5 py-3.5 text-center">
                         {w.safetyCertified ? (
                           <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium text-xs">
@@ -275,7 +275,7 @@ export default function WorkersRosterPage() {
                       <td className="px-5 py-3.5 text-right">
                         <button
                           onClick={() => setViewing(w)}
-                          className="text-[#C9A15A] hover:underline p-1 text-xs font-semibold inline-flex items-center gap-1"
+                          className="text-[#C0C8CA] hover:text-white p-1 text-xs font-semibold inline-flex items-center gap-1 transition-colors"
                           title="View Dossier"
                         >
                           <Eye size={14} />
@@ -294,32 +294,32 @@ export default function WorkersRosterPage() {
       {/* View dossier modal */}
       {viewing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl">
-            <div className="flex items-start justify-between border-b border-slate-100 dark:border-[#2F333A] pb-3">
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-slate-100 dark:border-[#2E4156] pb-3">
               <div>
-                <h2 className="text-base font-bold text-slate-900 dark:text-white">{viewing.fullName}</h2>
-                <p className="text-[#C9A15A] text-xs font-mono font-bold">{viewing.workerId} · {viewing.trade}</p>
+                <h2 className="text-base font-bold text-slate-900 dark:text-[#D4D8DD]">{viewing.fullName}</h2>
+                <p className="text-[#C0C8CA] text-xs font-mono font-bold">{viewing.workerId} · {viewing.trade}</p>
               </div>
               <button
                 onClick={() => setViewing(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-[#AAB7B7] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
               >
                 <X size={16} />
               </button>
             </div>
             <dl className="grid grid-cols-2 gap-3 text-xs">
-              <div><dt className="text-slate-400 font-medium">Site Assignment</dt><dd className="text-slate-800 dark:text-slate-200 font-semibold mt-0.5">{projectName(viewing.projectId)}</dd></div>
-              <div><dt className="text-slate-400 font-medium">Daily Wage</dt><dd className="text-[#C9A15A] font-mono font-bold mt-0.5">{fmt(viewing.dailyWageETB)} / day</dd></div>
-              <div><dt className="text-slate-400 font-medium">Phone</dt><dd className="text-slate-800 dark:text-slate-200 font-semibold mt-0.5">{viewing.phone}</dd></div>
-              <div><dt className="text-slate-400 font-medium">Emergency Contact</dt><dd className="text-slate-800 dark:text-slate-200 mt-0.5">{viewing.emergencyContact}</dd></div>
-              <div><dt className="text-slate-400 font-medium">Safety Certification</dt><dd className="text-slate-800 dark:text-slate-200 font-semibold mt-0.5">{viewing.safetyCertified ? "Certified" : "Pending"}</dd></div>
-              <div><dt className="text-slate-400 font-medium">Join Date</dt><dd className="text-slate-800 dark:text-slate-200 mt-0.5">{viewing.joinDate ? new Date(viewing.joinDate).toLocaleDateString("en-ET") : "—"}</dd></div>
-              <div><dt className="text-slate-400 font-medium">Status</dt><dd className="text-slate-800 dark:text-slate-200 font-semibold mt-0.5">{viewing.status}</dd></div>
+              <div><dt className="text-slate-500 dark:text-[#AAB7B7] font-medium">Site Assignment</dt><dd className="text-slate-800 dark:text-[#D4D8DD] font-semibold mt-0.5">{projectName(viewing.projectId)}</dd></div>
+              <div><dt className="text-slate-500 dark:text-[#AAB7B7] font-medium">Daily Wage</dt><dd className="text-[#C0C8CA] font-mono font-bold mt-0.5">{fmt(viewing.dailyWageETB)} / day</dd></div>
+              <div><dt className="text-slate-500 dark:text-[#AAB7B7] font-medium">Phone</dt><dd className="text-slate-800 dark:text-[#D4D8DD] font-semibold mt-0.5">{viewing.phone}</dd></div>
+              <div><dt className="text-slate-500 dark:text-[#AAB7B7] font-medium">Emergency Contact</dt><dd className="text-slate-800 dark:text-[#D4D8DD] mt-0.5">{viewing.emergencyContact}</dd></div>
+              <div><dt className="text-slate-500 dark:text-[#AAB7B7] font-medium">Safety Certification</dt><dd className="text-slate-800 dark:text-[#D4D8DD] font-semibold mt-0.5">{viewing.safetyCertified ? "Certified" : "Pending"}</dd></div>
+              <div><dt className="text-slate-500 dark:text-[#AAB7B7] font-medium">Join Date</dt><dd className="text-slate-800 dark:text-[#D4D8DD] mt-0.5">{viewing.joinDate ? new Date(viewing.joinDate).toLocaleDateString("en-ET") : "—"}</dd></div>
+              <div><dt className="text-slate-500 dark:text-[#AAB7B7] font-medium">Status</dt><dd className="text-slate-800 dark:text-[#D4D8DD] font-semibold mt-0.5">{viewing.status}</dd></div>
             </dl>
-            <div className="pt-3 border-t border-slate-100 dark:border-[#2F333A] flex justify-end">
+            <div className="pt-3 border-t border-slate-100 dark:border-[#2E4156] flex justify-end">
               <button
                 onClick={() => setViewing(null)}
-                className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-[#1C1F24] hover:bg-slate-200 dark:hover:bg-[#252A34] text-slate-800 dark:text-slate-200 text-xs font-semibold transition-colors"
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-700 dark:text-[#D4D8DD] hover:bg-slate-100 dark:hover:bg-[#2E4156] text-xs font-semibold transition-colors"
               >
                 Close
               </button>
@@ -331,20 +331,20 @@ export default function WorkersRosterPage() {
       {/* Create modal */}
       {formOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-slate-100 dark:border-[#2F333A] pb-3">
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-slate-100 dark:border-[#2E4156] pb-3">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-[#C9A15A]/15 text-[#C9A15A]">
+                <div className="p-2 rounded-xl bg-[#2E4156] text-[#C0C8CA] border border-[#AAB7B7]/25">
                   <Users className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-slate-900 dark:text-white">Register Worker</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Add field craft labor or site operative</p>
+                  <h2 className="text-base font-bold text-slate-900 dark:text-[#D4D8DD]">Register Worker</h2>
+                  <p className="text-xs text-slate-500 dark:text-[#AAB7B7]">Add field craft labor or site operative</p>
                 </div>
               </div>
               <button
                 onClick={() => setFormOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-[#AAB7B7] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
               >
                 <X size={16} />
               </button>
@@ -352,7 +352,7 @@ export default function WorkersRosterPage() {
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Project / site assignment *</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Project / site assignment *</label>
                 <select className={inputCls} value={form.projectId} onChange={(e) => setForm({ ...form, projectId: e.target.value })}>
                   {projects.length === 0 && <option value="">No accessible projects</option>}
                   {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
@@ -360,48 +360,48 @@ export default function WorkersRosterPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Worker ID</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Worker ID</label>
                   <input className={inputCls} value={form.workerId} onChange={(e) => setForm({ ...form, workerId: e.target.value })} placeholder="WRK-1001" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Full name *</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Full name *</label>
                   <input className={inputCls} value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} placeholder="Worker full name" />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Trade / role</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Trade / role</label>
                   <input className={inputCls} value={form.trade} onChange={(e) => setForm({ ...form, trade: e.target.value })} placeholder="Mason, Carpenter, Welder..." />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Daily wage (ETB)</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Daily wage (ETB)</label>
                   <input type="number" min="0" className={inputCls} value={form.dailyWageETB} onChange={(e) => setForm({ ...form, dailyWageETB: e.target.value })} />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Phone</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Phone</label>
                   <input className={inputCls} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+251-9X-XXX-XXXX" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Emergency contact</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Emergency contact</label>
                   <input className={inputCls} value={form.emergencyContact} onChange={(e) => setForm({ ...form, emergencyContact: e.target.value })} placeholder="Contact name & number" />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Join date</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Join date</label>
                   <input type="date" className={inputCls} value={form.joinDate} onChange={(e) => setForm({ ...form, joinDate: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Safety certified</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Safety certified</label>
                   <select className={inputCls} value={form.safetyCertified} onChange={(e) => setForm({ ...form, safetyCertified: e.target.value })}>
                     <option value="false">Pending</option>
                     <option value="true">Certified</option>
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Status</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Status</label>
                   <select className={inputCls} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
                     {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
@@ -411,17 +411,17 @@ export default function WorkersRosterPage() {
 
             {formError && <p className="text-xs text-rose-500 font-medium">{formError}</p>}
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#2F333A]">
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#2E4156]">
               <button
                 onClick={() => setFormOpen(false)}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#2F333A] text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-700 dark:text-[#D4D8DD] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={submit}
                 disabled={busy}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 text-xs font-bold shadow-md shadow-amber-500/20 transition-all disabled:opacity-60"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C0C8CA] hover:bg-white text-[#1A2D42] text-xs font-bold shadow-md transition-all disabled:opacity-60"
               >
                 {busy && <Loader2 size={14} className="animate-spin" />}
                 Register Worker

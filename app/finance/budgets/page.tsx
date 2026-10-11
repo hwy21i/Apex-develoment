@@ -153,26 +153,26 @@ export default function FinanceBudgetsPage() {
   };
 
   const inputCls =
-    "w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C9A15A]";
+    "w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 focus:outline-none focus:border-[#C0C8CA]";
 
   return (
     <AppShell>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[#C9A15A] font-mono text-xs font-bold uppercase tracking-wider mb-1">
-              <PieChart className="w-4 h-4" /> Capital Allocation & Controls
+            <div className="flex items-center gap-2 text-[#C0C8CA] font-mono text-xs font-bold uppercase tracking-wider mb-1">
+              <PieChart className="w-4 h-4" /> Capital Allocation &amp; Controls
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#F4F4F5] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#D4D8DD] tracking-tight">
               Project Budgets &amp; CSI Divisions
             </h1>
-            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#A7ABB3] mt-1">
+            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#AAB7B7] mt-1">
               Track allocated capital, committed purchase orders, actual expenditures, and cost variance
             </p>
           </div>
           <button
             onClick={openForm}
-            className="inline-flex items-center justify-center gap-2 bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-amber-500/20 transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
+            className="inline-flex items-center justify-center gap-2 bg-[#C0C8CA] hover:bg-white text-[#1A2D42] font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-black/10 transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
           >
             <Plus size={16} />
             <span>New Budget Line</span>
@@ -181,20 +181,20 @@ export default function FinanceBudgetsPage() {
 
         {/* Top metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Capital Allocated</p>
-            <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{fmt(totalAllocated)}</p>
+          <div className="glass-card border border-slate-200 dark:border-[#AAB7B7]/25 bg-white dark:bg-[#2E4156]/30 rounded-2xl p-4">
+            <p className="text-xs text-slate-500 dark:text-[#AAB7B7] font-medium">Total Capital Allocated</p>
+            <p className="text-2xl font-extrabold text-slate-900 dark:text-[#D4D8DD] mt-1">{fmt(totalAllocated)}</p>
           </div>
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Actual Expenditures</p>
+          <div className="glass-card border border-slate-200 dark:border-[#AAB7B7]/25 bg-white dark:bg-[#2E4156]/30 rounded-2xl p-4">
+            <p className="text-xs text-slate-500 dark:text-[#AAB7B7] font-medium">Actual Expenditures</p>
             <p className="text-2xl font-extrabold text-sky-600 dark:text-sky-400 mt-1">{fmt(totalSpent)}</p>
           </div>
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Committed (POs/Contracts)</p>
+          <div className="glass-card border border-slate-200 dark:border-[#AAB7B7]/25 bg-white dark:bg-[#2E4156]/30 rounded-2xl p-4">
+            <p className="text-xs text-slate-500 dark:text-[#AAB7B7] font-medium">Committed (POs/Contracts)</p>
             <p className="text-2xl font-extrabold text-purple-600 dark:text-purple-400 mt-1">{fmt(totalCommitted)}</p>
           </div>
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Net Uncommitted Balance</p>
+          <div className="glass-card border border-slate-200 dark:border-[#AAB7B7]/25 bg-white dark:bg-[#2E4156]/30 rounded-2xl p-4">
+            <p className="text-xs text-slate-500 dark:text-[#AAB7B7] font-medium">Net Uncommitted Balance</p>
             <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">{fmt(totalRemaining)}</p>
           </div>
         </div>
@@ -202,19 +202,19 @@ export default function FinanceBudgetsPage() {
         {/* Search & filters */}
         <div className="flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-[220px]">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#AAB7B7]" />
             <input
               type="text"
               placeholder="Filter by project or work breakdown category..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:border-[#C9A15A] shadow-xs transition-colors"
+              className="w-full bg-white dark:bg-[#1A2D42]/80 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 outline-none focus:border-[#C0C8CA] shadow-xs transition-colors"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#C9A15A]"
+            className="bg-white dark:bg-[#1A2D42]/80 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-[#D4D8DD] focus:outline-none focus:border-[#C0C8CA]"
           >
             <option value="All">All Statuses</option>
             <option value="On Track">On Track</option>
@@ -224,21 +224,21 @@ export default function FinanceBudgetsPage() {
         </div>
 
         {/* Budget list */}
-        <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl overflow-hidden shadow-xs">
+        <div className="glass-card border border-slate-200 dark:border-[#AAB7B7]/20 rounded-2xl overflow-hidden shadow-xs">
           {loading ? (
             <div className="flex items-center justify-center py-16 text-slate-400">
-              <Loader2 size={24} className="animate-spin text-[#C9A15A]" />
+              <Loader2 size={24} className="animate-spin text-[#C0C8CA]" />
             </div>
           ) : error ? (
             <div className="p-6 text-center">
               <p className="text-sm text-rose-500">{error}</p>
-              <button onClick={() => reload()} className="mt-3 text-xs font-semibold text-[#C9A15A] hover:underline">
+              <button onClick={() => reload()} className="mt-3 text-xs font-semibold text-[#C0C8CA] hover:underline">
                 Retry
               </button>
             </div>
           ) : filtered.length === 0 ? (
             <div className="p-12 text-center text-slate-400">
-              <PieChart size={32} className="mx-auto mb-2 opacity-40 text-[#C9A15A]" />
+              <PieChart size={32} className="mx-auto mb-2 opacity-40 text-[#C0C8CA]" />
               <p className="text-sm">
                 {budgets.length === 0 ? "No budget lines recorded yet." : "No budgets match your filters."}
               </p>
@@ -246,7 +246,7 @@ export default function FinanceBudgetsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50/80 dark:bg-[#121418]/80 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono text-[10px] border-b border-slate-200 dark:border-[#2F333A]">
+                <thead className="bg-slate-50/80 dark:bg-[#1A2D42]/90 text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider font-mono text-[10px] border-b border-slate-200 dark:border-[#AAB7B7]/20">
                   <tr>
                     <th className="px-5 py-3">Project &amp; WBS Category</th>
                     <th className="px-5 py-3">FY</th>
@@ -258,38 +258,38 @@ export default function FinanceBudgetsPage() {
                     <th className="px-5 py-3 text-center">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-[#2F333A]">
+                <tbody className="divide-y divide-slate-100 dark:divide-[#AAB7B7]/15">
                   {filtered.map((b) => (
-                    <tr key={b._id} className="hover:bg-slate-50/70 dark:hover:bg-[#1A1D24]/60 transition-colors">
+                    <tr key={b._id} className="hover:bg-slate-50/70 dark:hover:bg-[#2E4156]/30 transition-colors">
                       <td className="px-5 py-3.5">
-                        <span className="text-slate-900 dark:text-white font-bold">{projectName(b.projectId)}</span>
-                        <p className="text-slate-500 dark:text-slate-400 text-[11px] mt-0.5">
-                          <span className="font-mono text-[#C9A15A] font-semibold">{b.budgetCode}</span>
+                        <span className="text-slate-900 dark:text-[#D4D8DD] font-bold">{projectName(b.projectId)}</span>
+                        <p className="text-slate-500 dark:text-[#AAB7B7] text-[11px] mt-0.5">
+                          <span className="font-mono text-[#C0C8CA] font-semibold">{b.budgetCode}</span>
                           {b.budgetCode && " · "}
                           {b.category}
                         </p>
                       </td>
-                      <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300 font-mono text-[11px]">{b.fiscalYear}</td>
-                      <td className="px-5 py-3.5 text-right font-mono font-bold text-slate-900 dark:text-white">{fmt(b.allocatedAmount)}</td>
-                      <td className="px-5 py-3.5 text-right font-mono text-slate-700 dark:text-slate-300">{fmt(b.spentAmount)}</td>
-                      <td className="px-5 py-3.5 text-right font-mono text-slate-500 dark:text-slate-400">{fmt(b.committedAmount)}</td>
+                      <td className="px-5 py-3.5 text-slate-600 dark:text-[#D4D8DD] font-mono text-[11px]">{b.fiscalYear}</td>
+                      <td className="px-5 py-3.5 text-right font-mono font-bold text-slate-900 dark:text-[#D4D8DD]">{fmt(b.allocatedAmount)}</td>
+                      <td className="px-5 py-3.5 text-right font-mono text-slate-700 dark:text-[#D4D8DD]">{fmt(b.spentAmount)}</td>
+                      <td className="px-5 py-3.5 text-right font-mono text-slate-500 dark:text-[#AAB7B7]">{fmt(b.committedAmount)}</td>
                       <td className={`px-5 py-3.5 text-right font-mono font-bold ${b.remainingAmount < 0 ? "text-rose-600 dark:text-rose-400" : "text-emerald-600 dark:text-emerald-400"}`}>
                         {fmt(b.remainingAmount)}
                       </td>
                       <td className="px-5 py-3.5">
-                        <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                        <div className="w-full bg-slate-200 dark:bg-[#1A2D42] rounded-full h-2 overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all ${
                               b.variancePct > 100
                                 ? "bg-rose-500"
                                 : b.variancePct > 80
                                 ? "bg-amber-500"
-                                : "bg-[#C9A15A]"
+                                : "bg-[#C0C8CA]"
                             }`}
                             style={{ width: `${Math.min(b.variancePct, 100)}%` }}
                           />
                         </div>
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-1 block">{b.variancePct}% used</span>
+                        <span className="text-[10px] text-slate-500 dark:text-[#AAB7B7] font-mono mt-1 block">{b.variancePct}% used</span>
                       </td>
                       <td className="px-5 py-3.5 text-center">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${STATUS_BADGES[b.status] || STATUS_BADGES["On Track"]}`}>
@@ -308,20 +308,20 @@ export default function FinanceBudgetsPage() {
       {/* Create modal */}
       {formOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-slate-100 dark:border-[#2F333A] pb-3">
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-slate-100 dark:border-[#2E4156] pb-3">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-[#C9A15A]/15 text-[#C9A15A]">
+                <div className="p-2 rounded-xl bg-[#2E4156] text-[#C0C8CA] border border-[#AAB7B7]/25">
                   <PieChart className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-slate-900 dark:text-white">New Budget Line</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Allocate budget by CSI work breakdown</p>
+                  <h2 className="text-base font-bold text-slate-900 dark:text-[#D4D8DD]">New Budget Line</h2>
+                  <p className="text-xs text-slate-500 dark:text-[#AAB7B7]">Allocate budget by CSI work breakdown</p>
                 </div>
               </div>
               <button
                 onClick={() => setFormOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-[#AAB7B7] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
               >
                 <X size={16} />
               </button>
@@ -329,7 +329,7 @@ export default function FinanceBudgetsPage() {
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Project *</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Project *</label>
                 <select className={inputCls} value={form.projectId} onChange={(e) => setForm({ ...form, projectId: e.target.value })}>
                   {projects.length === 0 && <option value="">No accessible projects</option>}
                   {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
@@ -337,45 +337,45 @@ export default function FinanceBudgetsPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Budget code</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Budget code</label>
                   <input className={inputCls} value={form.budgetCode} onChange={(e) => setForm({ ...form, budgetCode: e.target.value })} placeholder="CSI-03-CONC" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">WBS category / description</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">WBS category / description</label>
                   <input className={inputCls} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Substructure & Concrete" />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Total allocated (ETB)</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Total allocated (ETB)</label>
                   <input type="number" min="0" className={inputCls} value={form.totalAmount} onChange={(e) => setForm({ ...form, totalAmount: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Spent to date (ETB)</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Spent to date (ETB)</label>
                   <input type="number" min="0" className={inputCls} value={form.spentAmount} onChange={(e) => setForm({ ...form, spentAmount: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Committed (ETB)</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Committed (ETB)</label>
                   <input type="number" min="0" className={inputCls} value={form.committedAmount} onChange={(e) => setForm({ ...form, committedAmount: e.target.value })} />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Start date</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Start date</label>
                   <input type="date" className={inputCls} value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">End date</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">End date</label>
                   <input type="date" className={inputCls} value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Fiscal year</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Fiscal year</label>
                   <input className={inputCls} value={form.fiscalYear} onChange={(e) => setForm({ ...form, fiscalYear: e.target.value })} placeholder="2023/24" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Status</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Status</label>
                   <select className={inputCls} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as BudgetStatus })}>
                     {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
@@ -385,17 +385,17 @@ export default function FinanceBudgetsPage() {
 
             {formError && <p className="text-xs text-rose-500 font-medium">{formError}</p>}
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#2F333A]">
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#2E4156]">
               <button
                 onClick={() => setFormOpen(false)}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#2F333A] text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-700 dark:text-[#D4D8DD] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={submit}
                 disabled={busy}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 text-xs font-bold shadow-md shadow-amber-500/20 transition-all disabled:opacity-60"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C0C8CA] hover:bg-white text-[#1A2D42] text-xs font-bold shadow-md transition-all disabled:opacity-60"
               >
                 {busy && <Loader2 size={14} className="animate-spin" />}
                 Create Budget Line

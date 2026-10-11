@@ -62,7 +62,7 @@ export default function ProjectsListClient({
       {/* Search and Filter Toolbar */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#AAB7B7]" />
           <input
             type="text"
             placeholder="Search projects by name, code, client, or site location..."
@@ -71,12 +71,12 @@ export default function ProjectsListClient({
               setLocalQuery(e.target.value);
               setGlobalQuery(e.target.value);
             }}
-            className="w-full bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] text-slate-900 dark:text-slate-100 text-xs rounded-xl pl-9 pr-8 py-2.5 outline-none focus:border-[#C9A15A] focus:ring-1 focus:ring-[#C9A15A]/30 transition-all shadow-xs"
+            className="w-full bg-white dark:bg-[#1A2D42]/80 border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 text-xs rounded-xl pl-9 pr-8 py-2.5 outline-none focus:border-[#C0C8CA] focus:ring-1 focus:ring-[#C0C8CA]/30 transition-all shadow-xs"
           />
           {(localQuery || globalQuery) && (
             <button
               onClick={handleClear}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 rounded-full"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-[#D4D8DD] p-0.5 rounded-full"
               title="Clear search"
             >
               <X className="w-3.5 h-3.5" />
@@ -92,8 +92,8 @@ export default function ProjectsListClient({
               onClick={() => setStatusFilter(st)}
               className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 statusFilter === st
-                  ? "bg-[#C9A15A] text-slate-950 font-bold shadow-xs"
-                  : "bg-white dark:bg-[#16181D] text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-[#2F333A]"
+                  ? "bg-[#C0C8CA] text-[#1A2D42] font-bold shadow-xs"
+                  : "bg-white dark:bg-[#1A2D42]/80 text-slate-600 dark:text-[#AAB7B7] hover:text-slate-900 dark:hover:text-[#D4D8DD] border border-slate-200 dark:border-[#AAB7B7]/25"
               }`}
             >
               {st}
@@ -104,12 +104,12 @@ export default function ProjectsListClient({
 
       {/* Projects Grid or Empty State */}
       {filteredProjects.length === 0 ? (
-        <section className="glass-card rounded-2xl border border-dashed border-slate-300 dark:border-[#2F333A] p-12 text-center shadow-xs">
-          <Building2 className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-          <h2 className="text-base font-semibold text-slate-800 dark:text-slate-200">
+        <section className="glass-card rounded-2xl border border-dashed border-slate-300 dark:border-[#AAB7B7]/30 p-12 text-center shadow-xs">
+          <Building2 className="w-10 h-10 text-[#AAB7B7] mx-auto mb-3" />
+          <h2 className="text-base font-semibold text-slate-800 dark:text-[#D4D8DD]">
             {effectiveQuery ? `No projects matching "${effectiveQuery}"` : "No projects found"}
           </h2>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+          <p className="mt-1 text-xs text-slate-500 dark:text-[#AAB7B7] max-w-sm mx-auto">
             {effectiveQuery
               ? "Try adjusting your search terms or clearing your filters."
               : "Create the first project to start managing site execution."}
@@ -118,7 +118,7 @@ export default function ProjectsListClient({
             {effectiveQuery && (
               <button
                 onClick={handleClear}
-                className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#2F333A] text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25 text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] hover:bg-slate-100 dark:hover:bg-[#2E4156]"
               >
                 Clear Search
               </button>
@@ -126,7 +126,7 @@ export default function ProjectsListClient({
             {canCreate && (
               <Link
                 href="/projects/new"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#C9A15A] text-slate-950 text-xs font-bold shadow-md shadow-amber-500/20 hover:bg-[#B8924B] transition-all"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#C0C8CA] text-[#1A2D42] text-xs font-bold shadow-md shadow-black/10 hover:bg-white transition-all"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Create Project</span>
@@ -146,31 +146,31 @@ export default function ProjectsListClient({
               <Link
                 key={project._id}
                 href={`/projects/${project._id}/overview`}
-                className="group glass-card rounded-2xl border border-slate-200 dark:border-[#2F333A] p-5 transition-all hover:-translate-y-1 hover:border-[#C9A15A] flex flex-col justify-between"
+                className="group glass-card rounded-2xl border border-slate-200 dark:border-[#AAB7B7]/25 bg-white dark:bg-[#2E4156]/30 p-5 transition-all hover:-translate-y-1 hover:border-[#C0C8CA] flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <span className="text-[11px] font-mono text-[#C9A15A] font-bold">
+                      <span className="text-[11px] font-mono text-[#C0C8CA] font-bold">
                         {project.projectCode}
                       </span>
-                      <h2 className="mt-1 text-base font-bold text-slate-900 dark:text-white group-hover:text-[#C9A15A] transition-colors">
+                      <h2 className="mt-1 text-base font-bold text-slate-900 dark:text-[#D4D8DD] group-hover:text-[#C0C8CA] transition-colors">
                         {project.name}
                       </h2>
                     </div>
                     <StatusBadge value={project.healthStatus || project.status} />
                   </div>
 
-                  <div className="mt-3 space-y-1.5 text-xs text-slate-500 dark:text-slate-400">
+                  <div className="mt-3 space-y-1.5 text-xs text-slate-500 dark:text-[#AAB7B7]">
                     <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <MapPin className="w-3.5 h-3.5 text-[#AAB7B7] shrink-0" />
                       <span className="truncate">{project.location || "Addis Ababa, Ethiopia"}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <DollarSign className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <DollarSign className="w-3.5 h-3.5 text-[#AAB7B7] shrink-0" />
                       <span>
                         Budget:{" "}
-                        <strong className="text-slate-800 dark:text-slate-200">
+                        <strong className="text-slate-800 dark:text-[#D4D8DD]">
                           {formattedBudget}
                         </strong>
                       </span>
@@ -178,10 +178,10 @@ export default function ProjectsListClient({
                   </div>
                 </div>
 
-                <div className="mt-5 pt-3 border-t border-slate-100 dark:border-[#2F333A]">
+                <div className="mt-5 pt-3 border-t border-slate-100 dark:border-[#AAB7B7]/20">
                   <div className="flex justify-between text-[11px] mb-1.5">
-                    <span className="text-slate-500 dark:text-slate-400 font-medium">Progress</span>
-                    <span className="text-[#C9A15A] font-mono font-bold">
+                    <span className="text-slate-500 dark:text-[#AAB7B7] font-medium">Progress</span>
+                    <span className="text-[#C0C8CA] font-mono font-bold">
                       {project.progressPercentage}%
                     </span>
                   </div>

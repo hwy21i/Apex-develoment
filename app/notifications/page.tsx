@@ -30,14 +30,14 @@ interface NotificationItem {
 }
 
 const TYPE_META: Record<NotificationType, { label: string; icon: React.ReactNode }> = {
-  MATERIAL_REQUEST: { label: "Material Request", icon: <Package size={16} className="text-[#C9A15A]" /> },
+  MATERIAL_REQUEST: { label: "Material Request", icon: <Package size={16} className="text-[#C0C8CA]" /> },
   PO_APPROVAL: { label: "PO Approval", icon: <Clock size={16} className="text-amber-500" /> },
   LOW_STOCK: { label: "Low Stock", icon: <AlertTriangle size={16} className="text-rose-500" /> },
   INVOICE_OVERDUE: { label: "Invoice Overdue", icon: <Receipt size={16} className="text-orange-500" /> },
-  TASK_ASSIGNED: { label: "Task Assigned", icon: <Wrench size={16} className="text-sky-500" /> },
+  TASK_ASSIGNED: { label: "Task Assigned", icon: <Wrench size={16} className="text-sky-400" /> },
   PROJECT_DELAY: { label: "Project Delay", icon: <CalendarClock size={16} className="text-rose-500" /> },
-  SAFETY_ALERT: { label: "Safety Alert", icon: <ShieldAlert size={16} className="text-purple-500" /> },
-  SYSTEM: { label: "System", icon: <Info size={16} className="text-slate-400" /> },
+  SAFETY_ALERT: { label: "Safety Alert", icon: <ShieldAlert size={16} className="text-purple-400" /> },
+  SYSTEM: { label: "System", icon: <Info size={16} className="text-[#AAB7B7]" /> },
 };
 
 function timeAgo(iso: string): string {
@@ -115,13 +115,13 @@ export default function NotificationsCenterPage() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[#C9A15A] font-mono text-xs font-bold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#C0C8CA] font-mono text-xs font-bold uppercase tracking-wider mb-1">
               <Bell className="w-4 h-4" /> Real-time Activity Feed
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#F4F4F5] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#D4D8DD] tracking-tight">
               Notifications &amp; Alerts
             </h1>
-            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#A7ABB3] mt-1">
+            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#AAB7B7] mt-1">
               Purchase requisitions, cost alerts, delivery notices, and site critical events
             </p>
           </div>
@@ -130,9 +130,9 @@ export default function NotificationsCenterPage() {
               <button
                 onClick={markAllAsRead}
                 disabled={busy}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white dark:bg-[#1C1F24] hover:bg-slate-100 dark:hover:bg-[#252A34] text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-[#2F333A] text-xs font-semibold transition-all hover:scale-[1.015] active:scale-[0.98] shadow-xs disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white dark:bg-[#1A2D42] hover:bg-slate-100 dark:hover:bg-[#2E4156] text-slate-800 dark:text-[#D4D8DD] border border-slate-200 dark:border-[#AAB7B7]/25 text-xs font-semibold transition-all hover:scale-[1.015] active:scale-[0.98] shadow-xs disabled:opacity-50"
               >
-                <CheckCheck size={14} className="text-[#C9A15A]" />
+                <CheckCheck size={14} className="text-[#C0C8CA]" />
                 <span>Mark all as read</span>
               </button>
             )}
@@ -145,8 +145,8 @@ export default function NotificationsCenterPage() {
             onClick={() => setFilter("All")}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
               filter === "All"
-                ? "bg-[#C9A15A] text-slate-950 shadow-sm"
-                : "bg-white dark:bg-[#16181D] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-[#2F333A]"
+                ? "bg-[#C0C8CA] text-[#1A2D42] shadow-sm font-extrabold"
+                : "bg-white dark:bg-[#1A2D42]/80 text-slate-600 dark:text-[#AAB7B7] hover:text-slate-900 dark:hover:text-[#D4D8DD] border border-slate-200 dark:border-[#AAB7B7]/25"
             }`}
           >
             All ({notifications.length})
@@ -155,8 +155,8 @@ export default function NotificationsCenterPage() {
             onClick={() => setFilter("Unread")}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
               filter === "Unread"
-                ? "bg-[#C9A15A] text-slate-950 shadow-sm"
-                : "bg-white dark:bg-[#16181D] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-[#2F333A]"
+                ? "bg-[#C0C8CA] text-[#1A2D42] shadow-sm font-extrabold"
+                : "bg-white dark:bg-[#1A2D42]/80 text-slate-600 dark:text-[#AAB7B7] hover:text-slate-900 dark:hover:text-[#D4D8DD] border border-slate-200 dark:border-[#AAB7B7]/25"
             }`}
           >
             Unread ({unreadCount})
@@ -166,14 +166,14 @@ export default function NotificationsCenterPage() {
         {/* Notifications list */}
         {loading ? (
           <div className="flex items-center justify-center py-16 text-slate-400">
-            <Loader2 size={24} className="animate-spin text-[#C9A15A]" />
+            <Loader2 size={24} className="animate-spin text-[#C0C8CA]" />
           </div>
         ) : error ? (
           <div className="glass-card border border-rose-500/30 rounded-2xl p-6 text-center">
             <p className="text-sm text-rose-500">{error}</p>
             <button
               onClick={() => { setLoading(true); load(); }}
-              className="mt-3 text-xs font-semibold text-[#C9A15A] hover:underline"
+              className="mt-3 text-xs font-semibold text-[#C0C8CA] hover:underline"
             >
               Retry
             </button>
@@ -185,30 +185,30 @@ export default function NotificationsCenterPage() {
               const inner = (
                 <>
                   <div className="flex items-start gap-3">
-                    <div className="p-2.5 bg-slate-100 dark:bg-[#121418] rounded-xl border border-slate-200 dark:border-[#2F333A] shrink-0">
+                    <div className="p-2.5 bg-slate-100 dark:bg-[#1A2D42] rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25 shrink-0">
                       {meta.icon}
                     </div>
                     <div className="space-y-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className={`text-xs sm:text-sm font-bold ${!n.isRead ? "text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-400"}`}>
+                        <h3 className={`text-xs sm:text-sm font-bold ${!n.isRead ? "text-slate-900 dark:text-[#D4D8DD]" : "text-slate-600 dark:text-[#AAB7B7]"}`}>
                           {n.title}
                         </h3>
                         {!n.isRead && (
-                          <span className="w-2 h-2 rounded-full bg-[#C9A15A] inline-block shrink-0" />
+                          <span className="w-2 h-2 rounded-full bg-[#C0C8CA] inline-block shrink-0" />
                         )}
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#1C1F24] text-slate-600 dark:text-slate-300 font-semibold border border-slate-200 dark:border-[#2F333A]">
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#2E4156] text-slate-600 dark:text-[#D4D8DD] font-semibold border border-slate-200 dark:border-[#AAB7B7]/25">
                           {meta.label}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">{n.message}</p>
-                      <p className="text-[11px] text-slate-400 font-mono">{timeAgo(n.createdAt)}</p>
+                      <p className="text-xs text-slate-600 dark:text-[#D4D8DD]/90 max-w-2xl leading-relaxed">{n.message}</p>
+                      <p className="text-[11px] text-[#AAB7B7] font-mono">{timeAgo(n.createdAt)}</p>
                     </div>
                   </div>
 
                   {!n.isRead && (
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); markAsRead(n._id); }}
-                      className="p-1.5 text-slate-400 hover:text-[#C9A15A] hover:bg-slate-100 dark:hover:bg-[#1C1F24] rounded-lg transition-colors self-start shrink-0"
+                      className="p-1.5 text-[#AAB7B7] hover:text-[#C0C8CA] hover:bg-slate-100 dark:hover:bg-[#2E4156] rounded-lg transition-colors self-start shrink-0"
                       title="Mark as read"
                     >
                       <Check size={16} />
@@ -219,12 +219,12 @@ export default function NotificationsCenterPage() {
 
               const cardClasses = `glass-card border rounded-2xl p-4 transition-all hover:scale-[1.005] flex items-start justify-between gap-4 ${
                 !n.isRead
-                  ? "border-[#C9A15A]/40 shadow-xs"
-                  : "border-slate-200 dark:border-[#2F333A]/60 opacity-85"
+                  ? "border-[#C0C8CA]/50 shadow-xs bg-white dark:bg-[#2E4156]/35"
+                  : "border-slate-200 dark:border-[#AAB7B7]/20 opacity-85 bg-white dark:bg-[#1A2D42]/40"
               }`;
 
               return n.link ? (
-                <Link key={n._id} href={n.link} className={`${cardClasses} hover:border-[#C9A15A]`}>
+                <Link key={n._id} href={n.link} className={`${cardClasses} hover:border-[#C0C8CA]`}>
                   {inner}
                 </Link>
               ) : (
@@ -235,8 +235,8 @@ export default function NotificationsCenterPage() {
             })}
 
             {filtered.length === 0 && (
-              <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-12 text-center text-slate-400">
-                <Bell size={32} className="mx-auto mb-2 opacity-40 text-[#C9A15A]" />
+              <div className="glass-card border border-slate-200 dark:border-[#AAB7B7]/20 rounded-2xl p-12 text-center text-slate-400">
+                <Bell size={32} className="mx-auto mb-2 opacity-40 text-[#C0C8CA]" />
                 <p className="text-sm">
                   {filter === "Unread" ? "No unread notifications." : "No notifications yet."}
                 </p>

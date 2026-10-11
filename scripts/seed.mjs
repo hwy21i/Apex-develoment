@@ -6,20 +6,17 @@ try {
   dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
 } catch {}
 
-const FALLBACK_DIRECT_URI =
-  "mongodb://hawariyayohannes52_db_user:yohatli@ac-smcmcr5-shard-00-00.zm7lnui.mongodb.net:27017,ac-smcmcr5-shard-00-01.zm7lnui.mongodb.net:27017,ac-smcmcr5-shard-00-02.zm7lnui.mongodb.net:27017/construction_management?ssl=true&replicaSet=atlas-relbq0-shard-0&authSource=admin&appName=Cluster0";
-
-const uri = process.env.MONGODB_URI || FALLBACK_DIRECT_URI;
+const uri = process.env.MONGODB_URI;
+if (!uri) {
+  console.error("ERROR: MONGODB_URI environment variable is required. Run with --env-file=.env.local");
+  process.exit(1);
+}
 
 try {
   await mongoose.connect(uri, { serverSelectionTimeoutMS: 15000 });
 } catch (e) {
-  if (uri !== FALLBACK_DIRECT_URI) {
-    console.warn("Primary URI failed. Retrying with direct replica set...");
-    await mongoose.connect(FALLBACK_DIRECT_URI, { serverSelectionTimeoutMS: 15000 });
-  } else {
-    throw e;
-  }
+  console.error("Failed to connect to MongoDB:", e.message);
+  process.exit(1);
 }
 
 // ============ Define Core Mongoose Schemas ============

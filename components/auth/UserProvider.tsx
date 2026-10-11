@@ -18,6 +18,9 @@ export interface CurrentUser {
   department?: string;
   position?: string;
   profileImage?: string;
+  organizationId?: string;
+  customPermissions?: string[];
+  permissions?: string[];
 }
 
 interface UserContextType {
@@ -54,6 +57,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             department: u.department,
             position: u.position,
             profileImage: u.profileImage,
+            organizationId: u.organizationId,
+            customPermissions: u.customPermissions,
+            permissions: json.data.permissions || [],
           });
           return;
         }
@@ -87,6 +93,13 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const p = window.location.pathname.toLowerCase();
+      if (p === "/login" || p === "/authpage") {
+        setLoading(false);
+        return;
+      }
+    }
     fetchUser().finally(() => setLoading(false));
   }, [fetchUser]);
 

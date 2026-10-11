@@ -25,6 +25,8 @@ export async function getActiveUser(request?: Request): Promise<SessionUser | nu
     email: user.email,
     role: user.role,
     department: user.department,
+    organizationId: user.organizationId ? String(user.organizationId) : undefined,
+    customPermissions: user.customPermissions || [],
     assignedProjects: (user.assignedProjects || []).map(String),
   };
 }

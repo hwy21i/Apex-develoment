@@ -153,17 +153,22 @@ export default function SupplierInvoicesPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white">Supplier Invoices</h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <div className="flex items-center gap-2 text-[#C0C8CA] font-mono text-xs font-bold uppercase tracking-wider mb-1">
+              <Receipt className="w-4 h-4" /> Accounts Payable &amp; Billing
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-[#D4D8DD] tracking-tight">
+              Supplier Invoices
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-[#AAB7B7] mt-1">
               Accounts payable, supplier billing vouchers, and payment disbursement tracking
             </p>
           </div>
           <button
             type="button"
             onClick={() => setIsCreateOpen(true)}
-            className="flex items-center gap-2 bg-[#C9A15A] hover:bg-[#B89248] text-slate-950 px-4 py-2 rounded-lg text-sm font-semibold transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 bg-[#C0C8CA] hover:bg-white text-[#1A2D42] px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all self-start sm:self-auto shrink-0"
           >
             <Plus size={16} />
             Record Invoice
@@ -172,23 +177,23 @@ export default function SupplierInvoicesPage() {
 
         {/* Top metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Total Invoiced</p>
-            <p className="text-xl font-bold text-white mt-1">
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <p className="text-xs font-semibold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider">Total Invoiced</p>
+            <p className="text-xl sm:text-2xl font-black text-slate-900 dark:text-[#D4D8DD] mt-1">
               {fmt(invoices.reduce((sum, i) => sum + i.amount, 0))}
             </p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Outstanding Payable</p>
-            <p className="text-xl font-bold text-yellow-400 mt-1">{fmt(totalPayable)}</p>
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <p className="text-xs font-semibold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider">Outstanding Payable</p>
+            <p className="text-xl sm:text-2xl font-black text-amber-500 dark:text-amber-400 mt-1">{fmt(totalPayable)}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Disbursed Payments</p>
-            <p className="text-xl font-bold text-green-400 mt-1">{fmt(totalPaid)}</p>
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <p className="text-xs font-semibold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider">Disbursed Payments</p>
+            <p className="text-xl sm:text-2xl font-black text-emerald-500 dark:text-emerald-400 mt-1">{fmt(totalPaid)}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Overdue Vouchers</p>
-            <p className="text-xl font-bold text-red-400 mt-1">
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <p className="text-xs font-semibold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider">Overdue Vouchers</p>
+            <p className="text-xl sm:text-2xl font-black text-rose-500 dark:text-rose-400 mt-1">
               {invoices.filter((i) => i.status === "Overdue").length}
             </p>
           </div>
@@ -197,19 +202,19 @@ export default function SupplierInvoicesPage() {
         {/* Filters */}
         <div className="flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-[220px]">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#AAB7B7]" />
             <input
               type="text"
               placeholder="Search by Invoice#, PO#, Supplier..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              className="w-full bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 focus:outline-none focus:border-[#C0C8CA] shadow-xs"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+            className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:outline-none focus:border-[#C0C8CA] shadow-xs"
           >
             <option value="All">All Statuses</option>
             <option value="Draft">Draft</option>
@@ -222,44 +227,44 @@ export default function SupplierInvoicesPage() {
         </div>
 
         {/* Invoices table */}
-        <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+        <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-900/50 border-b border-gray-700">
+            <table className="w-full text-xs">
+              <thead className="bg-slate-50 dark:bg-[#2E4156]/40 border-b border-slate-200 dark:border-[#AAB7B7]/25">
                 <tr>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Invoice #</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Supplier & PO</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Project</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Due Date</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Total Amount</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Paid / Balance</th>
-                  <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Status</th>
-                  <th className="text-right text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Actions</th>
+                  <th className="text-left text-[11px] font-bold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3.5">Invoice #</th>
+                  <th className="text-left text-[11px] font-bold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3.5">Supplier &amp; PO</th>
+                  <th className="text-left text-[11px] font-bold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3.5">Project</th>
+                  <th className="text-left text-[11px] font-bold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3.5">Due Date</th>
+                  <th className="text-left text-[11px] font-bold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3.5">Total Amount</th>
+                  <th className="text-left text-[11px] font-bold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3.5">Paid / Balance</th>
+                  <th className="text-left text-[11px] font-bold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3.5">Status</th>
+                  <th className="text-right text-[11px] font-bold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3.5">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="divide-y divide-slate-100 dark:divide-[#2E4156]/50">
                 {filtered.map((i) => {
                   const balance = i.amount - i.paidAmount;
                   return (
-                    <tr key={i._id} className="hover:bg-gray-700/30 transition-colors">
-                      <td className="px-4 py-3 font-mono text-blue-400 font-medium">
+                    <tr key={i._id} className="hover:bg-slate-50 dark:hover:bg-[#2E4156]/20 transition-colors">
+                      <td className="px-4 py-3 font-mono text-[#C0C8CA] font-bold">
                         {i.invoiceNumber}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-white font-medium">{i.supplierName}</span>
-                        <p className="font-mono text-gray-400 text-xs mt-0.5">{i.poNumber}</p>
+                        <span className="text-slate-900 dark:text-[#D4D8DD] font-semibold">{i.supplierName}</span>
+                        <p className="font-mono text-slate-400 dark:text-[#AAB7B7] text-[11px] mt-0.5">{i.poNumber}</p>
                       </td>
-                      <td className="px-4 py-3 text-gray-300 text-xs">{i.projectName}</td>
-                      <td className="px-4 py-3 text-gray-300 text-xs">
+                      <td className="px-4 py-3 text-slate-600 dark:text-[#AAB7B7] text-xs">{i.projectName}</td>
+                      <td className="px-4 py-3 text-slate-600 dark:text-[#AAB7B7] text-xs">
                         {new Date(i.dueDate).toLocaleDateString("en-ET")}
                       </td>
-                      <td className="px-4 py-3 font-semibold text-white">{fmt(i.amount)}</td>
+                      <td className="px-4 py-3 font-bold text-slate-900 dark:text-[#D4D8DD]">{fmt(i.amount)}</td>
                       <td className="px-4 py-3">
-                        <p className="text-green-400 text-xs">{fmt(i.paidAmount)} paid</p>
-                        <p className="text-gray-400 text-xs font-medium">Bal: {fmt(balance)}</p>
+                        <p className="text-emerald-500 dark:text-emerald-400 text-xs font-semibold">{fmt(i.paidAmount)} paid</p>
+                        <p className="text-slate-400 dark:text-[#AAB7B7] text-[11px] font-medium">Bal: {fmt(balance)}</p>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_BADGES[i.status]}`}>
+                        <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${STATUS_BADGES[i.status]}`}>
                           {i.status}
                         </span>
                       </td>
@@ -267,7 +272,7 @@ export default function SupplierInvoicesPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedInvoice(i)}
-                          className="text-[#C9A15A] hover:text-[#d4b06f] p-1.5 rounded transition-colors"
+                          className="text-[#C0C8CA] hover:text-white hover:bg-[#2E4156] p-1.5 rounded-lg transition-colors"
                           title="View Invoice"
                         >
                           <Eye size={16} />
@@ -283,68 +288,73 @@ export default function SupplierInvoicesPage() {
 
         {/* Record Invoice Modal */}
         {isCreateOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
-            <div className="bg-[#16181D] border border-[#2F333A] rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-[#2F333A]">
-                <div>
-                  <h3 className="text-lg font-bold text-white">Record Supplier Invoice</h3>
-                  <p className="text-xs text-slate-400">Log incoming voucher for PO matching & payment disbursement</p>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
+            <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#2E4156]">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-xl bg-[#2E4156] text-[#C0C8CA] border border-[#AAB7B7]/25">
+                    <Receipt className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-[#D4D8DD]">Record Supplier Invoice</h3>
+                    <p className="text-xs text-slate-500 dark:text-[#AAB7B7]">Log incoming voucher for PO matching &amp; disbursement</p>
+                  </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="p-1 rounded text-slate-400 hover:text-white"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-[#AAB7B7] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
                 >
-                  <X size={18} />
+                  <X size={16} />
                 </button>
               </div>
 
               <form onSubmit={handleCreate} className="space-y-4 text-xs">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-slate-300 font-medium block mb-1">Invoice Voucher #</label>
+                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Invoice Voucher #</label>
                     <input
                       required
                       value={form.invoiceNumber}
                       onChange={(e) => setForm({ ...form, invoiceNumber: e.target.value })}
-                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white font-mono focus:border-[#C9A15A] focus:outline-hidden"
+                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] font-mono focus:border-[#C0C8CA] outline-none"
                     />
                   </div>
                   <div>
-                    <label className="text-slate-300 font-medium block mb-1">Associated PO #</label>
+                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Associated PO #</label>
                     <input
                       required
                       value={form.poNumber}
                       onChange={(e) => setForm({ ...form, poNumber: e.target.value })}
-                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white font-mono focus:border-[#C9A15A] focus:outline-hidden"
+                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] font-mono focus:border-[#C0C8CA] outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-slate-300 font-medium block mb-1">Supplier Name</label>
+                  <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Supplier Name</label>
                   <input
                     required
                     placeholder="e.g. Tekle Steel Works Plc"
                     value={form.supplierName}
                     onChange={(e) => setForm({ ...form, supplierName: e.target.value })}
-                    className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 focus:border-[#C0C8CA] outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="text-slate-300 font-medium block mb-1">Project Site</label>
+                  <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Project Site</label>
                   <input
                     required
                     value={form.projectName}
                     onChange={(e) => setForm({ ...form, projectName: e.target.value })}
-                    className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                    className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:border-[#C0C8CA] outline-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-slate-300 font-medium block mb-1">Total Amount (ETB)</label>
+                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Total Amount (ETB)</label>
                     <input
                       required
                       type="number"
@@ -352,15 +362,15 @@ export default function SupplierInvoicesPage() {
                       placeholder="e.g. 500000"
                       value={form.amount}
                       onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden font-semibold"
+                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:border-[#C0C8CA] outline-none font-semibold"
                     />
                   </div>
                   <div>
-                    <label className="text-slate-300 font-medium block mb-1">Initial Status</label>
+                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Initial Status</label>
                     <select
                       value={form.status}
                       onChange={(e) => setForm({ ...form, status: e.target.value as SupplierInvoice["status"] })}
-                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:border-[#C0C8CA] outline-none"
                     >
                       <option value="Pending Approval">Pending Approval</option>
                       <option value="Approved">Approved</option>
@@ -371,36 +381,36 @@ export default function SupplierInvoicesPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-slate-300 font-medium block mb-1">Issue Date</label>
+                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Issue Date</label>
                     <input
                       type="date"
                       value={form.issueDate}
                       onChange={(e) => setForm({ ...form, issueDate: e.target.value })}
-                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:border-[#C0C8CA] outline-none"
                     />
                   </div>
                   <div>
-                    <label className="text-slate-300 font-medium block mb-1">Due Date</label>
+                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Due Date</label>
                     <input
                       type="date"
                       value={form.dueDate}
                       onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
-                      className="w-full bg-[#1C1F26] border border-[#2F333A] rounded-lg px-3 py-2 text-white focus:border-[#C9A15A] focus:outline-hidden"
+                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:border-[#C0C8CA] outline-none"
                     />
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-3 border-t border-[#2F333A]">
+                <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#2E4156]">
                   <button
                     type="button"
                     onClick={() => setIsCreateOpen(false)}
-                    className="px-4 py-2 rounded-lg bg-[#2A2D34] hover:bg-[#343842] text-slate-300 font-medium"
+                    className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-700 dark:text-[#D4D8DD] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded-lg bg-[#C9A15A] hover:bg-[#B89248] text-slate-950 font-bold"
+                    className="px-5 py-2.5 rounded-xl bg-[#C0C8CA] hover:bg-white text-[#1A2D42] text-xs font-bold shadow-md transition-all"
                   >
                     Save Invoice
                   </button>
@@ -412,72 +422,77 @@ export default function SupplierInvoicesPage() {
 
         {/* View Invoice Modal */}
         {selectedInvoice && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
-            <div className="bg-[#16181D] border border-[#2F333A] rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-[#2F333A]">
-                <div>
-                  <h3 className="text-lg font-bold text-white font-mono">{selectedInvoice.invoiceNumber}</h3>
-                  <p className="text-xs text-slate-400">Supplier Billing Voucher Details</p>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
+            <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#2E4156]">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-xl bg-[#2E4156] text-[#C0C8CA] border border-[#AAB7B7]/25">
+                    <Receipt className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-900 dark:text-[#D4D8DD] font-mono">{selectedInvoice.invoiceNumber}</h3>
+                    <p className="text-xs text-slate-500 dark:text-[#AAB7B7]">Supplier Billing Voucher Details</p>
+                  </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSelectedInvoice(null)}
-                  className="p-1 rounded text-slate-400 hover:text-white"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-[#AAB7B7] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
                 >
-                  <X size={18} />
+                  <X size={16} />
                 </button>
               </div>
 
               <div className="space-y-3 text-xs">
-                <div className="grid grid-cols-2 gap-3 p-3 bg-[#1C1F26] rounded-xl border border-[#2F333A]">
+                <div className="grid grid-cols-2 gap-3 p-3.5 bg-slate-50 dark:bg-[#2E4156]/30 rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25">
                   <div>
-                    <p className="text-slate-400">Supplier</p>
-                    <p className="font-semibold text-white mt-0.5">{selectedInvoice.supplierName}</p>
+                    <p className="text-slate-500 dark:text-[#AAB7B7]">Supplier</p>
+                    <p className="font-semibold text-slate-900 dark:text-[#D4D8DD] mt-0.5">{selectedInvoice.supplierName}</p>
                   </div>
                   <div>
-                    <p className="text-slate-400">Purchase Order</p>
-                    <p className="font-mono text-[#C9A15A] mt-0.5">{selectedInvoice.poNumber}</p>
+                    <p className="text-slate-500 dark:text-[#AAB7B7]">Purchase Order</p>
+                    <p className="font-mono text-[#C0C8CA] font-bold mt-0.5">{selectedInvoice.poNumber}</p>
                   </div>
                   <div>
-                    <p className="text-slate-400">Project</p>
-                    <p className="text-slate-200 mt-0.5">{selectedInvoice.projectName}</p>
+                    <p className="text-slate-500 dark:text-[#AAB7B7]">Project</p>
+                    <p className="text-slate-700 dark:text-[#D4D8DD] mt-0.5">{selectedInvoice.projectName}</p>
                   </div>
                   <div>
-                    <p className="text-slate-400">Status</p>
+                    <p className="text-slate-500 dark:text-[#AAB7B7]">Status</p>
                     <span className={`inline-block px-2 py-0.5 rounded-full mt-0.5 text-[11px] font-semibold ${STATUS_BADGES[selectedInvoice.status]}`}>
                       {selectedInvoice.status}
                     </span>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-3 p-3 bg-[#1C1F26] rounded-xl border border-[#2F333A] text-center">
+                <div className="grid grid-cols-3 gap-3 p-3.5 bg-slate-50 dark:bg-[#2E4156]/30 rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25 text-center">
                   <div>
-                    <p className="text-slate-400">Total Billed</p>
-                    <p className="font-bold text-white text-sm mt-0.5">{fmt(selectedInvoice.amount)}</p>
+                    <p className="text-slate-500 dark:text-[#AAB7B7]">Total Billed</p>
+                    <p className="font-bold text-slate-900 dark:text-[#D4D8DD] text-sm mt-0.5">{fmt(selectedInvoice.amount)}</p>
                   </div>
                   <div>
-                    <p className="text-slate-400">Paid Amount</p>
-                    <p className="font-bold text-green-400 text-sm mt-0.5">{fmt(selectedInvoice.paidAmount)}</p>
+                    <p className="text-slate-500 dark:text-[#AAB7B7]">Paid Amount</p>
+                    <p className="font-bold text-emerald-500 dark:text-emerald-400 text-sm mt-0.5">{fmt(selectedInvoice.paidAmount)}</p>
                   </div>
                   <div>
-                    <p className="text-slate-400">Outstanding</p>
-                    <p className="font-bold text-yellow-400 text-sm mt-0.5">{fmt(selectedInvoice.amount - selectedInvoice.paidAmount)}</p>
+                    <p className="text-slate-500 dark:text-[#AAB7B7]">Outstanding</p>
+                    <p className="font-bold text-amber-500 dark:text-amber-400 text-sm mt-0.5">{fmt(selectedInvoice.amount - selectedInvoice.paidAmount)}</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-slate-300">
-                  <div className="flex justify-between border-b border-[#2F333A]/50 py-1">
-                    <span className="text-slate-400">Issue Date:</span>
+                <div className="grid grid-cols-2 gap-3 text-slate-700 dark:text-[#D4D8DD]">
+                  <div className="flex justify-between border-b border-slate-100 dark:border-[#2E4156] py-1.5">
+                    <span className="text-slate-500 dark:text-[#AAB7B7]">Issue Date:</span>
                     <span>{new Date(selectedInvoice.issueDate).toLocaleDateString("en-ET")}</span>
                   </div>
-                  <div className="flex justify-between border-b border-[#2F333A]/50 py-1">
-                    <span className="text-slate-400">Due Date:</span>
+                  <div className="flex justify-between border-b border-slate-100 dark:border-[#2E4156] py-1.5">
+                    <span className="text-slate-500 dark:text-[#AAB7B7]">Due Date:</span>
                     <span>{new Date(selectedInvoice.dueDate).toLocaleDateString("en-ET")}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-[#2F333A]">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#2E4156]">
                 {selectedInvoice.status !== "Paid" && (
                   <button
                     type="button"
@@ -489,7 +504,7 @@ export default function SupplierInvoicesPage() {
                       ));
                       setSelectedInvoice(null);
                     }}
-                    className="px-3.5 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 text-white font-bold text-xs"
+                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs"
                   >
                     Mark as Paid
                   </button>
@@ -497,7 +512,7 @@ export default function SupplierInvoicesPage() {
                 <button
                   type="button"
                   onClick={() => setSelectedInvoice(null)}
-                  className="px-4 py-1.5 rounded-lg bg-[#2A2D34] hover:bg-[#343842] text-slate-300 font-medium text-xs"
+                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-700 dark:text-[#D4D8DD] hover:bg-slate-100 dark:hover:bg-[#2E4156] font-semibold text-xs"
                 >
                   Close
                 </button>

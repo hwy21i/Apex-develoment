@@ -114,27 +114,27 @@ export default function EquipmentPage() {
   };
 
   const inputCls =
-    "w-full bg-slate-50 dark:bg-[#1C1F24] border border-slate-200 dark:border-[#2F333A] rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#C9A15A]";
+    "w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 focus:outline-none focus:border-[#C0C8CA]";
 
   return (
     <AppShell>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[#C9A15A] font-mono text-xs font-bold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#C0C8CA] font-mono text-xs font-bold uppercase tracking-wider mb-1">
               <Wrench className="w-4 h-4" /> Plant &amp; Heavy Machinery Operations
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#F4F4F5] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-[#D4D8DD] tracking-tight">
               Heavy Equipment &amp; Machinery
             </h1>
-            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#A7ABB3] mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-[#AAB7B7] mt-1">
               Track machinery locations, project assignments, hourly rates, and maintenance intervals
             </p>
           </div>
 
           <button
             onClick={openForm}
-            className="inline-flex items-center justify-center gap-2 bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-amber-500/20 transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
+            className="inline-flex items-center justify-center gap-2 bg-[#C0C8CA] hover:bg-white text-[#1A2D42] font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
           >
             <Plus className="w-4 h-4" />
             <span>Register Equipment</span>
@@ -143,25 +143,25 @@ export default function EquipmentPage() {
 
         {/* Top metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Fleet Units</p>
-            <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{equipmentList.length}</p>
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <p className="text-xs text-slate-500 dark:text-[#AAB7B7] font-semibold uppercase tracking-wider">Total Fleet Units</p>
+            <p className="text-2xl font-black text-slate-900 dark:text-[#D4D8DD] mt-1">{equipmentList.length}</p>
           </div>
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Available Units</p>
-            <p className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <p className="text-xs text-slate-500 dark:text-[#AAB7B7] font-semibold uppercase tracking-wider">Available Units</p>
+            <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
               {equipmentList.filter((e) => e.status === "AVAILABLE").length}
             </p>
           </div>
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">In Operation / On Site</p>
-            <p className="text-2xl font-extrabold text-sky-600 dark:text-sky-400 mt-1">
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <p className="text-xs text-slate-500 dark:text-[#AAB7B7] font-semibold uppercase tracking-wider">In Operation / On Site</p>
+            <p className="text-2xl font-black text-sky-600 dark:text-sky-400 mt-1">
               {equipmentList.filter((e) => e.status === "IN_USE").length}
             </p>
           </div>
-          <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl p-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">In Maintenance / Repair</p>
-            <p className="text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <p className="text-xs text-slate-500 dark:text-[#AAB7B7] font-semibold uppercase tracking-wider">In Maintenance / Repair</p>
+            <p className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">
               {equipmentList.filter((e) => e.status === "MAINTENANCE" || e.status === "DAMAGED").length}
             </p>
           </div>
@@ -170,19 +170,19 @@ export default function EquipmentPage() {
         {/* Search & Filter Bar */}
         <div className="flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-[220px]">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#AAB7B7]" />
             <input
               type="text"
               placeholder="Search by equipment code, name, category, or project..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:border-[#C9A15A] shadow-xs transition-colors"
+              className="w-full bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 outline-none focus:border-[#C0C8CA] shadow-xs transition-colors"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-[#C9A15A]"
+            className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:outline-none focus:border-[#C0C8CA] shadow-xs"
           >
             <option value="ALL">All Statuses</option>
             {STATUSES.map((s) => (
@@ -192,25 +192,25 @@ export default function EquipmentPage() {
         </div>
 
         {/* Equipment Register Table */}
-        <div className="glass-card border border-slate-200 dark:border-[#2F333A] rounded-2xl overflow-hidden shadow-xs">
+        <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50/80 dark:bg-[#121418]/80 text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono text-[10px] border-b border-slate-200 dark:border-[#2F333A]">
+              <thead className="bg-slate-50 dark:bg-[#2E4156]/40 text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider font-mono text-[10px] border-b border-slate-200 dark:border-[#AAB7B7]/25">
                 <tr>
-                  <th className="px-5 py-3">Equipment Code</th>
-                  <th className="px-5 py-3">Equipment Name</th>
-                  <th className="px-5 py-3">Category</th>
-                  <th className="px-5 py-3">Current Assignment</th>
-                  <th className="px-5 py-3 text-right">Operating Rate (ETB/Hr)</th>
-                  <th className="px-5 py-3 text-center">Operating Status</th>
+                  <th className="px-5 py-3.5">Equipment Code</th>
+                  <th className="px-5 py-3.5">Equipment Name</th>
+                  <th className="px-5 py-3.5">Category</th>
+                  <th className="px-5 py-3.5">Current Assignment</th>
+                  <th className="px-5 py-3.5 text-right">Operating Rate (ETB/Hr)</th>
+                  <th className="px-5 py-3.5 text-center">Operating Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-[#2F333A]">
+              <tbody className="divide-y divide-slate-100 dark:divide-[#2E4156]/50">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-12 text-center text-slate-400">
+                    <td colSpan={6} className="px-5 py-12 text-center text-slate-400 dark:text-[#AAB7B7]">
                       <span className="inline-flex items-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin text-[#C9A15A]" /> Loading equipment registry...
+                        <Loader2 className="w-4 h-4 animate-spin text-[#C0C8CA]" /> Loading equipment registry...
                       </span>
                     </td>
                   </tr>
@@ -220,7 +220,7 @@ export default function EquipmentPage() {
                       <p className="text-sm text-rose-500">{error}</p>
                       <button
                         onClick={() => reload()}
-                        className="mt-2 text-xs font-semibold text-[#C9A15A] hover:underline"
+                        className="mt-2 text-xs font-semibold text-[#C0C8CA] hover:underline"
                       >
                         Retry
                       </button>
@@ -228,27 +228,27 @@ export default function EquipmentPage() {
                   </tr>
                 ) : filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-12 text-center text-slate-400">
-                      <Wrench className="w-8 h-8 mx-auto mb-2 opacity-40 text-[#C9A15A]" />
+                    <td colSpan={6} className="px-5 py-12 text-center text-slate-400 dark:text-[#AAB7B7]">
+                      <Wrench className="w-8 h-8 mx-auto mb-2 opacity-40 text-[#C0C8CA]" />
                       <p className="text-sm">{equipmentList.length === 0 ? "No equipment records found. Click \"Register Equipment\" above." : "No equipment matches your filter."}</p>
                     </td>
                   </tr>
                 ) : (
                   filtered.map((eq) => (
-                    <tr key={eq._id} className="hover:bg-slate-50/70 dark:hover:bg-[#1A1D24]/60 transition-colors">
-                      <td className="px-5 py-3.5 font-mono font-bold text-[#C9A15A]">
+                    <tr key={eq._id} className="hover:bg-slate-50 dark:hover:bg-[#2E4156]/20 transition-colors">
+                      <td className="px-5 py-3.5 font-mono font-bold text-[#C0C8CA]">
                         {eq.equipmentCode}
                       </td>
-                      <td className="px-5 py-3.5 font-bold text-slate-900 dark:text-white">
+                      <td className="px-5 py-3.5 font-bold text-slate-900 dark:text-[#D4D8DD]">
                         {eq.name}
                       </td>
-                      <td className="px-5 py-3.5 text-slate-600 dark:text-slate-400">
+                      <td className="px-5 py-3.5 text-slate-600 dark:text-[#AAB7B7]">
                         {eq.category}
                       </td>
-                      <td className="px-5 py-3.5 text-slate-800 dark:text-slate-200 font-medium">
+                      <td className="px-5 py-3.5 text-slate-700 dark:text-[#D4D8DD] font-medium">
                         {eq.assignedProject}
                       </td>
-                      <td className="px-5 py-3.5 font-mono font-bold text-slate-900 dark:text-white text-right">
+                      <td className="px-5 py-3.5 font-mono font-bold text-slate-900 dark:text-[#D4D8DD] text-right">
                         ETB {eq.hourlyOperatingRate.toLocaleString()} / hr
                       </td>
                       <td className="px-5 py-3.5 text-center">
@@ -272,20 +272,20 @@ export default function EquipmentPage() {
       {/* Create modal */}
       {formOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-[#16181D] border border-slate-200 dark:border-[#2F333A] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-slate-100 dark:border-[#2F333A] pb-3">
+          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-slate-100 dark:border-[#2E4156] pb-3">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-[#C9A15A]/15 text-[#C9A15A]">
+                <div className="p-2 rounded-xl bg-[#2E4156] text-[#C0C8CA] border border-[#AAB7B7]/25">
                   <Wrench className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-slate-900 dark:text-white">Register Equipment</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Plant machinery and heavy asset intake</p>
+                  <h2 className="text-base font-bold text-slate-900 dark:text-[#D4D8DD]">Register Equipment</h2>
+                  <p className="text-xs text-slate-500 dark:text-[#AAB7B7]">Plant machinery and heavy asset intake</p>
                 </div>
               </div>
               <button
                 onClick={() => setFormOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-[#AAB7B7] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -293,7 +293,7 @@ export default function EquipmentPage() {
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Assigned Project *</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Assigned Project *</label>
                 <select
                   className={inputCls}
                   value={form.projectId}
@@ -307,7 +307,7 @@ export default function EquipmentPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Equipment Name *</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Equipment Name *</label>
                   <input
                     className={inputCls}
                     value={form.name}
@@ -316,7 +316,7 @@ export default function EquipmentPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Equipment Code</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Equipment Code</label>
                   <input
                     className={inputCls}
                     value={form.equipmentCode}
@@ -327,7 +327,7 @@ export default function EquipmentPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Category</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Category</label>
                   <input
                     className={inputCls}
                     value={form.category}
@@ -336,7 +336,7 @@ export default function EquipmentPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Operating Rate (ETB/Hr)</label>
+                  <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Operating Rate (ETB/Hr)</label>
                   <input
                     type="number"
                     min="0"
@@ -347,7 +347,7 @@ export default function EquipmentPage() {
                 </div>
               </div>
               <div>
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">Operating Status</label>
+                <label className="text-xs font-semibold text-slate-700 dark:text-[#AAB7B7] block mb-1">Operating Status</label>
                 <select
                   className={inputCls}
                   value={form.status}
@@ -360,17 +360,17 @@ export default function EquipmentPage() {
 
             {formError && <p className="text-xs text-rose-500 font-medium">{formError}</p>}
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#2F333A]">
+            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#2E4156]">
               <button
                 onClick={() => setFormOpen(false)}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#2F333A] text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-700 dark:text-[#D4D8DD] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={submit}
                 disabled={busy}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C9A15A] hover:bg-[#B8924B] text-slate-950 text-xs font-bold shadow-md shadow-amber-500/20 transition-all disabled:opacity-60"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#C0C8CA] hover:bg-white text-[#1A2D42] text-xs font-bold shadow-md transition-all disabled:opacity-60"
               >
                 {busy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Save Equipment

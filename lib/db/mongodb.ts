@@ -12,11 +12,13 @@ type Cache = { conn: typeof mongoose | null; promise: Promise<typeof mongoose> |
 const globalCache = global as typeof globalThis & { mongooseCache?: Cache };
 const cache = globalCache.mongooseCache ?? (globalCache.mongooseCache = { conn: null, promise: null });
 
-const FALLBACK_DIRECT_URI =
-  "mongodb://hawariyayohannes52_db_user:yohatli@ac-smcmcr5-shard-00-00.zm7lnui.mongodb.net:27017,ac-smcmcr5-shard-00-01.zm7lnui.mongodb.net:27017,ac-smcmcr5-shard-00-02.zm7lnui.mongodb.net:27017/construction_management?ssl=true&replicaSet=atlas-relbq0-shard-0&authSource=admin&appName=Cluster0";
+const DIRECT_URI = process.env.MONGODB_DIRECT_URI || process.env.MONGODB_URI;
 
 export async function connectToDatabase() {
-  const uri = process.env.MONGODB_URI || FALLBACK_DIRECT_URI;
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error("MONGODB_URI environment variable is not defined in .env.local");
+  }
 
   if (cache.conn) return cache.conn;
 
@@ -32,13 +34,15 @@ export async function connectToDatabase() {
     // If SRV lookup fails due to Windows/local DNS loopback (ECONNREFUSED/ETIMEOUT), fallback to direct replica-set hosts
     if (
       uri.includes("mongodb+srv://") &&
+      DIRECT_URI &&
+      DIRECT_URI !== uri &&
       (error.message.includes("querySrv") ||
         error.message.includes("ECONNREFUSED") ||
         error.message.includes("ETIMEOUT"))
     ) {
       console.warn("MongoDB SRV DNS failed. Switching to direct replica-set connection...");
       try {
-        return await tryConnect(FALLBACK_DIRECT_URI);
+        return await tryConnect(DIRECT_URI);
       } catch (fallbackErr: any) {
         cache.promise = null;
         console.error("MongoDB Direct Fallback Failure:", fallbackErr.message);

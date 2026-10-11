@@ -125,7 +125,7 @@ function SignIn({
   onEnter: (identity: AuthIdentity) => void;
 }) {
   const [identifier, setIdentifier] = useState("hawariya21");
-  const [password, setPassword] = useState("Password123!");
+  const [password, setPassword] = useState("yohatli2023");
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -210,10 +210,10 @@ function SignIn({
         </label>
         <select
           onChange={(e) => {
-            const found = DEMO_PRESETS.find((p) => p.role === e.target.value);
+            const found = DEMO_PRESETS.find((p) => p.identifier === e.target.value);
             if (found) {
               setIdentifier(found.identifier);
-              setPassword("Password123!");
+              setPassword(found.identifier === "hawariya21" ? "yohatli2023" : "Password123!");
               setErrorMsg("");
             }
           }}
@@ -228,7 +228,7 @@ function SignIn({
         >
           <option value="">Select a Demo Role to Test...</option>
           {DEMO_PRESETS.map((p) => (
-            <option key={p.role} value={p.role}>
+            <option key={p.identifier} value={p.identifier}>
               {p.label} ({p.role})
             </option>
           ))}
@@ -619,6 +619,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
 
   return (
     <div
+      suppressHydrationWarning
       style={{
         display: "flex",
         minHeight: "100vh",
@@ -628,6 +629,7 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
     >
       {/* LEFT PANEL — Architecture / Brand */}
       <div
+        suppressHydrationWarning
         style={{
           flex: "0 0 46%",
           position: "relative",

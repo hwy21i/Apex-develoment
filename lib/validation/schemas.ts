@@ -160,3 +160,79 @@ export const locationSchema = z.object({
   status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
 });
 
+// ================= ORGANIZATION VALIDATION =================
+export const organizationSchema = z.object({
+  name: z.string().min(2, "Organization name is required").max(160),
+  code: z.string().min(2).max(30).toUpperCase(),
+  taxIdentificationNumber: z.string().max(50).optional(),
+  licenseNumber: z.string().max(50).optional(),
+  defaultCurrency: z.string().default("ETB"),
+  address: z.string().max(200).optional(),
+  city: z.string().max(80).optional(),
+  phone: z.string().max(30).optional(),
+  email: z.string().email().optional(),
+  vatRatePct: z.coerce.number().min(0).max(100).default(15),
+  withholdingTaxPct: z.coerce.number().min(0).max(100).default(2),
+  retentionRatePct: z.coerce.number().min(0).max(100).default(5),
+  status: z.enum(["ACTIVE", "SUSPENDED", "ARCHIVED"]).default("ACTIVE"),
+});
+
+// ================= CHANGE ORDER VALIDATION =================
+export const changeOrderSchema = z.object({
+  projectId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Project ID"),
+  orderNumber: z.string().min(2).max(50).toUpperCase().optional(),
+  title: z.string().min(3, "Change order title is required").max(200),
+  description: z.string().min(5, "Description is required").max(3000),
+  costImpact: z.coerce.number().default(0), // ETB +/-
+  scheduleImpactDays: z.coerce.number().int().default(0),
+  reason: z.string().max(1000).optional(),
+  status: z.enum(["DRAFT", "PENDING_APPROVAL", "APPROVED", "REJECTED"]).default("PENDING_APPROVAL"),
+});
+
+// ================= DAILY SITE REPORT VALIDATION =================
+export const dailyReportSchema = z.object({
+  projectId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Project ID"),
+  reportDate: z.coerce.date().default(() => new Date()),
+  weatherConditions: z.string().max(100).optional(),
+  workforceHeadcount: z.coerce.number().int().nonnegative().default(0),
+  workCompleted: z.string().min(5, "Work completed summary is required").max(4000),
+  materialsDelivered: z.string().max(2000).optional(),
+  equipmentUsed: z.string().max(2000).optional(),
+  delaysOrIssues: z.string().max(2000).optional(),
+  safetyIncidents: z.coerce.number().int().nonnegative().default(0),
+  safetyNotes: z.string().max(2000).optional(),
+});
+
+// ================= PURCHASE ORDER VALIDATION =================
+export const poItemSchema = z.object({
+  materialId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Material ID"),
+  materialName: z.string().min(1),
+  unitOfMeasure: z.string().min(1),
+  quantity: z.coerce.number().positive("Quantity must be greater than 0"),
+  unitPrice: z.coerce.number().nonnegative("Unit price cannot be negative"),
+});
+
+export const purchaseOrderValidationSchema = z.object({
+  projectId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Project ID"),
+  supplierId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Supplier ID"),
+  items: z.array(poItemSchema).min(1, "At least one item is required"),
+  expectedDeliveryDate: z.coerce.date(),
+  deliveryAddress: z.string().min(2, "Delivery address is required"),
+  paymentTerms: z.string().default("Net 30"),
+  currency: z.string().default("ETB"),
+});
+
+// ================= EXPENSE VALIDATION =================
+export const expenseValidationSchema = z.object({
+  projectId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Project ID"),
+  budgetId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Budget ID").optional(),
+  category: z.enum(["Materials", "Labor", "Subcontractor", "Equipment", "Overhead & Permits", "Contingency"]),
+  amount: z.coerce.number().positive("Amount must be greater than 0"),
+  payee: z.string().min(2, "Payee name is required").max(150),
+  paymentMethod: z.enum(["CASH", "BANK_TRANSFER", "CHECK", "CREDIT_LINE"]).default("BANK_TRANSFER"),
+  description: z.string().min(3, "Description is required").max(1000),
+  date: z.coerce.date().default(() => new Date()),
+  receiptNumber: z.string().max(60).optional(),
+  status: z.enum(["DRAFT", "PENDING_APPROVAL", "APPROVED", "REJECTED", "PAID"]).default("PENDING_APPROVAL"),
+});
+
