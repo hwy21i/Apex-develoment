@@ -247,8 +247,20 @@ await Promise.all([
 console.log("Seeding all 9 Construction ERP roles...");
 const defaultPassword = "Password123!";
 const passwordHash = await bcrypt.hash(defaultPassword, 12);
+const hawariyaPasswordHash = await bcrypt.hash("yohatli2023", 12);
 
 const users = await User.create([
+  {
+    fullName: "Hawariya Yohannes (Super Admin)",
+    username: "hawariya21",
+    email: "hawariya@apexdev.et",
+    passwordHash: hawariyaPasswordHash,
+    role: "Admin",
+    department: "Executive Management",
+    position: "System Administrator",
+    phone: "+251 91 100 0000",
+    isActive: true,
+  },
   {
     fullName: "Alemayehu Tesfaye (Executive Admin)",
     username: "admin",
@@ -353,7 +365,16 @@ const users = await User.create([
 console.log(`Created ${users.length} users across all 9 roles.`);
 
 // ============ Seed Initial Projects ============
-const [adminUser, pmUser, engUser, procUser, wareUser, accUser, hrUser, wrkUser, clientUser] = users;
+const hawariyaUser = users.find((u) => u.username === "hawariya21")!;
+const adminUser = users.find((u) => u.username === "admin")!;
+const pmUser = users.find((u) => u.username === "pm.abebe")!;
+const engUser = users.find((u) => u.username === "engineer.marta")!;
+const procUser = users.find((u) => u.username === "procurement.dawit")!;
+const wareUser = users.find((u) => u.username === "warehouse.tadesse")!;
+const accUser = users.find((u) => u.username === "accountant.hana")!;
+const hrUser = users.find((u) => u.username === "hr.selam")!;
+const wrkUser = users.find((u) => u.username === "worker.yonas")!;
+const clientUser = users.find((u) => u.username === "client.bole")!;
 
 // ============ Seed Countries, Regions, Cities ============
 console.log("Seeding Ethiopia administrative hierarchy (Country -> Regions -> Cities)...");

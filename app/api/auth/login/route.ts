@@ -50,8 +50,12 @@ export async function POST(request: Request) {
       role: user.role as RoleType,
       department: user.department,
       organizationId: user.organizationId ? user.organizationId.toString() : undefined,
-      customPermissions: user.customPermissions || [],
-      assignedProjects: (user.assignedProjects || []).map((id: any) => id.toString()),
+      customPermissions: Array.isArray(user.customPermissions)
+        ? Array.from(user.customPermissions).map(String)
+        : [],
+      assignedProjects: Array.isArray(user.assignedProjects)
+        ? Array.from(user.assignedProjects).map(String)
+        : [],
     };
 
     const token = await signSession(sessionPayload);

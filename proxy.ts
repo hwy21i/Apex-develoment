@@ -3,9 +3,25 @@ import { jwtVerify } from "jose";
 
 const SESSION_COOKIE_NAME = "apex_session";
 
-// Routes that never require a session.
-const AUTH_ROUTES = ["/login", "/Authpage", "/entrypage"];
-const PUBLIC_ROUTES = ["/about", "/platform", "/homepage", "/demo"];
+// ─── Route classifications ────────────────────────────────────────────────────
+
+/**
+ * Routes that are always public and never require authentication.
+ * Authenticated users who visit / intentionally see the entry page;
+ * they are NOT auto-redirected to /dashboard.
+ */
+const ALWAYS_PUBLIC = new Set([
+  "/",           // Entry / presentation page — always first
+  "/entrypage",  // Legacy entry route — same content
+  "/login",      // Sign-in / register form
+  "/Authpage",   // Direct auth route
+  "/about",
+  "/platform",
+  "/homepage",
+  "/demo",
+]);
+
+// ─── Security headers ─────────────────────────────────────────────────────────
 
 function withSecurityHeaders(response: NextResponse): NextResponse {
   response.headers.set("X-Content-Type-Options", "nosniff");
@@ -14,12 +30,16 @@ function withSecurityHeaders(response: NextResponse): NextResponse {
   return response;
 }
 
+// ─── Session verification ─────────────────────────────────────────────────────
+
 async function isAuthenticated(request: NextRequest): Promise<boolean> {
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+  if (!token) return false;
+
   const secret =
     process.env.JWT_SECRET ||
     "apex_enterprise_erp_secure_jwt_secret_key_2026_98374981734918237498127394812374";
-  if (!token) return false;
+
   try {
     await jwtVerify(token, new TextEncoder().encode(secret));
     return true;
@@ -28,38 +48,28 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
   }
 }
 
+// ─── Proxy (edge middleware) ──────────────────────────────────────────────────
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // API routes: only attach security headers. Authorization is enforced
-  // inside each route handler via requireAuth/requirePermission.
+  // 1. API routes — let individual handlers do their own auth.
   if (pathname.startsWith("/api")) {
     return withSecurityHeaders(NextResponse.next());
   }
 
+  // 2. Always-public pages — pass through without any session check.
+  //    This covers / (entry page) and /login even when the user IS logged in.
+  //    We deliberately do NOT redirect authenticated users away from / or /login
+  //    so they can always reach the entry page if they want.
+  if (ALWAYS_PUBLIC.has(pathname)) {
+    return withSecurityHeaders(NextResponse.next());
+  }
+
+  // 3. Everything else is a protected application route.
   const authed = await isAuthenticated(request);
-
-  // Signed-in users should not see the login/entry screens.
-  if (AUTH_ROUTES.includes(pathname)) {
-    if (authed) return NextResponse.redirect(new URL("/dashboard", request.url));
-    return withSecurityHeaders(NextResponse.next());
-  }
-
-  // Public marketing pages are always reachable.
-  if (PUBLIC_ROUTES.includes(pathname)) {
-    return withSecurityHeaders(NextResponse.next());
-  }
-
-  // Root: route into the real app or the login screen.
-  if (pathname === "/") {
-    return NextResponse.redirect(new URL(authed ? "/dashboard" : "/login", request.url));
-  }
-
-  // Everything else is a protected application route.
   if (!authed) {
-    const loginUrl = new URL("/login", request.url);
-    if (pathname !== "/") loginUrl.searchParams.set("next", pathname);
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return withSecurityHeaders(NextResponse.next());

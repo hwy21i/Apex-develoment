@@ -16,16 +16,23 @@ export const SESSION_DURATION_SECONDS = 60 * 60 * 8; // 8 hours
 
 export async function signSession(user: SessionUser): Promise<string> {
   const key = getSecretKey();
+  const customPermissions = Array.isArray(user.customPermissions)
+    ? Array.from(user.customPermissions).map((p) => String(p))
+    : [];
+  const assignedProjects = Array.isArray(user.assignedProjects)
+    ? Array.from(user.assignedProjects).map((id) => String(id))
+    : [];
+
   return new SignJWT({
-    id: user.id,
-    fullName: user.fullName,
-    username: user.username,
-    email: user.email,
-    role: user.role,
-    department: user.department,
-    organizationId: user.organizationId,
-    customPermissions: user.customPermissions || [],
-    assignedProjects: user.assignedProjects || [],
+    id: String(user.id),
+    fullName: String(user.fullName || ""),
+    username: String(user.username || ""),
+    email: String(user.email || ""),
+    role: String(user.role),
+    department: user.department ? String(user.department) : undefined,
+    organizationId: user.organizationId ? String(user.organizationId) : undefined,
+    customPermissions,
+    assignedProjects,
   })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()

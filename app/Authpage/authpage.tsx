@@ -620,24 +620,15 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
   return (
     <div
       suppressHydrationWarning
+      className="flex min-h-screen bg-[#F4F5F7]"
       style={{
-        display: "flex",
-        minHeight: "100vh",
-        background: A.bg,
         fontFamily: "'Plus Jakarta Sans', sans-serif",
       }}
     >
       {/* LEFT PANEL — Architecture / Brand */}
       <div
         suppressHydrationWarning
-        style={{
-          flex: "0 0 46%",
-          position: "relative",
-          overflow: "hidden",
-          background: A.nav,
-          display: "flex",
-          flexDirection: "column",
-        }}
+        className="relative overflow-hidden bg-[#16181D] hidden md:flex md:flex-col md:flex-none md:basis-[46%]"
       >
         <div
           style={{
@@ -772,16 +763,10 @@ export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity
 
       {/* RIGHT PANEL — Form */}
       <div
-        style={{
-          flex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "40px 32px",
-          overflowY: "auto",
-        }}
+        suppressHydrationWarning
+        className="flex-1 flex items-center justify-center p-6 md:p-10 overflow-y-auto bg-[#F4F5F7]"
       >
-        <div style={{ width: "100%", maxWidth: 440 }}>
+        <div className="w-full max-w-[440px]">
           {/* Mode Toggle */}
           <div
             style={{

@@ -1,17 +1,12 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 import AuthPage from "../Authpage/authpage";
 
 function LoginScreen() {
-  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleEnter = () => {
     const next = searchParams.get("next");
@@ -20,27 +15,20 @@ function LoginScreen() {
     router.replace(next && next.startsWith("/") ? next : "/dashboard");
   };
 
-  if (!mounted) {
-    return (
-      <div
-        suppressHydrationWarning
-        className="min-h-screen bg-[#1A2D42] flex items-center justify-center"
-      >
-        <div className="w-8 h-8 rounded-full border-2 border-[#C0C8CA] border-t-transparent animate-spin" />
-      </div>
-    );
-  }
+  return <AuthPage onEnter={handleEnter} />;
+}
 
+function LoginFallback() {
   return (
-    <div suppressHydrationWarning>
-      <AuthPage onEnter={handleEnter} />
+    <div className="min-h-screen bg-[#F4F5F7] flex items-center justify-center">
+      <div className="w-8 h-8 rounded-full border-2 border-[#3B82B6] border-t-transparent animate-spin" />
     </div>
   );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<LoginFallback />}>
       <LoginScreen />
     </Suspense>
   );

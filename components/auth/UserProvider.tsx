@@ -83,19 +83,21 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       try {
         localStorage.clear();
         sessionStorage.clear();
+        // Expire the session cookie immediately on the client side too
         document.cookie =
           "apex_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
       } catch {}
 
-      // Hard redirect to login page replacing history entry so Back button cannot return
-      window.location.replace("/login");
+      // Hard redirect to the entry page, replacing history so Back cannot return
+      window.location.replace("/");
     }
   }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const p = window.location.pathname.toLowerCase();
-      if (p === "/login" || p === "/authpage") {
+      // Skip session fetch on public/entry pages — no session needed there
+      if (p === "/" || p === "/entrypage" || p === "/login" || p === "/authpage") {
         setLoading(false);
         return;
       }

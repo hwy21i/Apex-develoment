@@ -91,7 +91,11 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
   }
 
   return (
-    <div style={{ background: P.bg, minHeight: '100vh', fontFamily: 'Work Sans, sans-serif', color: P.text }}>
+    <div
+      suppressHydrationWarning
+      className="min-h-screen bg-[#F4F5F7] text-[#17191D]"
+      style={{ fontFamily: 'Work Sans, sans-serif' }}
+    >
 
       {/* NAV */}
       <header style={{
@@ -110,7 +114,7 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
             </span>
           </div>
           <nav className="flex items-center gap-8">
-            {[['Platform', '/platform'], ['About', '/about']].map(([label, href]) => (
+            {[['Platform', '/platform'], ['About', '/about'], ['Sign In', '/login']].map(([label, href]) => (
               <Link key={href} href={href} style={{ fontFamily: 'Work Sans', fontSize: 13, color: '#C8CFD8', textDecoration: 'none', fontWeight: 500, transition: 'color 0.15s' }}
                 onMouseOver={e => (e.currentTarget.style.color = P.text)}
                 onMouseOut={e => (e.currentTarget.style.color = P.textDim)}>{label}</Link>
