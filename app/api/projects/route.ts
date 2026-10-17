@@ -84,6 +84,7 @@ export async function POST(request: Request) {
       progressPercentage: 0,
       contractValue: input.contractValue,
       status: input.status,
+      organizationId: guard.user.organizationId || undefined,
       createdBy: guard.user.id,
     });
 

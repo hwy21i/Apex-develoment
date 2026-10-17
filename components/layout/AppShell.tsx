@@ -5,6 +5,7 @@ import AppSidebar from "./AppSidebar";
 import AppHeader from "./AppHeader";
 import { RoleType } from "@/types/erp";
 import { useCurrentUser } from "@/components/auth/UserProvider";
+import { LogOut, X, Loader2 } from "lucide-react";
 
 interface SearchContextType {
   searchQuery: string;
@@ -28,8 +29,6 @@ interface AppShellProps {
   onRoleChange?: (role: RoleType) => void;
   onLogout?: () => void;
 }
-
-import { LogOut, AlertTriangle, X, Loader2 } from "lucide-react";
 
 export default function AppShell({
   children,
@@ -95,7 +94,7 @@ export default function AppShell({
 
   return (
     <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
-      <div className="min-h-screen w-full overflow-x-hidden bg-[#D4D8DD] dark:bg-[#1A2D42] font-sans text-[#1A2D42] dark:text-[#D4D8DD] transition-colors relative">
+      <div className="min-h-screen w-full overflow-x-hidden bg-[#F9FAFB] dark:bg-[#0B0B0B] font-sans text-[#111827] dark:text-[#FFFFFF] transition-colors relative">
         <AppSidebar
           isMobileOpen={isMobileOpen}
           onMobileClose={() => setIsMobileOpen(false)}
@@ -134,27 +133,27 @@ export default function AppShell({
 
         {/* Logout Confirmation Modal */}
         {showLogoutModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-            <div className="w-full max-w-sm glass-card bg-[#E3E6E9] dark:bg-[#2E4156] border border-[#AAB7B7]/50 dark:border-[#AAB7B7]/25 rounded-2xl p-6 shadow-2xl space-y-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
+            <div className="w-full max-w-sm bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-2xl p-6 shadow-2xl space-y-4">
               <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-xl bg-[#1A2D42]/10 dark:bg-[#1A2D42]/60 border border-[#AAB7B7]/30 text-[#1A2D42] dark:text-[#C0C8CA] flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-[#F3F4F6] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A] text-[#111827] dark:text-[#FFFFFF] flex items-center justify-center shrink-0">
                   <LogOut className="w-5 h-5" />
                 </div>
                 <button
                   onClick={() => setShowLogoutModal(false)}
                   disabled={isLoggingOut}
-                  className="p-1.5 rounded-lg text-[#2E4156] dark:text-[#AAB7B7] hover:bg-[#C0C8CA]/50 dark:hover:bg-[#1A2D42]/50 transition-colors"
+                  className="p-1.5 rounded-lg text-[#6B7280] dark:text-[#A1A1A1] hover:bg-[#F3F4F6] dark:hover:bg-[#252525] transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <div>
-                <h3 className="text-base font-bold text-[#1A2D42] dark:text-[#D4D8DD]">
+                <h3 className="text-base font-bold text-[#111827] dark:text-[#FFFFFF]">
                   Confirm Sign Out
                 </h3>
-                <p className="mt-1 text-xs text-[#2E4156] dark:text-[#AAB7B7] leading-relaxed">
-                  Are you sure you want to log out of Apex Build ERP{userName ? `, ${userName}` : ""}? All active tokens and role permissions will be revoked.
+                <p className="mt-1 text-xs text-[#6B7280] dark:text-[#A1A1A1] leading-relaxed">
+                  Are you sure you want to log out of APEX ERP{userName ? `, ${userName}` : ""}? All active tokens and role sessions will be cleared.
                 </p>
               </div>
 
@@ -163,7 +162,7 @@ export default function AppShell({
                   type="button"
                   onClick={() => setShowLogoutModal(false)}
                   disabled={isLoggingOut}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#1A2D42] dark:text-[#D4D8DD] hover:bg-[#C0C8CA] dark:hover:bg-[#1A2D42] border border-[#AAB7B7] dark:border-[#AAB7B7]/30 transition-colors"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#111827] dark:text-[#FFFFFF] hover:bg-[#F3F4F6] dark:hover:bg-[#252525] border border-[#E5E7EB] dark:border-[#2A2A2A] transition-colors"
                 >
                   Cancel
                 </button>
@@ -171,7 +170,7 @@ export default function AppShell({
                   type="button"
                   onClick={handleConfirmLogout}
                   disabled={isLoggingOut}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-[#D4D8DD] bg-[#1A2D42] hover:bg-[#122030] border border-[#AAB7B7]/40 transition-colors shadow-md shadow-[#1A2D42]/30"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-[#FFFFFF] dark:text-[#111111] bg-[#111111] dark:bg-[#FFFFFF] hover:opacity-90 border border-transparent transition-opacity shadow-xs"
                 >
                   {isLoggingOut ? (
                     <>

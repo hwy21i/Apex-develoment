@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     }
 
     const rolePermissions = getRolePermissions(user.role);
-    const customPermissions = (user.customPermissions || []) as any[];
+    const customPermissions = (user.customPermissions || []).map(String);
     const permissions = Array.from(new Set([...rolePermissions, ...customPermissions]));
 
     return ok({

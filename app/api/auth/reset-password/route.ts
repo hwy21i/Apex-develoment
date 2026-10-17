@@ -5,11 +5,22 @@ import { body, fail, handleError, ok } from "@/lib/api";
 import { resetPasswordSchema } from "@/lib/validation/schemas";
 import { User } from "@/models/User";
 import { logAudit } from "@/lib/services/audit";
+import { checkRateLimit, getClientIp } from "@/lib/auth/rate-limit";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const rateCheck = checkRateLimit(`reset-pass:${ip}`, { max: 5, windowMs: 60 * 1000 });
+    if (!rateCheck.allowed) {
+      return fail(
+        "TOO_MANY_REQUESTS",
+        "Too many password reset attempts. Please wait a minute and try again.",
+        429
+      );
+    }
+
     const { token, newPassword } = await body(request, resetPasswordSchema);
     await connectToDatabase();
 

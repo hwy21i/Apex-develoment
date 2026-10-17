@@ -96,8 +96,6 @@ export default function UserManagementPage() {
 
   const load = useCallback(async () => {
     try {
-      setLoading(true);
-      setError(null);
       const res = await fetch("/api/users", { cache: "no-store" });
       const json = await res.json();
       if (!res.ok || !json.success) {
@@ -112,7 +110,15 @@ export default function UserManagementPage() {
   }, []);
 
   useEffect(() => {
-    load();
+    let ignore = false;
+    Promise.resolve().then(() => {
+      if (!ignore) {
+        load();
+      }
+    });
+    return () => {
+      ignore = true;
+    };
   }, [load]);
 
   const filtered = users.filter((u) => {

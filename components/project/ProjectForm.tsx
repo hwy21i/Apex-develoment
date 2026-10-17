@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, Calendar, DollarSign, MapPin, FileText, CheckCircle2 } from "lucide-react";
+import { Building2, Calendar, DollarSign, MapPin, CheckCircle2 } from "lucide-react";
 import HierarchicalLocationSelector, {
   HierarchicalLocationValue,
 } from "@/components/location/HierarchicalLocationSelector";

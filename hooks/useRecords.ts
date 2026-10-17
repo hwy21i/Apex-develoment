@@ -8,6 +8,7 @@ export interface OperationalRecord {
   kind: string;
   status?: string;
   title?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: Record<string, any>;
   createdBy?: string;
   createdAt: string;
@@ -24,7 +25,8 @@ export interface CreatePayload {
   projectId: string;
   title?: string;
   status?: string;
-  data: Record<string, unknown>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: Record<string, any>;
 }
 
 /**
@@ -39,8 +41,6 @@ export function useRecords(kind: string) {
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    setLoading(true);
-    setError(null);
     try {
       const [recRes, projRes] = await Promise.all([
         fetch(`/api/records/${kind}`, { cache: "no-store" }),
@@ -56,11 +56,13 @@ export function useRecords(kind: string) {
         const projJson = await projRes.json();
         if (projJson.success) {
           setProjects(
-            (projJson.data.items || []).map((p: any) => ({
-              _id: p._id,
-              name: p.name,
-              projectCode: p.projectCode,
-            }))
+            (projJson.data.items || []).map(
+              (p: { _id: string; name: string; projectCode?: string }) => ({
+                _id: p._id,
+                name: p.name,
+                projectCode: p.projectCode,
+              })
+            )
           );
         }
       }
@@ -72,7 +74,15 @@ export function useRecords(kind: string) {
   }, [kind]);
 
   useEffect(() => {
-    load();
+    let ignore = false;
+    Promise.resolve().then(() => {
+      if (!ignore) {
+        load();
+      }
+    });
+    return () => {
+      ignore = true;
+    };
   }, [load]);
 
   const projectName = useCallback(

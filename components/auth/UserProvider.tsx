@@ -39,7 +39,15 @@ const UserContext = createContext<UserContextType>({
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<CurrentUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      const p = window.location.pathname.toLowerCase();
+      if (p === "/" || p === "/entrypage" || p === "/login" || p === "/authpage") {
+        return false;
+      }
+    }
+    return true;
+  });
 
   const fetchUser = useCallback(async () => {
     try {
@@ -94,15 +102,24 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    let ignore = false;
     if (typeof window !== "undefined") {
       const p = window.location.pathname.toLowerCase();
       // Skip session fetch on public/entry pages — no session needed there
       if (p === "/" || p === "/entrypage" || p === "/login" || p === "/authpage") {
-        setLoading(false);
         return;
       }
     }
-    fetchUser().finally(() => setLoading(false));
+    Promise.resolve().then(() => {
+      if (!ignore) {
+        fetchUser().finally(() => {
+          if (!ignore) setLoading(false);
+        });
+      }
+    });
+    return () => {
+      ignore = true;
+    };
   }, [fetchUser]);
 
   return (

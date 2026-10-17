@@ -36,9 +36,11 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   if (!token) return false;
 
-  const secret =
-    process.env.JWT_SECRET ||
-    "apex_enterprise_erp_secure_jwt_secret_key_2026_98374981734918237498127394812374";
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    console.error("JWT_SECRET environment variable is missing; rejecting session token.");
+    return false;
+  }
 
   try {
     await jwtVerify(token, new TextEncoder().encode(secret));

@@ -101,20 +101,15 @@ export default function AppHeader({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Debounced search query fetching
+  // Debounced search query
   useEffect(() => {
-    const trimmed = searchQuery.trim();
-    if (!trimmed) {
-      setSearchResults([]);
-      setIsSearching(false);
+    if (!searchQuery.trim()) {
       return;
     }
 
-    setIsSearching(true);
-    setShowSearchDropdown(true);
-
     const timer = setTimeout(() => {
-      fetch(`/api/search?q=${encodeURIComponent(trimmed)}`)
+      setIsSearching(true);
+      fetch(`/api/dashboard?q=${encodeURIComponent(searchQuery.trim())}`)
         .then((res) => res.json())
         .then((json) => {
           if (json.success && Array.isArray(json.data?.results)) {
@@ -129,6 +124,8 @@ export default function AppHeader({
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  const displayedResults = searchQuery.trim() ? searchResults : [];
 
   // Fetch real unread notification count
   useEffect(() => {
@@ -146,7 +143,7 @@ export default function AppHeader({
   const pathSegments = pathname.split("/").filter(Boolean);
 
   return (
-    <header className="sticky top-0 z-30 w-full min-w-0 bg-[#D4D8DD] dark:bg-[#1A2D42] border-b border-[#AAB7B7]/40 dark:border-[rgba(170,183,183,0.18)] shadow-xs transition-colors">
+    <header className="sticky top-0 z-30 w-full min-w-0 bg-[#FFFFFF]/90 dark:bg-[#141414]/90 backdrop-blur-md border-b border-[#E5E7EB] dark:border-[#2A2A2A] shadow-xs transition-colors">
       <div className="h-16 px-3 sm:px-5 lg:px-6 flex items-center justify-between gap-2 sm:gap-4 w-full min-w-0">
         {/* Left Section: Mobile Hamburger Toggle + Breadcrumbs / Mobile Logo */}
         <div className="flex flex-1 items-center gap-2 sm:gap-3 min-w-0">
@@ -155,10 +152,10 @@ export default function AppHeader({
             onClick={onToggleMobileSidebar}
             aria-label={isMobileSidebarOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={isMobileSidebarOpen}
-            className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl text-[#2E4156] dark:text-[#AAB7B7] hover:text-[#1A2D42] dark:hover:text-[#D4D8DD] hover:bg-[#AAB7B7]/30 dark:hover:bg-[#2E4156] md:hidden transition-colors shrink-0"
+            className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl text-[#6B7280] dark:text-[#A1A1A1] hover:text-[#111827] dark:hover:text-[#FFFFFF] hover:bg-[#F3F4F6] dark:hover:bg-[#1F1F1F] md:hidden transition-colors shrink-0"
           >
             {isMobileSidebarOpen ? (
-              <X className="w-5 h-5 text-[#2E4156] dark:text-[#C0C8CA]" />
+              <X className="w-5 h-5 text-[#111827] dark:text-[#FFFFFF]" />
             ) : (
               <Menu className="w-5 h-5" />
             )}
@@ -166,19 +163,19 @@ export default function AppHeader({
 
           {/* Mobile Brand Mark (Visible only on mobile header) */}
           <div className="md:hidden flex items-center shrink-0">
-            <ApexLogo size={32} showText subtitle="" href="/dashboard" />
+            <ApexLogo size={30} showText subtitle="" href="/dashboard" />
           </div>
 
           {/* Desktop/Tablet Breadcrumb Navigation */}
           <nav
             aria-label="Breadcrumbs"
-            className="hidden md:flex min-w-0 items-center text-xs font-medium text-[#2E4156]/70 dark:text-[#AAB7B7]"
+            className="hidden md:flex min-w-0 items-center text-xs font-medium text-[#6B7280] dark:text-[#A1A1A1]"
           >
             <Link
               href="/dashboard"
-              className="flex shrink-0 items-center gap-1.5 font-bold text-[#1A2D42] dark:text-[#D4D8DD] transition-colors hover:text-[#2E4156] dark:hover:text-[#C0C8CA]"
+              className="flex shrink-0 items-center gap-1.5 font-bold text-[#111827] dark:text-[#FFFFFF] transition-colors hover:text-[#4B5563] dark:hover:text-[#E5E7EB]"
             >
-              <span>Apex Build</span>
+              <span>APEX ERP</span>
             </Link>
             {pathSegments.map((segment, index) => {
               const href = `/${pathSegments.slice(0, index + 1).join("/")}`;
@@ -189,15 +186,15 @@ export default function AppHeader({
 
               return (
                 <React.Fragment key={href}>
-                  <ChevronRight className="w-3.5 h-3.5 mx-1 text-[#AAB7B7] dark:text-[#AAB7B7]/50 shrink-0" />
+                  <ChevronRight className="w-3.5 h-3.5 mx-1 text-[#9CA3AF] dark:text-[#777777] shrink-0" />
                   {isLast ? (
-                    <span className="text-[#1A2D42] dark:text-[#D4D8DD] font-semibold truncate max-w-[120px] sm:max-w-[200px]">
+                    <span className="text-[#111827] dark:text-[#FFFFFF] font-semibold truncate max-w-[120px] sm:max-w-[200px]">
                       {formattedSegment}
                     </span>
                   ) : (
                     <Link
                       href={href}
-                      className="hover:text-[#1A2D42] dark:hover:text-[#D4D8DD] transition-colors truncate max-w-[100px] sm:max-w-none text-[#2E4156]/80 dark:text-[#AAB7B7]"
+                      className="hover:text-[#111827] dark:hover:text-[#FFFFFF] transition-colors truncate max-w-[100px] sm:max-w-none text-[#6B7280] dark:text-[#A1A1A1]"
                     >
                       {formattedSegment}
                     </Link>
@@ -215,7 +212,7 @@ export default function AppHeader({
             ref={searchContainerRef}
             className="relative hidden min-w-0 flex-[0_1_22rem] items-center md:flex"
           >
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2E4156]/60 dark:text-[#AAB7B7] pointer-events-none z-10" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF] dark:text-[#777777] pointer-events-none z-10" />
             <input
               type="text"
               value={searchQuery}
@@ -230,7 +227,7 @@ export default function AppHeader({
                 if (e.key === "Escape") setShowSearchDropdown(false);
               }}
               placeholder="Search projects, materials, workers..."
-              className="w-full h-9 bg-[#E3E6E9] dark:bg-[#2E4156] border border-[#AAB7B7]/50 dark:border-[rgba(170,183,183,0.22)] text-[#1A2D42] dark:text-[#D4D8DD] placeholder-[#2E4156]/60 dark:placeholder-[#AAB7B7]/70 text-xs rounded-lg pl-9 pr-8 outline-none focus:border-[#2E4156] dark:focus:border-[#C0C8CA] focus:bg-white dark:focus:bg-[#354B62] focus:ring-1 focus:ring-[#C0C8CA]/30 transition-all"
+              className="w-full h-9 bg-[#F9FAFB] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] text-[#111827] dark:text-[#FFFFFF] placeholder-[#9CA3AF] dark:placeholder-[#777777] text-xs rounded-xl pl-9 pr-8 outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF] focus:ring-1 focus:ring-[#111827]/10 dark:focus:ring-[#FFFFFF]/10 transition-all shadow-2xs"
             />
             {searchQuery && (
               <button
@@ -238,7 +235,7 @@ export default function AppHeader({
                   onSearchChange?.("");
                   setShowSearchDropdown(false);
                 }}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#2E4156] dark:text-[#AAB7B7] hover:text-[#1A2D42] dark:hover:text-white p-0.5 rounded-full transition-colors"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] dark:text-[#777777] hover:text-[#111827] dark:hover:text-[#FFFFFF] p-0.5 rounded-full transition-colors"
                 title="Clear search"
                 aria-label="Clear search"
               >
@@ -248,67 +245,67 @@ export default function AppHeader({
 
             {/* Global Search Results Dropdown */}
             {showSearchDropdown && searchQuery.trim().length > 0 && (
-              <div className="absolute left-0 top-full mt-2 w-full min-w-[340px] max-w-[440px] bg-[#E3E6E9] dark:bg-[#2E4156] border border-[#AAB7B7]/50 dark:border-[rgba(170,183,183,0.25)] rounded-xl shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150 overflow-hidden">
-                <div className="px-3.5 py-1.5 border-b border-[#AAB7B7]/30 dark:border-[rgba(170,183,183,0.18)] flex items-center justify-between text-[11px] font-semibold text-[#2E4156] dark:text-[#AAB7B7]">
+              <div className="absolute left-0 top-full mt-2 w-full min-w-[340px] max-w-[440px] bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150 overflow-hidden">
+                <div className="px-3.5 py-1.5 border-b border-[#E5E7EB] dark:border-[#2A2A2A] flex items-center justify-between text-[11px] font-semibold text-[#6B7280] dark:text-[#A1A1A1]">
                   <span>{isSearching ? "SEARCHING..." : `RESULTS FOR "${searchQuery.trim()}"`}</span>
-                  <span className="text-[10px] font-mono">{searchResults.length} found</span>
+                  <span className="text-[10px] font-mono">{displayedResults.length} found</span>
                 </div>
 
-                <div className="max-h-72 overflow-y-auto divide-y divide-[#AAB7B7]/25 dark:divide-[rgba(170,183,183,0.15)]">
+                <div className="max-h-72 overflow-y-auto divide-y divide-[#E5E7EB] dark:divide-[#2A2A2A]">
                   {isSearching ? (
-                    <div className="p-5 flex items-center justify-center gap-2.5 text-xs text-[#2E4156]/70 dark:text-[#AAB7B7]">
-                      <Loader2 className="w-4 h-4 animate-spin text-[#C0C8CA]" />
-                      <span>Scanning workspace records...</span>
+                    <div className="p-5 flex items-center justify-center gap-2.5 text-xs text-[#6B7280] dark:text-[#A1A1A1]">
+                      <Loader2 className="w-4 h-4 animate-spin text-[#111827] dark:text-[#FFFFFF]" />
+                      <span>Scanning records...</span>
                     </div>
-                  ) : searchResults.length === 0 ? (
+                  ) : displayedResults.length === 0 ? (
                     <div className="p-6 text-center space-y-2">
-                      <Search className="w-7 h-7 text-[#AAB7B7] dark:text-[#AAB7B7]/50 mx-auto" />
-                      <p className="text-xs font-semibold text-[#1A2D42] dark:text-[#D4D8DD]">
+                      <Search className="w-7 h-7 text-[#9CA3AF] dark:text-[#777777] mx-auto" />
+                      <p className="text-xs font-semibold text-[#111827] dark:text-[#FFFFFF]">
                         No results found for &ldquo;{searchQuery}&rdquo;
                       </p>
-                      <p className="text-[11px] text-[#2E4156]/70 dark:text-[#AAB7B7] max-w-[260px] mx-auto">
-                        Check spelling or search by project code, worker name, or materials SKU.
+                      <p className="text-[11px] text-[#6B7280] dark:text-[#A1A1A1] max-w-[260px] mx-auto">
+                        Search by project code, worker name, or materials SKU.
                       </p>
                       <button
                         onClick={() => {
                           onSearchChange?.("");
                           setShowSearchDropdown(false);
                         }}
-                        className="mt-1 px-3 py-1 rounded-lg text-xs font-medium text-[#1A2D42] dark:text-[#D4D8DD] hover:bg-[#AAB7B7]/30 dark:hover:bg-[#1A2D42] transition-colors"
+                        className="mt-1 px-3 py-1 rounded-lg text-xs font-medium text-[#111827] dark:text-[#FFFFFF] hover:bg-[#F3F4F6] dark:hover:bg-[#252525] transition-colors"
                       >
                         Clear Search
                       </button>
                     </div>
                   ) : (
-                    searchResults.map((item) => (
+                    displayedResults.map((item) => (
                       <button
                         key={item.id}
                         onClick={() => {
                           setShowSearchDropdown(false);
                           router.push(item.url);
                         }}
-                        className="w-full flex items-center gap-3 px-3.5 py-2.5 text-left hover:bg-[#CAD1D5] dark:hover:bg-[#354B62] transition-colors group"
+                        className="w-full flex items-center gap-3 px-3.5 py-2.5 text-left hover:bg-[#F3F4F6] dark:hover:bg-[#252525] transition-colors group"
                       >
-                        <div className="p-2 rounded-xl bg-[#D4D8DD] dark:bg-[#1A2D42] group-hover:bg-[#C0C8CA] dark:group-hover:bg-[#3B536D] transition-colors">
-                          {item.type === "project" && <Building2 className="w-4 h-4 text-[#1A2D42] dark:text-[#D4D8DD] shrink-0" />}
-                          {item.type === "task" && <CheckSquare className="w-4 h-4 text-[#2E4156] dark:text-[#C0C8CA] shrink-0" />}
-                          {item.type === "material" && <Package className="w-4 h-4 text-[#1A2D42] dark:text-[#AAB7B7] shrink-0" />}
-                          {item.type === "equipment" && <Truck className="w-4 h-4 text-[#2E4156] dark:text-[#D4D8DD] shrink-0" />}
-                          {item.type === "user" && <User className="w-4 h-4 text-[#1A2D42] dark:text-[#C0C8CA] shrink-0" />}
-                          {item.type === "module" && <Compass className="w-4 h-4 text-[#2E4156] dark:text-[#AAB7B7] shrink-0" />}
+                        <div className="p-2 rounded-xl bg-[#F3F4F6] dark:bg-[#141414] group-hover:bg-[#E5E7EB] dark:group-hover:bg-[#2A2A2A] transition-colors">
+                          {item.type === "project" && <Building2 className="w-4 h-4 text-[#111827] dark:text-[#FFFFFF] shrink-0" />}
+                          {item.type === "task" && <CheckSquare className="w-4 h-4 text-[#111827] dark:text-[#FFFFFF] shrink-0" />}
+                          {item.type === "material" && <Package className="w-4 h-4 text-[#111827] dark:text-[#FFFFFF] shrink-0" />}
+                          {item.type === "equipment" && <Truck className="w-4 h-4 text-[#111827] dark:text-[#FFFFFF] shrink-0" />}
+                          {item.type === "user" && <User className="w-4 h-4 text-[#111827] dark:text-[#FFFFFF] shrink-0" />}
+                          {item.type === "module" && <Compass className="w-4 h-4 text-[#111827] dark:text-[#FFFFFF] shrink-0" />}
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between gap-2">
-                            <span className="text-xs font-bold text-[#1A2D42] dark:text-[#D4D8DD] truncate group-hover:text-[#1A2D42] dark:group-hover:text-white transition-colors">
+                            <span className="text-xs font-bold text-[#111827] dark:text-[#FFFFFF] truncate group-hover:underline transition-all">
                               {item.title}
                             </span>
                             {item.badge && (
-                              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#C0C8CA]/50 dark:bg-[#1A2D42] text-[#1A2D42] dark:text-[#C0C8CA] border border-[#AAB7B7]/40 shrink-0">
+                              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F3F4F6] dark:bg-[#141414] text-[#111827] dark:text-[#FFFFFF] border border-[#E5E7EB] dark:border-[#2A2A2A] shrink-0">
                                 {item.badge}
                               </span>
                             )}
                           </div>
-                          <p className="text-[11px] text-[#2E4156]/70 dark:text-[#AAB7B7] truncate">
+                          <p className="text-[11px] text-[#6B7280] dark:text-[#A1A1A1] truncate">
                             {item.subtitle}
                           </p>
                         </div>
@@ -317,15 +314,15 @@ export default function AppHeader({
                   )}
                 </div>
 
-                {searchResults.length > 0 && (
-                  <div className="px-3.5 py-2 border-t border-[#AAB7B7]/30 dark:border-[rgba(170,183,183,0.18)] bg-[#D4D8DD]/40 dark:bg-[#1A2D42]/60 flex items-center justify-between text-[11px]">
-                    <span className="text-[#2E4156]/60 dark:text-[#AAB7B7]/70">Press Esc to dismiss</span>
+                {displayedResults.length > 0 && (
+                  <div className="px-3.5 py-2 border-t border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#F9FAFB] dark:bg-[#141414] flex items-center justify-between text-[11px]">
+                    <span className="text-[#9CA3AF] dark:text-[#777777]">Press Esc to dismiss</span>
                     <button
                       onClick={() => {
                         onSearchChange?.("");
                         setShowSearchDropdown(false);
                       }}
-                      className="text-[#1A2D42] dark:text-[#D4D8DD] hover:underline font-medium"
+                      className="text-[#111827] dark:text-[#FFFFFF] hover:underline font-medium"
                     >
                       Clear
                     </button>
@@ -338,7 +335,7 @@ export default function AppHeader({
           {/* Mobile Search Toggle Button (>=44px touch target) */}
           <button
             onClick={() => setShowMobileSearch(!showMobileSearch)}
-            className="md:hidden flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl text-[#2E4156] dark:text-[#AAB7B7] hover:text-[#1A2D42] dark:hover:text-[#D4D8DD] hover:bg-[#AAB7B7]/30 dark:hover:bg-[#2E4156] transition-colors shrink-0"
+            className="md:hidden flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl text-[#6B7280] dark:text-[#A1A1A1] hover:text-[#111827] dark:hover:text-[#FFFFFF] hover:bg-[#F3F4F6] dark:hover:bg-[#1F1F1F] transition-colors shrink-0"
             title="Search"
             aria-label="Toggle search input"
           >
@@ -349,19 +346,19 @@ export default function AppHeader({
           <div className="relative" ref={themeMenuRef}>
             <button
               onClick={() => setShowThemeMenu(!showThemeMenu)}
-              className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl text-[#2E4156] dark:text-[#AAB7B7] hover:text-[#1A2D42] dark:hover:text-[#D4D8DD] hover:bg-[#AAB7B7]/30 dark:hover:bg-[#2E4156] transition-colors"
+              className="flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl text-[#6B7280] dark:text-[#A1A1A1] hover:text-[#111827] dark:hover:text-[#FFFFFF] hover:bg-[#F3F4F6] dark:hover:bg-[#1F1F1F] transition-colors"
               title={`Theme: ${theme}`}
               aria-label="Toggle color theme"
             >
               {resolvedTheme === "dark" ? (
-                <Moon className="w-4 h-4 text-[#C0C8CA]" />
+                <Moon className="w-4 h-4 text-[#FFFFFF]" />
               ) : (
-                <Sun className="w-4 h-4 text-[#2E4156]" />
+                <Sun className="w-4 h-4 text-[#111827]" />
               )}
             </button>
 
             {showThemeMenu && (
-              <div className="absolute right-0 mt-2 w-36 bg-[#E3E6E9] dark:bg-[#2E4156] border border-[#AAB7B7]/50 dark:border-[rgba(170,183,183,0.25)] rounded-xl shadow-xl py-1 z-50 animate-in fade-in duration-100">
+              <div className="absolute right-0 mt-2 w-36 bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-2xl shadow-xl py-1 z-50 animate-in fade-in duration-100">
                 <button
                   onClick={() => {
                     setTheme("light");
@@ -369,11 +366,11 @@ export default function AppHeader({
                   }}
                   className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-left transition-colors ${
                     theme === "light"
-                      ? "text-[#1A2D42] dark:text-[#D4D8DD] bg-[#C0C8CA]/50 dark:bg-[#1A2D42] font-semibold"
-                      : "text-[#2E4156] dark:text-[#AAB7B7] hover:bg-[#CAD1D5] dark:hover:bg-[#354B62]"
+                      ? "text-[#111827] dark:text-[#FFFFFF] bg-[#F3F4F6] dark:bg-[#252525] font-semibold"
+                      : "text-[#6B7280] dark:text-[#A1A1A1] hover:bg-[#F3F4F6] dark:hover:bg-[#252525]"
                   }`}
                 >
-                  <Sun className="w-4 h-4 text-[#2E4156] dark:text-[#C0C8CA]" />
+                  <Sun className="w-4 h-4 text-[#111827] dark:text-[#FFFFFF]" />
                   <span>Light</span>
                 </button>
                 <button
@@ -383,11 +380,11 @@ export default function AppHeader({
                   }}
                   className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-left transition-colors ${
                     theme === "dark"
-                      ? "text-[#1A2D42] dark:text-[#D4D8DD] bg-[#C0C8CA]/50 dark:bg-[#1A2D42] font-semibold"
-                      : "text-[#2E4156] dark:text-[#AAB7B7] hover:bg-[#CAD1D5] dark:hover:bg-[#354B62]"
+                      ? "text-[#111827] dark:text-[#FFFFFF] bg-[#F3F4F6] dark:bg-[#252525] font-semibold"
+                      : "text-[#6B7280] dark:text-[#A1A1A1] hover:bg-[#F3F4F6] dark:hover:bg-[#252525]"
                   }`}
                 >
-                  <Moon className="w-4 h-4 text-[#2E4156] dark:text-[#C0C8CA]" />
+                  <Moon className="w-4 h-4 text-[#111827] dark:text-[#FFFFFF]" />
                   <span>Dark</span>
                 </button>
                 <button
@@ -397,11 +394,11 @@ export default function AppHeader({
                   }}
                   className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-left transition-colors ${
                     theme === "system"
-                      ? "text-[#1A2D42] dark:text-[#D4D8DD] bg-[#C0C8CA]/50 dark:bg-[#1A2D42] font-semibold"
-                      : "text-[#2E4156] dark:text-[#AAB7B7] hover:bg-[#CAD1D5] dark:hover:bg-[#354B62]"
+                      ? "text-[#111827] dark:text-[#FFFFFF] bg-[#F3F4F6] dark:bg-[#252525] font-semibold"
+                      : "text-[#6B7280] dark:text-[#A1A1A1] hover:bg-[#F3F4F6] dark:hover:bg-[#252525]"
                   }`}
                 >
-                  <Laptop className="w-4 h-4 text-[#2E4156] dark:text-[#AAB7B7]" />
+                  <Laptop className="w-4 h-4 text-[#111827] dark:text-[#FFFFFF]" />
                   <span>System</span>
                 </button>
               </div>
@@ -411,13 +408,13 @@ export default function AppHeader({
           {/* Notifications Link with Live Badge (>=44px touch target) */}
           <Link
             href="/notifications"
-            className="relative flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl text-[#2E4156] dark:text-[#AAB7B7] hover:text-[#1A2D42] dark:hover:text-[#D4D8DD] hover:bg-[#AAB7B7]/30 dark:hover:bg-[#2E4156] transition-colors"
+            className="relative flex items-center justify-center min-h-[44px] min-w-[44px] rounded-xl text-[#6B7280] dark:text-[#A1A1A1] hover:text-[#111827] dark:hover:text-[#FFFFFF] hover:bg-[#F3F4F6] dark:hover:bg-[#1F1F1F] transition-colors"
             title="Notifications"
             aria-label="View notifications"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#1A2D42] dark:bg-[#C0C8CA] text-[10px] font-bold text-[#D4D8DD] dark:text-[#1A2D42] shadow-xs">
+              <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#111111] dark:bg-[#FFFFFF] text-[10px] font-bold text-[#FFFFFF] dark:text-[#111111] shadow-2xs ring-2 ring-[#FFFFFF] dark:ring-[#141414]">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}
@@ -427,36 +424,36 @@ export default function AppHeader({
           <div className="relative" ref={profileMenuRef}>
             <button
               onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-[#AAB7B7]/25 dark:hover:bg-[#2E4156] min-h-[44px] transition-colors"
+              className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-[#F3F4F6] dark:hover:bg-[#1F1F1F] min-h-[44px] transition-colors"
               aria-label="User profile menu"
             >
-              <div className="w-8 h-8 rounded-full bg-[#1A2D42] dark:bg-[#2E4156] text-[#D4D8DD] dark:text-[#C0C8CA] border border-[#AAB7B7]/40 flex items-center justify-center text-xs font-bold shadow-xs">
+              <div className="w-8 h-8 rounded-full bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] border border-[#E5E7EB] dark:border-[#2A2A2A] flex items-center justify-center text-xs font-bold shadow-2xs">
                 {userName ? userName.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
               </div>
               <div className="hidden sm:flex flex-col text-left leading-tight">
-                <span className="text-xs font-semibold text-[#1A2D42] dark:text-[#D4D8DD]">
+                <span className="text-xs font-semibold text-[#111827] dark:text-[#FFFFFF]">
                   {userName}
                 </span>
-                <span className="text-[10px] text-[#2E4156]/70 dark:text-[#AAB7B7] font-medium">
+                <span className="text-[10px] text-[#6B7280] dark:text-[#A1A1A1] font-medium">
                   {userRole}
                 </span>
               </div>
-              <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-[#2E4156]/70 dark:text-[#AAB7B7]" />
+              <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-[#9CA3AF] dark:text-[#777777]" />
             </button>
 
             {/* Profile Dropdown Menu */}
             {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-60 bg-[#E3E6E9] dark:bg-[#2E4156] border border-[#AAB7B7]/50 dark:border-[rgba(170,183,183,0.25)] rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
-                <div className="px-4 py-2.5 border-b border-[#AAB7B7]/30 dark:border-[rgba(170,183,183,0.18)]">
-                  <p className="text-xs font-semibold text-[#1A2D42] dark:text-[#D4D8DD] truncate">
+              <div className="absolute right-0 mt-2 w-60 bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+                <div className="px-4 py-2.5 border-b border-[#E5E7EB] dark:border-[#2A2A2A]">
+                  <p className="text-xs font-semibold text-[#111827] dark:text-[#FFFFFF] truncate">
                     {userName}
                   </p>
                   {userEmail && (
-                    <p className="text-[11px] text-[#2E4156]/70 dark:text-[#AAB7B7] truncate">
+                    <p className="text-[11px] text-[#6B7280] dark:text-[#A1A1A1] truncate">
                       {userEmail}
                     </p>
                   )}
-                  <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-[#1A2D42]/10 dark:bg-[#1A2D42] text-[#1A2D42] dark:text-[#C0C8CA] border border-[#AAB7B7]/40">
+                  <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-[#F3F4F6] dark:bg-[#141414] text-[#111827] dark:text-[#FFFFFF] border border-[#E5E7EB] dark:border-[#2A2A2A]">
                     {userRole}
                   </span>
                 </div>
@@ -464,9 +461,9 @@ export default function AppHeader({
                 <Link
                   href="/administration/settings"
                   onClick={() => setShowProfileMenu(false)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-xs text-[#1A2D42] dark:text-[#D4D8DD] hover:bg-[#CAD1D5] dark:hover:bg-[#354B62] transition-colors"
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-xs text-[#111827] dark:text-[#FFFFFF] hover:bg-[#F3F4F6] dark:hover:bg-[#252525] transition-colors"
                 >
-                  <User className="w-4 h-4 text-[#2E4156] dark:text-[#AAB7B7]" />
+                  <User className="w-4 h-4 text-[#6B7280] dark:text-[#A1A1A1]" />
                   <span>Account Settings</span>
                 </Link>
 
@@ -476,7 +473,7 @@ export default function AppHeader({
                       setShowProfileMenu(false);
                       onLogout();
                     }}
-                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-[#964A4A] dark:text-[#B56B6B] hover:bg-[#964A4A]/10 dark:hover:bg-[#B56B6B]/15 transition-colors text-left border-t border-[#AAB7B7]/30 dark:border-[rgba(170,183,183,0.18)]"
+                    className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-[#D14343] dark:text-[#E66868] hover:bg-[#D14343]/10 dark:hover:bg-[#E66868]/15 transition-colors text-left border-t border-[#E5E7EB] dark:border-[#2A2A2A]"
                   >
                     <LogOut className="w-4 h-4" />
                     <span>Logout</span>
@@ -488,26 +485,26 @@ export default function AppHeader({
         </div>
       </div>
 
-      {/* Expandable Mobile Search Dropdown (>=44px touch-friendly input) */}
+      {/* Expandable Mobile Search Dropdown */}
       {showMobileSearch && (
         <div
           ref={mobileSearchRef}
-          className="md:hidden px-4 pb-3 pt-2 border-t border-[#AAB7B7]/30 dark:border-[rgba(170,183,183,0.18)] bg-[#D4D8DD] dark:bg-[#1A2D42]"
+          className="md:hidden px-4 pb-3 pt-2 border-t border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#141414]"
         >
           <div className="relative flex items-center">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2E4156]/60 dark:text-[#AAB7B7] pointer-events-none z-10" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF] dark:text-[#777777] pointer-events-none z-10" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange?.(e.target.value)}
               placeholder="Search projects, materials, workers..."
-              className="w-full h-10 bg-[#E3E6E9] dark:bg-[#2E4156] border border-[#AAB7B7]/50 dark:border-[rgba(170,183,183,0.22)] text-[#1A2D42] dark:text-[#D4D8DD] placeholder-[#2E4156]/60 dark:placeholder-[#AAB7B7]/70 text-xs rounded-lg pl-9 pr-9 outline-none focus:border-[#2E4156] dark:focus:border-[#C0C8CA] focus:bg-white dark:focus:bg-[#354B62] focus:ring-1 focus:ring-[#C0C8CA]/30 transition-all"
+              className="w-full h-10 bg-[#F9FAFB] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] text-[#111827] dark:text-[#FFFFFF] placeholder-[#9CA3AF] dark:placeholder-[#777777] text-xs rounded-xl pl-9 pr-9 outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF] transition-all"
               autoFocus
             />
             {searchQuery && (
               <button
                 onClick={() => onSearchChange?.("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#2E4156] dark:text-[#AAB7B7] hover:text-[#1A2D42] dark:hover:text-white p-0.5 rounded-full transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] dark:text-[#777777] hover:text-[#111827] dark:hover:text-[#FFFFFF] p-0.5 rounded-full transition-colors"
                 title="Clear"
                 aria-label="Clear search"
               >
@@ -518,39 +515,39 @@ export default function AppHeader({
 
           {/* Mobile Search Results */}
           {searchQuery.trim().length > 0 && (
-            <div className="mt-2 max-h-60 overflow-y-auto rounded-xl border border-[#AAB7B7]/50 dark:border-[rgba(170,183,183,0.25)] bg-[#E3E6E9] dark:bg-[#2E4156] divide-y divide-[#AAB7B7]/25 dark:divide-[rgba(170,183,183,0.15)]">
+            <div className="mt-2 max-h-60 overflow-y-auto rounded-2xl border border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#1F1F1F] divide-y divide-[#E5E7EB] dark:divide-[#2A2A2A] shadow-xl">
               {isSearching ? (
-                <div className="p-3 text-center text-xs text-[#2E4156]/70 dark:text-[#AAB7B7] flex items-center justify-center gap-2">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C0C8CA]" />
+                <div className="p-3 text-center text-xs text-[#6B7280] dark:text-[#A1A1A1] flex items-center justify-center gap-2">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#111827] dark:text-[#FFFFFF]" />
                   <span>Searching...</span>
                 </div>
-              ) : searchResults.length === 0 ? (
-                <div className="p-4 text-center text-xs text-[#2E4156]/70 dark:text-[#AAB7B7]">
+              ) : displayedResults.length === 0 ? (
+                <div className="p-4 text-center text-xs text-[#6B7280] dark:text-[#A1A1A1]">
                   No matches for &ldquo;{searchQuery}&rdquo;
                 </div>
               ) : (
-                searchResults.map((item) => (
+                displayedResults.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => {
                       setShowMobileSearch(false);
                       router.push(item.url);
                     }}
-                    className="w-full flex items-center gap-2.5 p-2.5 text-left text-xs hover:bg-[#CAD1D5] dark:hover:bg-[#354B62] transition-colors"
+                    className="w-full flex items-center gap-2.5 p-2.5 text-left text-xs hover:bg-[#F3F4F6] dark:hover:bg-[#252525] transition-colors"
                   >
-                    <div className="p-1.5 rounded-lg bg-[#D4D8DD] dark:bg-[#1A2D42]">
-                      {item.type === "project" && <Building2 className="w-3.5 h-3.5 text-[#1A2D42] dark:text-[#D4D8DD]" />}
-                      {item.type === "task" && <CheckSquare className="w-3.5 h-3.5 text-[#2E4156] dark:text-[#C0C8CA]" />}
-                      {item.type === "material" && <Package className="w-3.5 h-3.5 text-[#1A2D42] dark:text-[#AAB7B7]" />}
-                      {item.type === "equipment" && <Truck className="w-3.5 h-3.5 text-[#2E4156] dark:text-[#D4D8DD]" />}
-                      {item.type === "user" && <User className="w-3.5 h-3.5 text-[#1A2D42] dark:text-[#C0C8CA]" />}
-                      {item.type === "module" && <Compass className="w-3.5 h-3.5 text-[#2E4156] dark:text-[#AAB7B7]" />}
+                    <div className="p-1.5 rounded-lg bg-[#F3F4F6] dark:bg-[#141414]">
+                      {item.type === "project" && <Building2 className="w-3.5 h-3.5 text-[#111827] dark:text-[#FFFFFF]" />}
+                      {item.type === "task" && <CheckSquare className="w-3.5 h-3.5 text-[#111827] dark:text-[#FFFFFF]" />}
+                      {item.type === "material" && <Package className="w-3.5 h-3.5 text-[#111827] dark:text-[#FFFFFF]" />}
+                      {item.type === "equipment" && <Truck className="w-3.5 h-3.5 text-[#111827] dark:text-[#FFFFFF]" />}
+                      {item.type === "user" && <User className="w-3.5 h-3.5 text-[#111827] dark:text-[#FFFFFF]" />}
+                      {item.type === "module" && <Compass className="w-3.5 h-3.5 text-[#111827] dark:text-[#FFFFFF]" />}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="font-semibold text-[#1A2D42] dark:text-[#D4D8DD] truncate">
+                      <div className="font-semibold text-[#111827] dark:text-[#FFFFFF] truncate">
                         {item.title}
                       </div>
-                      <div className="text-[10px] text-[#2E4156]/70 dark:text-[#AAB7B7] truncate">
+                      <div className="text-[10px] text-[#6B7280] dark:text-[#A1A1A1] truncate">
                         {item.subtitle}
                       </div>
                     </div>

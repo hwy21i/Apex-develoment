@@ -2,10 +2,6 @@
 
 import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
-import {
-  Calendar, Clock, CheckCircle, AlertTriangle, Layers,
-  ChevronRight, ArrowRight, Flag, Filter
-} from "lucide-react";
 
 interface TimelineItem {
   id: string;
@@ -96,7 +92,7 @@ const STATUS_BADGES: Record<string, string> = {
 };
 
 export default function MasterTimelinePage() {
-  const [items, setItems] = useState<TimelineItem[]>(MOCK_TIMELINE);
+  const [items] = useState<TimelineItem[]>(MOCK_TIMELINE);
   const [projectFilter, setProjectFilter] = useState("All");
 
   const projects = ["All", ...Array.from(new Set(MOCK_TIMELINE.map((t) => t.project)))];

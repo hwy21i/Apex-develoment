@@ -52,12 +52,21 @@ const PRIORITIES = ["Low", "Medium", "High", "Critical"];
 function mapRecord(r: OperationalRecord): MaterialRequest {
   const d = r.data || {};
   const rawItems = Array.isArray(d.items) ? d.items : [];
-  const items: RequestItem[] = rawItems.map((it: any) => ({
-    name: it?.name || it?.material?.name || "—",
-    unit: it?.unit || it?.material?.unit || "",
-    quantityRequested: Number(it?.quantityRequested) || 0,
-    estimatedCost: Number(it?.estimatedCost) || 0,
-  }));
+  const items: RequestItem[] = rawItems.map((it: unknown) => {
+    const item = it as {
+      name?: string;
+      material?: { name?: string; unit?: string };
+      unit?: string;
+      quantityRequested?: number | string;
+      estimatedCost?: number | string;
+    } | null;
+    return {
+      name: item?.name || item?.material?.name || "—",
+      unit: item?.unit || item?.material?.unit || "",
+      quantityRequested: Number(item?.quantityRequested) || 0,
+      estimatedCost: Number(item?.estimatedCost) || 0,
+    };
+  });
   const totalEstimatedCost =
     Number(d.totalEstimatedCost) || items.reduce((s, i) => s + i.estimatedCost, 0);
   return {

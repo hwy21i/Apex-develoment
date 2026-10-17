@@ -2,7 +2,6 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import bcrypt from "bcryptjs";
 import {
-  ROLE_PERMISSIONS,
   getRolePermissions,
   hasPermission,
   hasAnyPermission,
@@ -71,4 +70,14 @@ test("RBAC - Permission Aliasing", () => {
   // Checking either FINANCE_VIEW or finance.read
   assert.ok(hasPermission(pm, "FINANCE_VIEW"));
   assert.ok(hasPermission(pm, "finance.read"));
+});
+
+test("RBAC - Helper Functions (hasAnyPermission, hasAllPermissions, getRolePermissions)", () => {
+  const admin = { role: "Admin" };
+  assert.ok(hasAnyPermission(admin, ["projects.read", "nonexistent.perm"]));
+  assert.ok(hasAllPermissions(admin, ["projects.read", "finance.approve"]));
+
+  const perms = getRolePermissions("Storekeeper");
+  assert.ok(perms.includes("GOODS_RECEIPT_CREATE"));
+  assert.ok(perms.includes("inventory.receive"));
 });

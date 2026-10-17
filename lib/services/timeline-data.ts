@@ -2,33 +2,51 @@ import { Task } from "@/models/Task";
 import { Milestone } from "@/models/Milestone";
 import { connectToDatabase } from "@/lib/db/mongodb";
 
+interface LeanTask {
+  _id: unknown;
+  title?: string;
+  startDate?: Date | string;
+  dueDate?: Date | string;
+  createdAt?: Date | string;
+  progress?: number;
+  status?: string;
+  dependencies?: unknown[];
+}
+
+interface LeanMilestone {
+  _id: unknown;
+  title?: string;
+  dueDate?: Date | string;
+  status?: string;
+}
+
 export async function getProjectTimelineData(projectId: string) {
   await connectToDatabase();
 
   const [tasks, milestones] = await Promise.all([
-    Task.find({ projectId }).sort({ startDate: 1 }).lean(),
-    Milestone.find({ projectId }).sort({ dueDate: 1 }).lean(),
+    Task.find({ projectId }).sort({ startDate: 1 }).lean<LeanTask[]>(),
+    Milestone.find({ projectId }).sort({ dueDate: 1 }).lean<LeanMilestone[]>(),
   ]);
 
   // Transform data for the Gantt chart
-  const formattedTasks = tasks.map((task: any) => ({
-    id: task._id.toString(),
-    name: task.title,
-    start: task.startDate || task.createdAt,
-    end: task.dueDate || task.startDate || task.createdAt,
+  const formattedTasks = tasks.map((task) => ({
+    id: String(task._id),
+    name: task.title || "Untitled Task",
+    start: task.startDate || task.createdAt || new Date(),
+    end: task.dueDate || task.startDate || task.createdAt || new Date(),
     progress: task.progress || 0,
     status: task.status,
-    dependencies: task.dependencies?.map((d: any) => d.toString()) || [],
-    type: 'task'
+    dependencies: Array.isArray(task.dependencies) ? task.dependencies.map(String) : [],
+    type: "task",
   }));
 
-  const formattedMilestones = milestones.map((ms: any) => ({
-    id: ms._id.toString(),
-    name: ms.title,
-    start: ms.dueDate,
-    end: ms.dueDate,
+  const formattedMilestones = milestones.map((ms) => ({
+    id: String(ms._id),
+    name: ms.title || "Untitled Milestone",
+    start: ms.dueDate || new Date(),
+    end: ms.dueDate || new Date(),
     status: ms.status,
-    type: 'milestone'
+    type: "milestone",
   }));
 
   return {

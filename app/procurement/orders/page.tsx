@@ -4,7 +4,7 @@ import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
   Plus, Search, Eye, ShoppingCart, CheckCircle, Clock,
-  Truck, Package, AlertCircle, FileText, ChevronDown, X
+  Truck, Package, AlertCircle, FileText, X
 } from "lucide-react";
 
 interface PurchaseOrder {
@@ -130,7 +130,7 @@ export default function PurchaseOrdersPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const [form, setForm] = useState({
-    poNumber: `PO-2024-000${orders.length + 1}`,
+    poNumber: "PO-2024-0005",
     supplierName: "",
     supplierContact: "+251-911-000000",
     projectName: "Addis Heights Tower",
@@ -138,9 +138,26 @@ export default function PurchaseOrdersPage() {
     quantity: "50",
     unit: "tons",
     unitPrice: "85000",
-    deliveryDate: new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0],
+    deliveryDate: "2024-03-15",
     paymentTerms: "Net 30",
   });
+
+  const openCreateModal = () => {
+    const delivery = new Date(Date.now() + 14 * 86400000).toISOString().split("T")[0];
+    setForm({
+      poNumber: `PO-2024-000${orders.length + 1}`,
+      supplierName: "",
+      supplierContact: "+251-911-000000",
+      projectName: "Addis Heights Tower",
+      itemDescription: "High-Tensile Reinforcement Rebar 16mm",
+      quantity: "50",
+      unit: "tons",
+      unitPrice: "85000",
+      deliveryDate: delivery,
+      paymentTerms: "Net 30",
+    });
+    setIsCreateOpen(true);
+  };
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -223,7 +240,7 @@ export default function PurchaseOrdersPage() {
           </div>
           <button
             type="button"
-            onClick={() => setIsCreateOpen(true)}
+            onClick={openCreateModal}
             className="inline-flex items-center gap-2 bg-[#C0C8CA] hover:bg-white text-[#1A2D42] px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all self-start sm:self-auto shrink-0"
           >
             <Plus size={16} />

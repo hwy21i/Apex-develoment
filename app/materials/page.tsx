@@ -62,7 +62,6 @@ export default function MaterialsPage() {
   const [formUnitCost, setFormUnitCost] = useState("950");
 
   const fetchMaterials = useCallback(async () => {
-    setLoading(true);
     try {
       const [matRes, projRes] = await Promise.all([
         fetch("/api/records/materials", { cache: "no-store" }),
@@ -90,8 +89,8 @@ export default function MaterialsPage() {
         const projJson = await projRes.json();
         if (projJson.success && projJson.data?.items) {
           setProjects(projJson.data.items);
-          if (projJson.data.items.length > 0 && !formProjectId) {
-            setFormProjectId(projJson.data.items[0]._id);
+          if (projJson.data.items.length > 0) {
+            setFormProjectId((prev) => prev || projJson.data.items[0]._id);
           }
         }
       }
@@ -100,10 +99,18 @@ export default function MaterialsPage() {
     } finally {
       setLoading(false);
     }
-  }, [formProjectId]);
+  }, []);
 
   useEffect(() => {
-    fetchMaterials();
+    let ignore = false;
+    Promise.resolve().then(() => {
+      if (!ignore) {
+        fetchMaterials();
+      }
+    });
+    return () => {
+      ignore = true;
+    };
   }, [fetchMaterials]);
 
   // Form Submission

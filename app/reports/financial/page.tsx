@@ -2,7 +2,7 @@
 
 import AppShell from "@/components/layout/AppShell";
 import { exportCsv, csvSlug } from "@/lib/exportCsv";
-import { FileText, Download, DollarSign, BarChart3, TrendingUp } from "lucide-react";
+import { FileText, Download } from "lucide-react";
 
 export default function FinancialReportsPage() {
   const reports = [

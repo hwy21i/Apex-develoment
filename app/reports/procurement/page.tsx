@@ -2,7 +2,7 @@
 
 import AppShell from "@/components/layout/AppShell";
 import { exportCsv, csvSlug } from "@/lib/exportCsv";
-import { FileText, Download, ShoppingCart, Truck, Star } from "lucide-react";
+import { Download } from "lucide-react";
 
 export default function ProcurementReportsPage() {
   const reports = [

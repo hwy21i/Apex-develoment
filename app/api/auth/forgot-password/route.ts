@@ -1,14 +1,25 @@
 import crypto from "crypto";
 import { connectToDatabase } from "@/lib/db/mongodb";
-import { body, fail, handleError, ok } from "@/lib/api";
+import { body, handleError, ok, fail } from "@/lib/api";
 import { forgotPasswordSchema } from "@/lib/validation/schemas";
 import { User } from "@/models/User";
 import { logAudit } from "@/lib/services/audit";
+import { checkRateLimit, getClientIp } from "@/lib/auth/rate-limit";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const rateCheck = checkRateLimit(`forgot-pass:${ip}`, { max: 5, windowMs: 60 * 1000 });
+    if (!rateCheck.allowed) {
+      return fail(
+        "TOO_MANY_REQUESTS",
+        "Too many password reset requests. Please wait a minute and try again.",
+        429
+      );
+    }
+
     const { email } = await body(request, forgotPasswordSchema);
     await connectToDatabase();
 

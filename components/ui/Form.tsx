@@ -14,7 +14,7 @@ export function FormCard({
   return (
     <form
       onSubmit={onSubmit}
-      className={`bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-5 sm:p-7 shadow-xs space-y-6 transition-colors ${className}`}
+      className={`bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-2xl p-5 sm:p-7 shadow-xs space-y-6 transition-colors ${className}`}
     >
       {children}
     </form>
@@ -36,15 +36,15 @@ export function FormSection({
 }) {
   return (
     <div className={`space-y-4 pt-2 first:pt-0 ${className}`}>
-      <div className="border-b border-slate-100 dark:border-[#2E4156] pb-2">
+      <div className="border-b border-[#E5E7EB] dark:border-[#2A2A2A] pb-2">
         <div className="flex items-center gap-2">
-          {Icon && <Icon className="w-4 h-4 text-[#C0C8CA]" />}
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-[#D4D8DD]">
+          {Icon && <Icon className="w-4 h-4 text-[#111827] dark:text-[#FFFFFF]" />}
+          <h3 className="text-xs font-bold uppercase tracking-wider text-[#111827] dark:text-[#FFFFFF]">
             {title}
           </h3>
         </div>
         {subtitle && (
-          <p className="text-xs text-slate-500 dark:text-[#AAB7B7] mt-0.5">
+          <p className="text-xs text-[#6B7280] dark:text-[#A1A1A1] mt-0.5">
             {subtitle}
           </p>
         )}
@@ -73,14 +73,14 @@ export function FormField({
 }) {
   return (
     <div className={`space-y-1.5 ${fullWidth ? "md:col-span-2" : ""} ${className}`}>
-      <label className="block text-xs font-semibold text-slate-700 dark:text-[#AAB7B7]">
-        {label} {required && <span className="text-rose-500">*</span>}
+      <label className="block text-xs font-semibold text-[#111827] dark:text-[#FFFFFF]">
+        {label} {required && <span className="text-[#EF4444]">*</span>}
       </label>
       {children}
       {helper && !error && (
-        <p className="text-[11px] text-slate-500 dark:text-[#AAB7B7]">{helper}</p>
+        <p className="text-[11px] text-[#6B7280] dark:text-[#A1A1A1]">{helper}</p>
       )}
-      {error && <p className="text-[11px] text-rose-500 font-medium">{error}</p>}
+      {error && <p className="text-[11px] text-[#EF4444] font-medium">{error}</p>}
     </div>
   );
 }
@@ -91,7 +91,7 @@ export function FormInput({
 }: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
-      className={`w-full min-h-[42px] bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 outline-none focus:border-[#C0C8CA] focus:bg-white dark:focus:bg-[#1A2D42] focus:ring-2 focus:ring-[#C0C8CA]/20 transition-all ${className}`}
+      className={`w-full min-h-[42px] bg-[#F9FAFB] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-xl px-3.5 py-2 text-xs text-[#111827] dark:text-[#FFFFFF] placeholder-[#9CA3AF] dark:placeholder-[#777777] outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF] transition-all ${className}`}
       {...props}
     />
   );
@@ -104,7 +104,7 @@ export function FormSelect({
 }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
     <select
-      className={`w-full min-h-[42px] bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2 text-xs text-slate-900 dark:text-[#D4D8DD] outline-none focus:border-[#C0C8CA] focus:bg-white dark:focus:bg-[#1A2D42] focus:ring-2 focus:ring-[#C0C8CA]/20 transition-all cursor-pointer ${className}`}
+      className={`w-full min-h-[42px] bg-[#F9FAFB] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-xl px-3.5 py-2 text-xs text-[#111827] dark:text-[#FFFFFF] outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF] transition-all cursor-pointer ${className}`}
       {...props}
     >
       {children}
@@ -120,7 +120,7 @@ export function FormTextarea({
   return (
     <textarea
       rows={rows}
-      className={`w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 outline-none focus:border-[#C0C8CA] focus:bg-white dark:focus:bg-[#1A2D42] focus:ring-2 focus:ring-[#C0C8CA]/20 transition-all resize-y ${className}`}
+      className={`w-full bg-[#F9FAFB] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-xl px-3.5 py-2.5 text-xs text-[#111827] dark:text-[#FFFFFF] placeholder-[#9CA3AF] dark:placeholder-[#777777] outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF] transition-all resize-y ${className}`}
       {...props}
     />
   );
@@ -135,10 +135,9 @@ export function FormActions({
 }) {
   return (
     <div
-      className={`pt-4 border-t border-slate-100 dark:border-[#2E4156] flex flex-col-reverse sm:flex-row items-center justify-end gap-3 ${className}`}
+      className={`pt-4 border-t border-[#E5E7EB] dark:border-[#2A2A2A] flex flex-col-reverse sm:flex-row items-center justify-end gap-3 ${className}`}
     >
       {children}
     </div>
   );
 }
-

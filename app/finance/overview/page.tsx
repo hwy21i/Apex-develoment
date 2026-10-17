@@ -1,10 +1,7 @@
 "use client";
 
 import AppShell from "@/components/layout/AppShell";
-import {
-  DollarSign, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownLeft,
-  PieChart, BarChart3, AlertCircle, Building2, CheckCircle, ShieldCheck
-} from "lucide-react";
+import { DollarSign, TrendingUp } from "lucide-react";
 
 export default function FinancialOverviewPage() {
   const fmt = (n: number) =>

@@ -365,14 +365,12 @@ const users = await User.create([
 console.log(`Created ${users.length} users across all 9 roles.`);
 
 // ============ Seed Initial Projects ============
-const hawariyaUser = users.find((u) => u.username === "hawariya21")!;
 const adminUser = users.find((u) => u.username === "admin")!;
 const pmUser = users.find((u) => u.username === "pm.abebe")!;
 const engUser = users.find((u) => u.username === "engineer.marta")!;
 const procUser = users.find((u) => u.username === "procurement.dawit")!;
 const wareUser = users.find((u) => u.username === "warehouse.tadesse")!;
 const accUser = users.find((u) => u.username === "accountant.hana")!;
-const hrUser = users.find((u) => u.username === "hr.selam")!;
 const wrkUser = users.find((u) => u.username === "worker.yonas")!;
 const clientUser = users.find((u) => u.username === "client.bole")!;
 
@@ -472,7 +470,7 @@ await User.updateMany(
 
 // ============ Seed Warehouses ============
 console.log("Seeding warehouses & logistics centers...");
-const warehouses = await Warehouse.create([
+await Warehouse.create([
   {
     name: "Central Logistics Hub - Kaliti",
     code: "WH-ADD-01",
@@ -498,7 +496,7 @@ const warehouses = await Warehouse.create([
 
 // ============ Seed Qualified Suppliers ============
 console.log("Seeding qualified suppliers...");
-const suppliers = await Supplier.create([
+await Supplier.create([
   {
     name: "Addis Construction Supply Co.",
     contactPerson: "Solomon Tadesse",
@@ -539,7 +537,7 @@ const suppliers = await Supplier.create([
 
 // ============ Seed Materials Catalog ============
 console.log("Seeding materials catalog with ETB unit pricing...");
-const materials = await Material.create([
+await Material.create([
   {
     name: "Portland Pozzolana Cement (50kg bag)",
     sku: "MAT-CEM-001",

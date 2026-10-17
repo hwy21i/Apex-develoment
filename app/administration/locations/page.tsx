@@ -47,8 +47,6 @@ export default function CountriesAndLocationsPage() {
   });
 
   async function fetchCountries() {
-    setLoading(true);
-    setError("");
     try {
       const res = await fetch("/api/countries");
       const json = await res.json();
@@ -65,7 +63,15 @@ export default function CountriesAndLocationsPage() {
   }
 
   useEffect(() => {
-    fetchCountries();
+    let ignore = false;
+    Promise.resolve().then(() => {
+      if (!ignore) {
+        fetchCountries();
+      }
+    });
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   async function handleCreateCountry(e: React.FormEvent) {

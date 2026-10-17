@@ -20,8 +20,8 @@ export async function GET() {
         dbLatencyMs = Date.now() - pingStart;
       }
     }
-  } catch (err: any) {
-    dbStatus = `ERROR: ${err.message}`;
+  } catch {
+    dbStatus = "ERROR: Connection failed";
   }
 
   const isHealthy = dbStatus === "CONNECTED";

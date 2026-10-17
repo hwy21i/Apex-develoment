@@ -43,9 +43,10 @@ export async function connectToDatabase() {
       console.warn("MongoDB SRV DNS failed. Switching to direct replica-set connection...");
       try {
         return await tryConnect(DIRECT_URI);
-      } catch (fallbackErr: any) {
+      } catch (fallbackErr: unknown) {
         cache.promise = null;
-        console.error("MongoDB Direct Fallback Failure:", fallbackErr.message);
+        const msg = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
+        console.error("MongoDB Direct Fallback Failure:", msg);
         throw fallbackErr;
       }
     }

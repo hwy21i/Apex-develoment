@@ -1,5 +1,5 @@
 import { connectToDatabase } from "@/lib/db/mongodb";
-import { body, fail, handleError, ok } from "@/lib/api";
+import { body, handleError, ok } from "@/lib/api";
 import { requirePermission } from "@/lib/auth/guard";
 import { locationSchema } from "@/lib/validation/schemas";
 import { Location } from "@/models/Location";

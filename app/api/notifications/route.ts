@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get("limit") || "30", 10), 100);
 
     const filter: Record<string, unknown> = {
-      $or: [{ userId: user.id }, { userId: { $exists: false } }],
+      userId: user.id,
     };
 
     if (unreadOnly) {
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     const [notifications, unreadCount] = await Promise.all([
       Notification.find(filter).sort({ createdAt: -1 }).limit(limit).lean(),
       Notification.countDocuments({
-        $or: [{ userId: user.id }, { userId: { $exists: false } }],
+        userId: user.id,
         isRead: false,
       }),
     ]);
@@ -42,9 +42,10 @@ export async function GET(request: NextRequest) {
         unreadCount,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to retrieve notifications";
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to retrieve notifications" },
+      { success: false, error: message },
       { status: 500 }
     );
   }
@@ -77,9 +78,9 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ success: true, message: "All notifications marked as read" });
     }
 
-    if (!notificationId) {
+    if (!notificationId || typeof notificationId !== "string") {
       return NextResponse.json(
-        { success: false, error: "Missing notificationId" },
+        { success: false, error: "Missing or invalid notificationId" },
         { status: 400 }
       );
     }
@@ -98,9 +99,10 @@ export async function PATCH(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, data: updated });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to update notification";
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to update notification" },
+      { success: false, error: message },
       { status: 500 }
     );
   }

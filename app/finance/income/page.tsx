@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
-import {
-  TrendingUp, Search, DollarSign, BarChart3, PieChart,
-  ArrowUpRight, Building2, Layers, CheckCircle
-} from "lucide-react";
+import { Search } from "lucide-react";
 
 interface IncomeStream {
   _id: string;
@@ -60,7 +57,7 @@ const MOCK_INCOME: IncomeStream[] = [
 ];
 
 export default function FinanceIncomePage() {
-  const [incomes, setIncomes] = useState<IncomeStream[]>(MOCK_INCOME);
+  const [incomes] = useState<IncomeStream[]>(MOCK_INCOME);
   const [search, setSearch] = useState("");
 
   const filtered = incomes.filter((i) =>

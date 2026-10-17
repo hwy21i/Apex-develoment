@@ -1,12 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import { exportCsv, csvSlug } from "@/lib/exportCsv";
-import {
-  FileText, Download, Filter, Calendar, BarChart2,
-  TrendingUp, CheckCircle, Clock, AlertTriangle
-} from "lucide-react";
+import { FileText, Download } from "lucide-react";
 
 export default function ProjectReportsPage() {
   const reports = [

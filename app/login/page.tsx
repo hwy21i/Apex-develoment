@@ -20,8 +20,8 @@ function LoginScreen() {
 
 function LoginFallback() {
   return (
-    <div className="min-h-screen bg-[#F4F5F7] flex items-center justify-center">
-      <div className="w-8 h-8 rounded-full border-2 border-[#3B82B6] border-t-transparent animate-spin" />
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-[#0B0B0B] flex items-center justify-center">
+      <div className="w-8 h-8 rounded-full border-2 border-[#111111] dark:border-[#FFFFFF] border-t-transparent animate-spin" />
     </div>
   );
 }

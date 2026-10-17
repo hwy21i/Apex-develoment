@@ -49,9 +49,10 @@ export async function GET(request: NextRequest) {
       .lean();
 
     return NextResponse.json({ success: true, data: receipts });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to retrieve goods receipts";
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to retrieve goods receipts" },
+      { success: false, error: message },
       { status: 500 }
     );
   }
@@ -106,6 +107,70 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check PO existence and status
+    const po = await PurchaseOrder.findById(purchaseOrderId);
+    if (!po) {
+      return NextResponse.json(
+        { success: false, error: "Referenced purchase order not found" },
+        { status: 404 }
+      );
+    }
+    if (po.status === "COMPLETED") {
+      return NextResponse.json(
+        { success: false, error: "Purchase order is already completely fulfilled." },
+        { status: 400 }
+      );
+    }
+    if (po.status === "CANCELLED") {
+      return NextResponse.json(
+        { success: false, error: "Cannot receive goods against a cancelled purchase order." },
+        { status: 400 }
+      );
+    }
+
+    // Idempotency check: prevent duplicate posting for same PO and delivery note
+    if (deliveryNoteNumber && typeof deliveryNoteNumber === "string" && deliveryNoteNumber.trim()) {
+      const existingGRN = await GoodsReceipt.findOne({
+        purchaseOrderId,
+        deliveryNoteNumber: deliveryNoteNumber.trim(),
+      });
+      if (existingGRN) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Goods receipt already posted for Delivery Note "${deliveryNoteNumber.trim()}" on this purchase order (${existingGRN.grnNumber}).`,
+          },
+          { status: 409 }
+        );
+      }
+    }
+
+    // Over-receipt check: ensure received quantity does not exceed remaining ordered quantity
+    for (const item of items) {
+      const poItem = po.items.find(
+        (pi: { materialId?: unknown }) => String(pi.materialId) === String(item.materialId)
+      );
+      if (!poItem) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Material item ${item.materialId} is not part of purchase order ${po.poNumber}`,
+          },
+          { status: 422 }
+        );
+      }
+      const remaining = (poItem.quantity || 0) - (poItem.receivedQuantity || 0);
+      if (item.receivedQuantity > remaining) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Received quantity (${item.receivedQuantity}) exceeds remaining order quantity (${remaining}) for material ${poItem.materialName || item.materialId}.`,
+          },
+          { status: 422 }
+        );
+      }
+    }
+
     // Auto-generate sequential GRN number
     const grnNumber = `GRN-${new Date().getFullYear()}-${new mongoose.Types.ObjectId().toString().slice(-8).toUpperCase()}`;
 
@@ -117,7 +182,7 @@ export async function POST(request: NextRequest) {
       warehouseId,
       supplierId,
       items,
-      deliveryNoteNumber,
+      deliveryNoteNumber: deliveryNoteNumber?.trim(),
       carrierName,
       vehicleNumber,
       status: "POSTED",
@@ -157,11 +222,12 @@ export async function POST(request: NextRequest) {
         let allCompleted = true;
         for (const item of items) {
           const poItem = po.items.find(
-            (pi: any) => pi.materialId.toString() === item.materialId.toString()
+            (pi: { materialId?: unknown; receivedQuantity?: number; quantity?: number }) =>
+              String(pi.materialId) === String(item.materialId)
           );
           if (poItem) {
             poItem.receivedQuantity = (poItem.receivedQuantity || 0) + item.receivedQuantity;
-            if (poItem.receivedQuantity < poItem.quantity) {
+            if (poItem.receivedQuantity < (poItem.quantity || 0)) {
               allCompleted = false;
             }
           }
@@ -194,9 +260,10 @@ export async function POST(request: NextRequest) {
       { success: true, data: newReceipt, message: "Goods Receipt posted and stock ledger updated." },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to post goods receipt";
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to post goods receipt" },
+      { success: false, error: message },
       { status: 500 }
     );
   }

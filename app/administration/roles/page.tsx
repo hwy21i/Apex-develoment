@@ -3,8 +3,7 @@
 import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
-  Shield, Check, X, Lock, Key, Users, Edit,
-  CheckCircle, AlertCircle, ChevronRight
+  Shield, Check, X
 } from "lucide-react";
 import { RoleType } from "@/types/erp";
 import { ROLE_PERMISSIONS } from "@/lib/rbac/permissions";
@@ -56,7 +55,7 @@ export default function RolesAndPermissionsPage() {
 
   const hasPermission = (perm: string) => {
     if (isSuperAdmin) return true;
-    return currentPermissions.includes(perm as any);
+    return (currentPermissions as string[]).includes(perm);
   };
 
   return (

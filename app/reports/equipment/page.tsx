@@ -2,7 +2,7 @@
 
 import AppShell from "@/components/layout/AppShell";
 import { exportCsv, csvSlug } from "@/lib/exportCsv";
-import { FileText, Download, Truck, Wrench, AlertTriangle } from "lucide-react";
+import { Download } from "lucide-react";
 
 export default function EquipmentReportsPage() {
   const reports = [

@@ -4,7 +4,6 @@ import { handleError, ok } from "@/lib/api";
 import { Project } from "@/models/Project";
 import { Task } from "@/models/Task";
 import { AuditLog } from "@/models/AuditLog";
-import { Operational } from "@/models/Operational";
 import { Material } from "@/models/Material";
 import { Equipment } from "@/models/Equipment";
 import { Payment } from "@/models/Payment";
@@ -13,6 +12,13 @@ import { Milestone } from "@/models/Milestone";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+interface PopulatedEntity {
+  _id?: unknown;
+  name?: string;
+  fullName?: string;
+  projectCode?: string;
+}
 
 const isProjectActive = (status?: string): boolean => {
   if (!status) return false;
@@ -56,7 +62,6 @@ export async function GET(request: Request) {
       paymentList,
       expenseList,
       milestoneList,
-      operations,
     ] = await Promise.all([
       Task.find({ projectId: { $in: projectIds } })
         .populate("assignedTo", "fullName")
@@ -84,10 +89,6 @@ export async function GET(request: Request) {
         .populate("projectId", "name projectCode")
         .sort({ dueDate: 1 })
         .limit(10)
-        .lean(),
-      Operational.find({ projectId: { $in: projectIds } })
-        .sort({ createdAt: -1 })
-        .limit(50)
         .lean(),
     ]);
 
@@ -173,9 +174,9 @@ export async function GET(request: Request) {
           dueDate: t.dueDate,
           remainingDays,
           kind: "Task",
-          projectName: (t.projectId as any)?.name || "General",
+          projectName: (t.projectId as PopulatedEntity | null)?.name || "General",
           status: t.status,
-          projectId: String((t.projectId as any)?._id || t.projectId || ""),
+          projectId: String((t.projectId as PopulatedEntity | null)?._id || t.projectId || ""),
         };
       });
 
@@ -190,14 +191,14 @@ export async function GET(request: Request) {
           dueDate: m.dueDate,
           remainingDays,
           kind: "Milestone",
-          projectName: (m.projectId as any)?.name || "General",
+          projectName: (m.projectId as PopulatedEntity | null)?.name || "General",
           status: m.status,
-          projectId: String((m.projectId as any)?._id || m.projectId || ""),
+          projectId: String((m.projectId as PopulatedEntity | null)?._id || m.projectId || ""),
         };
       });
 
     const allDeadlines = [...taskDeadlines, ...milestoneDeadlines]
-      .sort((a, b) => new Date(a.dueDate as any).getTime() - new Date(b.dueDate as any).getTime())
+      .sort((a, b) => new Date(String(a.dueDate)).getTime() - new Date(String(b.dueDate)).getTime())
       .slice(0, 8);
 
     // 9. Normalized Project list
@@ -209,7 +210,7 @@ export async function GET(request: Request) {
         id: String(p._id),
         name: p.name,
         projectCode: p.projectCode || `PRJ-${String(p._id).slice(-4).toUpperCase()}`,
-        client: p.client || (p as any).clientName || "Corporate Client",
+        client: p.client || (p as unknown as { clientName?: string }).clientName || "Corporate Client",
         location: p.location || "Addis Ababa, Ethiopia",
         manager:
           (p.projectManager as unknown as { fullName?: string } | null)?.fullName || "Unassigned",
@@ -293,8 +294,8 @@ export async function GET(request: Request) {
         items: taskRows.slice(0, 6).map((t) => ({
           id: String(t._id),
           title: t.title,
-          projectName: (t.projectId as any)?.name || "General",
-          assignedTo: (t.assignedTo as any)?.fullName || "Unassigned",
+          projectName: (t.projectId as PopulatedEntity | null)?.name || "General",
+          assignedTo: (t.assignedTo as PopulatedEntity | null)?.fullName || "Unassigned",
           priority: t.priority || "MEDIUM",
           status: t.status || "NOT_STARTED",
           dueDate: t.dueDate,
@@ -305,7 +306,7 @@ export async function GET(request: Request) {
         ? paymentList.map((p) => ({
             id: String(p._id),
             paymentNumber: p.paymentNumber,
-            projectName: (p.projectId as any)?.name || "General",
+            projectName: (p.projectId as PopulatedEntity | null)?.name || "General",
             amount: p.amount,
             currency: p.currency || "ETB",
             paymentDate: p.paymentDate,
@@ -315,7 +316,7 @@ export async function GET(request: Request) {
         : expenseList.map((e) => ({
             id: String(e._id),
             paymentNumber: e.expenseNumber,
-            projectName: (e.projectId as any)?.name || "General",
+            projectName: (e.projectId as PopulatedEntity | null)?.name || "General",
             amount: e.amount,
             currency: e.currency || "ETB",
             paymentDate: e.date,

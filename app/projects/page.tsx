@@ -4,11 +4,9 @@ import { connectToDatabase } from "@/lib/db/mongodb";
 import { Project } from "@/models/Project";
 import { ProjectSummary } from "@/types/project";
 import AppShell from "@/components/layout/AppShell";
-import { Building2, Plus, MapPin, DollarSign } from "lucide-react";
+import { Building2, Plus } from "lucide-react";
 import { getActiveUser } from "@/lib/auth/guard";
 import { hasPermission } from "@/lib/rbac/permissions";
-import { ProgressBar } from "@/components/ui/ProgressBar";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import ProjectsListClient from "@/components/projects/ProjectsListClient";
 
 export const dynamic = "force-dynamic";

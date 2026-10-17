@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import AppShell from "@/components/layout/AppShell";
 import { exportCsv, csvSlug } from "@/lib/exportCsv";
 import {
   FileText,
   Download,
-  Calendar,
-  Filter,
   BarChart3,
   PieChart,
   DollarSign,

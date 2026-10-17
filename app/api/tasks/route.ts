@@ -27,7 +27,12 @@ export async function GET(request: Request) {
       }).distinct("_id");
       query.projectId = { $in: projectIds };
     }
-    if (projectId) query.projectId = projectId;
+    if (projectId) {
+      if (!(await canAccessProject(guard.user, projectId))) {
+        return fail("FORBIDDEN", "You do not have access to this project", 403);
+      }
+      query.projectId = projectId;
+    }
     if (status) query.status = status;
 
     const tasks = await Task.find(query)

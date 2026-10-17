@@ -6,15 +6,6 @@ import AppShell from "@/components/layout/AppShell";
 import {
   ShoppingBag,
   Plus,
-  Search,
-  Filter,
-  FileText,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  Truck,
-  Building,
-  DollarSign,
 } from "lucide-react";
 
 interface RequestItem {
@@ -28,20 +19,31 @@ interface RequestItem {
   reason: string;
 }
 
+interface ProcurementRecordItem {
+  _id: string;
+  title?: string;
+  status?: string;
+  data?: {
+    requestNumber?: string;
+    requiredByDate?: string;
+    priority?: "LOW" | "MEDIUM" | "HIGH" | "URGENT";
+    itemCount?: number;
+    reason?: string;
+  };
+}
+
 export default function ProcurementPage() {
   const [requests, setRequests] = useState<RequestItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("requests");
 
   async function fetchRequests() {
-    setLoading(true);
     try {
       const res = await fetch("/api/records/procurement");
       const json = await res.json();
       if (json.success && json.data?.items) {
         setRequests(
-          json.data.items.map((r: any) => ({
+          json.data.items.map((r: ProcurementRecordItem) => ({
             _id: r._id,
             requestNumber: r.data?.requestNumber || "MR-2026-" + r._id.slice(-4).toUpperCase(),
             projectName: r.title || "Addis Heights Mixed-Use Tower",
@@ -61,7 +63,15 @@ export default function ProcurementPage() {
   }
 
   useEffect(() => {
-    fetchRequests();
+    let ignore = false;
+    Promise.resolve().then(() => {
+      if (!ignore) {
+        fetchRequests();
+      }
+    });
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 
 export type Theme = "light" | "dark" | "system";
 
@@ -11,39 +11,64 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: "light",
-  resolvedTheme: "light",
+  theme: "dark",
+  resolvedTheme: "dark",
   setTheme: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("apex-erp-theme") as Theme | null;
-    if (saved && (saved === "light" || saved === "dark" || saved === "system")) {
-      setThemeState(saved);
-    } else {
-      setThemeState("light");
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("apex-erp-theme") as Theme | null;
+        if (saved && (saved === "light" || saved === "dark" || saved === "system")) {
+          return saved;
+        }
+      } catch {
+        // Storage restricted
+      }
     }
-    setMounted(true);
+    return "dark";
+  });
+
+  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">(() => {
+    if (typeof window !== "undefined") {
+      const isDark = document.documentElement.classList.contains("dark");
+      return isDark ? "dark" : "light";
+    }
+    return "dark";
+  });
+
+  const applyTheme = useCallback((targetTheme: Theme) => {
+    if (typeof window === "undefined") return;
+
+    let resolved: "light" | "dark" = "dark";
+    if (targetTheme === "system") {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      resolved = mediaQuery.matches ? "dark" : "light";
+    } else {
+      resolved = targetTheme;
+    }
+
+    setResolvedTheme(resolved);
+
+    const root = document.documentElement;
+    if (resolved === "dark") {
+      root.classList.add("dark");
+      root.setAttribute("data-theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      root.setAttribute("data-theme", "light");
+    }
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (theme !== "system") return;
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    function applyTheme() {
-      let resolved: "light" | "dark" = "light";
-      if (theme === "system") {
-        resolved = mediaQuery.matches ? "dark" : "light";
-      } else {
-        resolved = theme;
-      }
-
+    const handler = (e: MediaQueryListEvent) => {
+      const isDark = e.matches;
+      const resolved = isDark ? "dark" : "light";
       setResolvedTheme(resolved);
 
       const root = document.documentElement;
@@ -54,25 +79,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         root.classList.remove("dark");
         root.setAttribute("data-theme", "light");
       }
-    }
-
-    applyTheme();
-
-    const listener = () => {
-      if (theme === "system") applyTheme();
     };
 
-    mediaQuery.addEventListener("change", listener);
-    return () => mediaQuery.removeEventListener("change", listener);
-  }, [theme, mounted]);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, [theme]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
     try {
       localStorage.setItem("apex-erp-theme", newTheme);
     } catch {
-      // LocalStorage might be disabled or unavailable
+      // LocalStorage unavailable
     }
+    applyTheme(newTheme);
   };
 
   return (
@@ -83,4 +103,3 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useTheme = () => useContext(ThemeContext);
-

@@ -11,21 +11,40 @@ const toneFor = (value: string): StatusTone => {
   return "slate";
 };
 
-// Restrained architectural status badges aligned with the steel/slate palette
-const styles: Record<StatusTone, string> = {
-  green: "bg-[#2E4156]/40 dark:bg-[#2E4156] text-[#A8C5B5] dark:text-[#A8C5B5] border border-[#6E9E88]/40",
-  blue: "bg-[#2E4156]/50 dark:bg-[#1A2D42] text-[#D4D8DD] dark:text-[#C0C8CA] border border-[#AAB7B7]/40",
-  amber: "bg-[#2E4156]/30 dark:bg-[#2E4156] text-[#D5BC95] dark:text-[#D5BC95] border border-[#C49F6A]/40",
-  red: "bg-[#2E4156]/40 dark:bg-[#2E4156] text-[#D29F9F] dark:text-[#D29F9F] border border-[#B56B6B]/40",
-  slate: "bg-[#C0C8CA]/40 dark:bg-[#2E4156] text-[#1A2D42] dark:text-[#D4D8DD] border border-[#AAB7B7]/30",
+// Monochrome status badges with subtle dot indicators
+const styles: Record<StatusTone, { badge: string; dot: string }> = {
+  green: {
+    badge: "bg-[#F3F4F6] dark:bg-[#1F1F1F] text-[#111827] dark:text-[#FFFFFF] border border-[#E5E7EB] dark:border-[#2A2A2A]",
+    dot: "bg-[#10B981]",
+  },
+  blue: {
+    badge: "bg-[#F3F4F6] dark:bg-[#1F1F1F] text-[#111827] dark:text-[#FFFFFF] border border-[#E5E7EB] dark:border-[#2A2A2A]",
+    dot: "bg-[#6B7280] dark:bg-[#A1A1A1]",
+  },
+  amber: {
+    badge: "bg-[#F3F4F6] dark:bg-[#1F1F1F] text-[#111827] dark:text-[#FFFFFF] border border-[#E5E7EB] dark:border-[#2A2A2A]",
+    dot: "bg-[#F59E0B]",
+  },
+  red: {
+    badge: "bg-[#FEF2F2] dark:bg-[#2A1515] text-[#991B1B] dark:text-[#FCA5A5] border border-[#FECACA] dark:border-[#5C2323]",
+    dot: "bg-[#EF4444]",
+  },
+  slate: {
+    badge: "bg-[#F3F4F6] dark:bg-[#1F1F1F] text-[#6B7280] dark:text-[#A1A1A1] border border-[#E5E7EB] dark:border-[#2A2A2A]",
+    dot: "bg-[#9CA3AF] dark:bg-[#777777]",
+  },
 };
 
 export function StatusBadge({ value, className = "" }: { value: string; className?: string }) {
+  const tone = toneFor(value);
+  const cfg = styles[tone];
+
   return (
     <span
-      className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold tracking-wide capitalize ${styles[toneFor(value)]} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[10px] font-semibold tracking-wide capitalize shadow-2xs ${cfg.badge} ${className}`}
     >
-      {value.replaceAll("_", " ").replaceAll("-", " ")}
+      <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+      <span>{value.replaceAll("_", " ").replaceAll("-", " ")}</span>
     </span>
   );
 }

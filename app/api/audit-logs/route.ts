@@ -23,15 +23,25 @@ export async function GET(request: NextRequest) {
     if (action) query.action = action;
     if (entity) query.entity = entity;
 
+    // Non-super-admins should only see logs for projects they have access to or their own actions
+    if (authResult.user.role !== "Admin" && authResult.user.role !== "Super Admin") {
+      const allowedProjects = authResult.user.assignedProjects || [];
+      query.$or = [
+        { userId: authResult.user.id },
+        { projectId: { $in: allowedProjects } },
+      ];
+    }
+
     const logs = await AuditLog.find(query)
       .sort({ createdAt: -1 })
       .limit(limit)
       .lean();
 
     return NextResponse.json({ success: true, data: logs });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to fetch audit logs";
     return NextResponse.json(
-      { success: false, error: error.message || "Failed to fetch audit logs" },
+      { success: false, error: message },
       { status: 500 }
     );
   }

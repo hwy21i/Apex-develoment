@@ -64,7 +64,6 @@ export default function NotificationsCenterPage() {
 
   const load = useCallback(async () => {
     try {
-      setError(null);
       const res = await fetch("/api/notifications?limit=50", { cache: "no-store" });
       const json = await res.json();
       if (!res.ok || !json.success) {
@@ -80,7 +79,15 @@ export default function NotificationsCenterPage() {
   }, []);
 
   useEffect(() => {
-    load();
+    let ignore = false;
+    Promise.resolve().then(() => {
+      if (!ignore) {
+        load();
+      }
+    });
+    return () => {
+      ignore = true;
+    };
   }, [load]);
 
   const filtered = notifications.filter((n) => filter === "All" || !n.isRead);

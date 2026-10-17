@@ -76,8 +76,8 @@ void main() {
 `;
 
 export default function Aurora({
-  colorStops = ["#1A2D42", "#2E4156", "#AAB7B7"],
-  blend = 0.35,
+  colorStops = ["#0A1931", "#1A3D63", "#4A7FA7"],
+  blend = 0.4,
   amplitude = 0.7,
   speed = 0.25,
   className = "",
@@ -102,11 +102,11 @@ export default function Aurora({
       });
       gl = renderer.gl;
       if (!gl) {
-        setHasWebGL(false);
+        requestAnimationFrame(() => setHasWebGL(false));
         return;
       }
     } catch {
-      setHasWebGL(false);
+      requestAnimationFrame(() => setHasWebGL(false));
       return;
     }
 

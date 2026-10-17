@@ -3,8 +3,7 @@
 import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
-  Plus, Search, Truck, CheckCircle, Clock, AlertTriangle,
-  Eye, FileText, PackageCheck, Warehouse, ArrowUpRight, X
+  Plus, Search, Eye, PackageCheck, Warehouse, X
 } from "lucide-react";
 
 interface GoodsReceipt {
@@ -85,18 +84,36 @@ export default function GoodsReceiptsPage() {
   const [selectedReceipt, setSelectedReceipt] = useState<GoodsReceipt | null>(null);
 
   const [form, setForm] = useState({
-    grnNumber: `GRN-2024-00${Math.floor(92 + Math.random() * 50)}`,
+    grnNumber: "GRN-2024-0094",
     poNumber: "PO-2024-0004",
     supplierName: "",
     projectName: "Addis Heights Tower",
     warehouseName: "Addis Heights Main Store",
-    receivedDate: new Date().toISOString().split("T")[0],
+    receivedDate: "2024-03-01",
     receivedBy: "Solomon Worku (Site Engineer)",
-    deliveryNoteNumber: `DN-${Math.floor(1000 + Math.random() * 9000)}`,
+    deliveryNoteNumber: "DN-1001",
     totalReceivedQty: "",
     totalValue: "",
     status: "Verified" as GoodsReceipt["status"],
   });
+
+  const openCreateModal = () => {
+    const today = new Date().toISOString().split("T")[0];
+    setForm({
+      grnNumber: `GRN-2024-00${Math.floor(92 + Math.random() * 50)}`,
+      poNumber: "PO-2024-0004",
+      supplierName: "",
+      projectName: "Addis Heights Tower",
+      warehouseName: "Addis Heights Main Store",
+      receivedDate: today,
+      receivedBy: "Solomon Worku (Site Engineer)",
+      deliveryNoteNumber: `DN-${Math.floor(1000 + Math.random() * 9000)}`,
+      totalReceivedQty: "",
+      totalValue: "",
+      status: "Verified",
+    });
+    setIsCreateOpen(true);
+  };
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -163,7 +180,7 @@ export default function GoodsReceiptsPage() {
           </div>
           <button
             type="button"
-            onClick={() => setIsCreateOpen(true)}
+            onClick={openCreateModal}
             className="inline-flex items-center gap-2 bg-[#C0C8CA] hover:bg-white text-[#1A2D42] px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all self-start sm:self-auto shrink-0"
           >
             <Plus size={16} />

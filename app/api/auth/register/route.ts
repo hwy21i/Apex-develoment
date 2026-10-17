@@ -6,11 +6,22 @@ import { User } from "@/models/User";
 import { signSession, setSession } from "@/lib/auth/session";
 import { logAudit } from "@/lib/services/audit";
 import { RoleType } from "@/types/erp";
+import { checkRateLimit, getClientIp } from "@/lib/auth/rate-limit";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const rateCheck = checkRateLimit(`register:${ip}`, { max: 5, windowMs: 60 * 1000 });
+    if (!rateCheck.allowed) {
+      return fail(
+        "TOO_MANY_REQUESTS",
+        "Too many registration attempts. Please wait a minute and try again.",
+        429
+      );
+    }
+
     const input = await body(request, registerSchema);
     await connectToDatabase();
 

@@ -60,7 +60,6 @@ export default function TasksPage() {
   const [formDescription, setFormDescription] = useState("");
 
   const fetchTasks = useCallback(async () => {
-    setLoading(true);
     try {
       const [tasksRes, projectsRes] = await Promise.all([
         fetch("/api/tasks", { cache: "no-store" }),
@@ -74,8 +73,8 @@ export default function TasksPage() {
         const projJson = await projectsRes.json();
         if (projJson.success && projJson.data?.items) {
           setProjects(projJson.data.items);
-          if (projJson.data.items.length > 0 && !formProjectId) {
-            setFormProjectId(projJson.data.items[0]._id);
+          if (projJson.data.items.length > 0) {
+            setFormProjectId((prev) => prev || projJson.data.items[0]._id);
           }
         }
       }
@@ -84,10 +83,18 @@ export default function TasksPage() {
     } finally {
       setLoading(false);
     }
-  }, [formProjectId]);
+  }, []);
 
   useEffect(() => {
-    fetchTasks();
+    let ignore = false;
+    Promise.resolve().then(() => {
+      if (!ignore) {
+        fetchTasks();
+      }
+    });
+    return () => {
+      ignore = true;
+    };
   }, [fetchTasks]);
 
   // Create Task Submission

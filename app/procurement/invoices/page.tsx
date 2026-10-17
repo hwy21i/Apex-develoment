@@ -3,8 +3,7 @@
 import { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
-  Plus, Search, Receipt, CheckCircle, Clock, AlertCircle,
-  Eye, FileText, ArrowDownLeft, DollarSign, Calendar, X
+  Plus, Search, Receipt, Eye, X
 } from "lucide-react";
 
 interface SupplierInvoice {
@@ -93,15 +92,31 @@ export default function SupplierInvoicesPage() {
   const [selectedInvoice, setSelectedInvoice] = useState<SupplierInvoice | null>(null);
 
   const [form, setForm] = useState({
-    invoiceNumber: `INV-SUP-${Math.floor(1000 + Math.random() * 9000)}`,
+    invoiceNumber: "INV-SUP-8824",
     poNumber: "PO-2024-0004",
     supplierName: "",
     projectName: "Addis Heights Tower",
-    issueDate: new Date().toISOString().split("T")[0],
-    dueDate: new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0],
+    issueDate: "2024-03-01",
+    dueDate: "2024-03-31",
     amount: "",
     status: "Pending Approval" as SupplierInvoice["status"],
   });
+
+  const openCreateModal = () => {
+    const today = new Date().toISOString().split("T")[0];
+    const due = new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0];
+    setForm({
+      invoiceNumber: `INV-SUP-${Math.floor(1000 + Math.random() * 9000)}`,
+      poNumber: "PO-2024-0004",
+      supplierName: "",
+      projectName: "Addis Heights Tower",
+      issueDate: today,
+      dueDate: due,
+      amount: "",
+      status: "Pending Approval",
+    });
+    setIsCreateOpen(true);
+  };
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,7 +182,7 @@ export default function SupplierInvoicesPage() {
           </div>
           <button
             type="button"
-            onClick={() => setIsCreateOpen(true)}
+            onClick={openCreateModal}
             className="inline-flex items-center gap-2 bg-[#C0C8CA] hover:bg-white text-[#1A2D42] px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all self-start sm:self-auto shrink-0"
           >
             <Plus size={16} />

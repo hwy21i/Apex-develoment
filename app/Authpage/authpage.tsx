@@ -2,100 +2,9 @@
 
 import { useState } from "react";
 import { RoleType, SYSTEM_ROLES } from "@/types/erp";
-
-const A = {
-  bg: "#F4F5F7",
-  nav: "#16181D",
-  panel: "#FFFFFF",
-  border: "#D9DEE5",
-  borderFocus: "#3B82B6",
-  text: "#17191D",
-  textDim: "#69707D",
-  textMuted: "#8A929E",
-  brass: "#3B82B6",
-  brassDim: "rgba(59,130,182,0.12)",
-  brassGlow: "rgba(59,130,182,0.2)",
-  error: "#DC3545",
-  success: "#22A06B",
-};
-
-const INPUT_BASE: React.CSSProperties = {
-  width: "100%",
-  background: "#FFFFFF",
-  border: `1px solid ${A.border}`,
-  borderRadius: 6,
-  padding: "12px 14px",
-  fontFamily: "'Plus Jakarta Sans', sans-serif",
-  fontSize: 14,
-  color: A.text,
-  outline: "none",
-  transition: "border-color 0.18s ease, box-shadow 0.18s ease",
-  boxSizing: "border-box",
-};
-
-function Input({
-  label,
-  type = "text",
-  placeholder,
-  value,
-  onChange,
-  hint,
-  required = false,
-}: {
-  label: string;
-  type?: string;
-  placeholder?: string;
-  value: string;
-  onChange: (v: string) => void;
-  hint?: string;
-  required?: boolean;
-}) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <div>
-      <label
-        style={{
-          display: "block",
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-          fontSize: 12,
-          fontWeight: 600,
-          color: A.textDim,
-          marginBottom: 6,
-          letterSpacing: "0.04em",
-          textTransform: "uppercase",
-        }}
-      >
-        {label} {required && <span style={{ color: A.brass }}>*</span>}
-      </label>
-      <input
-        type={type}
-        required={required}
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={{
-          ...INPUT_BASE,
-          borderColor: focused ? A.brass : A.border,
-          boxShadow: focused ? `0 0 0 3px ${A.brassGlow}` : "none",
-        }}
-      />
-      {hint && (
-        <p
-          style={{
-            fontFamily: "JetBrains Mono, monospace",
-            fontSize: 10,
-            color: A.textMuted,
-            marginTop: 4,
-          }}
-        >
-          {hint}
-        </p>
-      )}
-    </div>
-  );
-}
+import { ApexLogo } from "@/components/brand/ApexLogo";
+import { useTheme } from "@/components/theme/ThemeProvider";
+import { Sun, Moon, Laptop, ShieldCheck, Lock, Eye, EyeOff } from "lucide-react";
 
 export type AuthIdentity = {
   name: string;
@@ -117,6 +26,73 @@ const DEMO_PRESETS: { label: string; role: RoleType; identifier: string }[] = [
   { label: "Client Portal", role: "Client", identifier: "client.bole" },
 ];
 
+function Spinner() {
+  return (
+    <span
+      className="inline-block w-3.5 h-3.5 rounded-full border-2 border-current border-t-transparent animate-spin mr-2 align-middle"
+    />
+  );
+}
+
+function Input({
+  label,
+  type = "text",
+  placeholder,
+  value,
+  onChange,
+  hint,
+  required = false,
+  isPassword = false,
+}: {
+  label: string;
+  type?: string;
+  placeholder?: string;
+  value: string;
+  onChange: (v: string) => void;
+  hint?: string;
+  required?: boolean;
+  isPassword?: boolean;
+}) {
+  const [showPassword, setShowPassword] = useState(false);
+  const effectiveType = isPassword ? (showPassword ? "text" : "password") : type;
+
+  return (
+    <div className="space-y-1.5">
+      <label className="block text-xs font-bold tracking-wider uppercase text-[#6B7280] dark:text-[#A1A1A1]">
+        {label} {required && <span className="text-[#EF4444]">*</span>}
+      </label>
+      <div className="relative flex items-center">
+        <input
+          type={effectiveType}
+          required={required}
+          placeholder={placeholder}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={`w-full bg-[#FFFFFF] dark:bg-[#171717] border border-[#D1D5DB] dark:border-[#303030] rounded-xl px-3.5 py-2.5 text-xs text-[#111827] dark:text-[#FFFFFF] placeholder-[#9CA3AF] dark:placeholder-[#777777] outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF] transition-all shadow-2xs ${
+            isPassword ? "pr-10" : ""
+          }`}
+        />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 p-1 text-[#9CA3AF] dark:text-[#777777] hover:text-[#111827] dark:hover:text-[#FFFFFF] transition-colors"
+            title={showPassword ? "Hide password" : "Show password"}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        )}
+      </div>
+      {hint && (
+        <p className="text-[10px] font-mono text-[#9CA3AF] dark:text-[#777777] mt-0.5">
+          {hint}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function SignIn({
   onSwitch,
   onEnter,
@@ -126,6 +102,7 @@ function SignIn({
 }) {
   const [identifier, setIdentifier] = useState("hawariya21");
   const [password, setPassword] = useState("yohatli2023");
+  const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -145,7 +122,7 @@ function SignIn({
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identifier, password }),
+        body: JSON.stringify({ identifier, password, rememberMe }),
       });
 
       const json = await res.json();
@@ -173,7 +150,7 @@ function SignIn({
 
   const handleForgotPassword = async () => {
     if (!identifier.includes("@")) {
-      setErrorMsg("Enter your email in the field above, then click 'Forgot password'.");
+      setErrorMsg("Enter your work email in the field above, then click 'Forgot password'.");
       return;
     }
     setErrorMsg("");
@@ -191,21 +168,10 @@ function SignIn({
   };
 
   return (
-    <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+    <form onSubmit={handleLogin} className="space-y-4">
       {/* Demo Preset Quick-Fill */}
-      <div>
-        <label
-          style={{
-            display: "block",
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontSize: 11,
-            fontWeight: 600,
-            color: A.brass,
-            marginBottom: 6,
-            letterSpacing: "0.04em",
-            textTransform: "uppercase",
-          }}
-        >
+      <div className="space-y-1.5">
+        <label className="block text-xs font-bold tracking-wider uppercase text-[#6B7280] dark:text-[#A1A1A1]">
           ⚡ Quick Demo Role Presets
         </label>
         <select
@@ -217,14 +183,7 @@ function SignIn({
               setErrorMsg("");
             }
           }}
-          style={{
-            ...INPUT_BASE,
-            background: "#F8FAFC",
-            fontSize: 13,
-            padding: "8px 12px",
-            borderColor: A.brass,
-            cursor: "pointer",
-          }}
+          className="w-full bg-[#FFFFFF] dark:bg-[#171717] border border-[#D1D5DB] dark:border-[#303030] rounded-xl px-3.5 py-2.5 text-xs text-[#111827] dark:text-[#FFFFFF] outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF] transition-all cursor-pointer shadow-2xs"
         >
           <option value="">Select a Demo Role to Test...</option>
           {DEMO_PRESETS.map((p) => (
@@ -237,7 +196,7 @@ function SignIn({
 
       <Input
         label="Email or Username"
-        placeholder="admin, pm.abebe, or you@apexdev.et"
+        placeholder="hawariya21, pm.abebe, or you@apexdev.et"
         value={identifier}
         onChange={setIdentifier}
         required
@@ -245,58 +204,45 @@ function SignIn({
 
       <Input
         label="Password"
-        type="password"
+        isPassword
         placeholder="••••••••••••"
         value={password}
         onChange={setPassword}
         required
       />
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 12, color: A.textDim }}>Default Seed Password: Password123!</span>
+      <div className="flex items-center justify-between text-xs pt-1">
+        <label className="flex items-center gap-2 cursor-pointer select-none text-[#6B7280] dark:text-[#A1A1A1]">
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            className="w-3.5 h-3.5 rounded border-[#D1D5DB] dark:border-[#303030] text-[#111111] dark:text-[#FFFFFF] focus:ring-0 cursor-pointer accent-[#111111] dark:accent-[#FFFFFF]"
+          />
+          <span>Remember session</span>
+        </label>
+
         <button
           type="button"
           onClick={handleForgotPassword}
-          style={{
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-            fontSize: 12,
-            color: A.brass,
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            padding: 0,
-          }}
+          className="text-[#6B7280] dark:text-[#A1A1A1] hover:text-[#111827] dark:hover:text-[#FFFFFF] hover:underline"
         >
           Forgot password?
         </button>
       </div>
 
+      <div className="text-[11px] font-mono text-[#9CA3AF] dark:text-[#777777]">
+        Default seed password: <span className="font-semibold text-[#111827] dark:text-[#FFFFFF]">Password123!</span>
+      </div>
+
       {errorMsg && (
-        <div
-          style={{
-            padding: "10px 14px",
-            background: "rgba(220,53,69,0.08)",
-            border: `1px solid ${A.error}`,
-            borderRadius: 6,
-            fontSize: 12,
-            color: A.error,
-          }}
-        >
+        <div className="p-3 rounded-xl bg-[#FEF2F2] dark:bg-[#2A1515] border border-[#FECACA] dark:border-[#5C2323] text-xs text-[#991B1B] dark:text-[#FCA5A5]">
           ⚠️ {errorMsg}
         </div>
       )}
 
       {successMsg && (
-        <div
-          style={{
-            padding: "10px 14px",
-            background: "rgba(34,160,107,0.08)",
-            border: `1px solid ${A.success}`,
-            borderRadius: 6,
-            fontSize: 12,
-            color: A.success,
-          }}
-        >
+        <div className="p-3 rounded-xl bg-[#F0FDF4] dark:bg-[#14291D] border border-[#BBF7D0] dark:border-[#245838] text-xs text-[#166534] dark:text-[#86EFAC]">
           ✓ {successMsg}
         </div>
       )}
@@ -304,57 +250,23 @@ function SignIn({
       <button
         type="submit"
         disabled={loading}
-        style={{
-          width: "100%",
-          padding: "14px",
-          borderRadius: 6,
-          border: "none",
-          background: loading ? A.brassDim : A.brass,
-          color: loading ? A.textDim : "#FFFFFF",
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-          fontSize: 14,
-          fontWeight: 700,
-          cursor: loading ? "default" : "pointer",
-          letterSpacing: "0.02em",
-          transition: "all 0.18s ease",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 8,
-          boxShadow: `0 4px 14px ${A.brassGlow}`,
-        }}
+        className="w-full py-3 rounded-xl bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] font-bold text-xs tracking-wider uppercase hover:opacity-90 transition-opacity shadow-xs disabled:opacity-50"
       >
         {loading ? (
           <>
             <Spinner /> Authenticating...
           </>
         ) : (
-          "Sign In to ERP"
+          "Sign In to APEX ERP"
         )}
       </button>
 
-      <p
-        style={{
-          textAlign: "center",
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-          fontSize: 13,
-          color: A.textDim,
-          marginTop: 4,
-        }}
-      >
+      <p className="text-center text-xs text-[#6B7280] dark:text-[#A1A1A1] pt-2">
         New team member?{" "}
         <button
           type="button"
           onClick={onSwitch}
-          style={{
-            color: A.brass,
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontWeight: 600,
-            fontSize: 13,
-            fontFamily: "inherit",
-          }}
+          className="font-bold text-[#111827] dark:text-[#FFFFFF] hover:underline"
         >
           Register account →
         </button>
@@ -429,8 +341,8 @@ function SignUp({
   };
 
   return (
-    <form onSubmit={handleRegister} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+    <form onSubmit={handleRegister} className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
         <Input
           label="Full Name"
           placeholder="e.g. Marta Tesfaye"
@@ -458,37 +370,22 @@ function SignUp({
 
       <Input
         label="Password"
-        type="password"
-        placeholder="Min 8 characters"
+        isPassword
+        placeholder="Min 8 chars, 1 uppercase, 1 digit"
         value={password}
         onChange={setPassword}
-        hint="Must be at least 8 characters"
         required
       />
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <div>
-          <label
-            style={{
-              display: "block",
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              fontSize: 12,
-              fontWeight: 600,
-              color: A.textDim,
-              marginBottom: 6,
-              letterSpacing: "0.04em",
-              textTransform: "uppercase",
-            }}
-          >
-            Assigned ERP Role *
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <label className="block text-xs font-bold tracking-wider uppercase text-[#6B7280] dark:text-[#A1A1A1]">
+            Assigned Role
           </label>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value as RoleType)}
-            style={{
-              ...INPUT_BASE,
-              cursor: "pointer",
-            }}
+            className="w-full bg-[#FFFFFF] dark:bg-[#171717] border border-[#D1D5DB] dark:border-[#303030] rounded-xl px-3 py-2 text-xs text-[#111827] dark:text-[#FFFFFF] outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF]"
           >
             {SYSTEM_ROLES.map((r) => (
               <option key={r} value={r}>
@@ -498,40 +395,27 @@ function SignUp({
           </select>
         </div>
 
-        <Input
-          label="Department"
-          placeholder="e.g. Structural Engineering"
-          value={department}
-          onChange={setDepartment}
-        />
+        <div className="space-y-1.5">
+          <label className="block text-xs font-bold tracking-wider uppercase text-[#6B7280] dark:text-[#A1A1A1]">
+            Department
+          </label>
+          <input
+            type="text"
+            value={department}
+            onChange={(e) => setDepartment(e.target.value)}
+            className="w-full bg-[#FFFFFF] dark:bg-[#171717] border border-[#D1D5DB] dark:border-[#303030] rounded-xl px-3 py-2 text-xs text-[#111827] dark:text-[#FFFFFF] outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF]"
+          />
+        </div>
       </div>
 
       {errorMsg && (
-        <div
-          style={{
-            padding: "10px 14px",
-            background: "rgba(220,53,69,0.08)",
-            border: `1px solid ${A.error}`,
-            borderRadius: 6,
-            fontSize: 12,
-            color: A.error,
-          }}
-        >
+        <div className="p-3 rounded-xl bg-[#FEF2F2] dark:bg-[#2A1515] border border-[#FECACA] dark:border-[#5C2323] text-xs text-[#991B1B] dark:text-[#FCA5A5]">
           ⚠️ {errorMsg}
         </div>
       )}
 
       {successMsg && (
-        <div
-          style={{
-            padding: "10px 14px",
-            background: "rgba(34,160,107,0.08)",
-            border: `1px solid ${A.success}`,
-            borderRadius: 6,
-            fontSize: 12,
-            color: A.success,
-          }}
-        >
+        <div className="p-3 rounded-xl bg-[#F0FDF4] dark:bg-[#14291D] border border-[#BBF7D0] dark:border-[#245838] text-xs text-[#166534] dark:text-[#86EFAC]">
           ✓ {successMsg}
         </div>
       )}
@@ -539,283 +423,174 @@ function SignUp({
       <button
         type="submit"
         disabled={loading}
-        style={{
-          width: "100%",
-          padding: "14px",
-          borderRadius: 6,
-          border: "none",
-          background: loading ? A.brassDim : A.brass,
-          color: loading ? A.textDim : "#FFFFFF",
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-          fontSize: 14,
-          fontWeight: 700,
-          cursor: loading ? "default" : "pointer",
-          letterSpacing: "0.02em",
-          transition: "all 0.18s ease",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 8,
-          boxShadow: `0 4px 14px ${A.brassGlow}`,
-        }}
+        className="w-full py-3 rounded-xl bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] font-bold text-xs tracking-wider uppercase hover:opacity-90 transition-opacity shadow-xs disabled:opacity-50"
       >
         {loading ? (
           <>
-            <Spinner /> Registering...
+            <Spinner /> Provisioning Profile...
           </>
         ) : (
-          "Create Verified Account"
+          "Create Account & Enter"
         )}
       </button>
 
-      <p
-        style={{
-          textAlign: "center",
-          fontFamily: "'Plus Jakarta Sans', sans-serif",
-          fontSize: 13,
-          color: A.textDim,
-        }}
-      >
+      <p className="text-center text-xs text-[#6B7280] dark:text-[#A1A1A1] pt-2">
         Already registered?{" "}
         <button
           type="button"
           onClick={onSwitch}
-          style={{
-            color: A.brass,
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontWeight: 600,
-            fontSize: 13,
-            fontFamily: "inherit",
-          }}
+          className="font-bold text-[#111827] dark:text-[#FFFFFF] hover:underline"
         >
-          Sign in →
+          Sign in here →
         </button>
       </p>
     </form>
   );
 }
 
-function Spinner() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" style={{ animation: "spin 0.8s linear infinite" }}>
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-      <circle
-        cx="8"
-        cy="8"
-        r="6"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeDasharray="20 18"
-      />
-    </svg>
-  );
-}
-
-export default function AuthPage({ onEnter }: { onEnter: (identity: AuthIdentity) => void }) {
+export default function AuthPage({
+  onEnter,
+}: {
+  onEnter: (identity: AuthIdentity) => void;
+}) {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const { theme, resolvedTheme, setTheme } = useTheme();
 
   return (
-    <div
-      suppressHydrationWarning
-      className="flex min-h-screen bg-[#F4F5F7]"
-      style={{
-        fontFamily: "'Plus Jakarta Sans', sans-serif",
-      }}
-    >
-      {/* LEFT PANEL — Architecture / Brand */}
-      <div
-        suppressHydrationWarning
-        className="relative overflow-hidden bg-[#16181D] hidden md:flex md:flex-col md:flex-none md:basis-[46%]"
-      >
+    <div className="min-h-screen flex flex-col md:flex-row bg-[#F9FAFB] dark:bg-[#0B0B0B] text-[#111827] dark:text-[#FFFFFF] transition-colors relative overflow-hidden">
+      {/* Top Floating Bar for Theme Switcher */}
+      <div className="absolute top-4 right-4 z-50 flex items-center gap-1 bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-xl p-1 shadow-xs">
+        <button
+          onClick={() => setTheme("light")}
+          className={`p-1.5 rounded-lg transition-colors ${
+            theme === "light"
+              ? "bg-[#111111] text-[#FFFFFF]"
+              : "text-[#6B7280] dark:text-[#A1A1A1] hover:text-[#111827] dark:hover:text-[#FFFFFF]"
+          }`}
+          title="Light theme"
+          aria-label="Light theme"
+        >
+          <Sun className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={() => setTheme("dark")}
+          className={`p-1.5 rounded-lg transition-colors ${
+            theme === "dark"
+              ? "bg-[#FFFFFF] text-[#111111]"
+              : "text-[#6B7280] dark:text-[#A1A1A1] hover:text-[#111827] dark:hover:text-[#FFFFFF]"
+          }`}
+          title="Dark theme"
+          aria-label="Dark theme"
+        >
+          <Moon className="w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={() => setTheme("system")}
+          className={`p-1.5 rounded-lg transition-colors ${
+            theme === "system"
+              ? "bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111]"
+              : "text-[#6B7280] dark:text-[#A1A1A1] hover:text-[#111827] dark:hover:text-[#FFFFFF]"
+          }`}
+          title="System theme"
+          aria-label="System theme"
+        >
+          <Laptop className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* LEFT PANEL — Architectural Mission & Credentials Showcase */}
+      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12 bg-[#F3F4F6] dark:bg-[#111111] border-r border-[#E5E7EB] dark:border-[#2A2A2A] relative overflow-hidden">
+        {/* Subtle grid backdrop */}
         <div
+          className="absolute inset-0 pointer-events-none"
           style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage: `linear-gradient(rgba(59,130,182,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,182,0.05) 1px, transparent 1px)`,
-            backgroundSize: "44px 44px",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 3,
-            background: `linear-gradient(to right, ${A.brass}, transparent)`,
+            backgroundImage: `
+              linear-gradient(to right, ${resolvedTheme === "dark" ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)"} 1px, transparent 1px),
+              linear-gradient(to bottom, ${resolvedTheme === "dark" ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)"} 1px, transparent 1px)
+            `,
+            backgroundSize: "36px 36px",
           }}
         />
 
-        <div
-          style={{
-            position: "relative",
-            padding: "44px 48px",
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-            zIndex: 1,
-          }}
-        >
-          {/* Logo */}
-          <div className="flex items-center gap-2" style={{ marginBottom: "auto" }}>
-            <div style={{ width: 4, height: 24, background: A.brass, borderRadius: 2 }} />
-            <span
-              style={{
-                fontFamily: "Roboto Slab, serif",
-                fontSize: 18,
-                fontWeight: 700,
-                color: "#FFFFFF",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              Apex <span style={{ color: A.brass }}>Developments ERP</span>
+        {/* Top Logo */}
+        <div className="relative z-1 flex items-center gap-3">
+          <ApexLogo size={34} />
+          <div className="flex flex-col">
+            <span className="text-base font-extrabold tracking-widest text-[#111827] dark:text-[#FFFFFF] uppercase leading-none">
+              Apex <span className="text-[#6B7280] dark:text-[#A1A1A1]">ERP</span>
+            </span>
+            <span className="text-[9.5px] font-mono tracking-widest text-[#9CA3AF] dark:text-[#777777] uppercase mt-0.5">
+              Construction Project Management
             </span>
           </div>
+        </div>
 
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              paddingBottom: 24,
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "JetBrains Mono, monospace",
-                fontSize: 10,
-                color: A.brass,
-                letterSpacing: "0.2em",
-                marginBottom: 16,
-                textTransform: "uppercase",
-              }}
-            >
-              Enterprise Construction Management
-            </div>
-
-            <h1
-              style={{
-                fontFamily: "Roboto Slab, serif",
-                fontSize: 38,
-                fontWeight: 700,
-                color: "#FFFFFF",
-                lineHeight: 1.15,
-                letterSpacing: "-0.025em",
-                marginBottom: 18,
-              }}
-            >
-              Real Workflows.
-              <br />
-              <span style={{ color: A.brass }}>Complete Auditability.</span>
-              <br />
-              Zero Disconnect.
-            </h1>
-
-            <p
-              style={{
-                fontSize: 14,
-                color: "#CBD5E1",
-                lineHeight: 1.7,
-                maxWidth: 420,
-                marginBottom: 36,
-              }}
-            >
-              Integrated procurement lifecycle, multi-warehouse stock ledger, project cost tracking,
-              and strict 9-role authorization for construction enterprises.
-            </p>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 12,
-                borderTop: "1px solid rgba(255,255,255,0.1)",
-                paddingTop: 24,
-              }}
-            >
-              <div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: A.brass }}>9 Roles</div>
-                <div style={{ fontSize: 11, color: "#94A3B8" }}>Granular RBAC Enforced</div>
-              </div>
-              <div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: A.brass }}>100% Traceable</div>
-                <div style={{ fontSize: 11, color: "#94A3B8" }}>Dual-Entry Stock Ledger</div>
-              </div>
-            </div>
+        {/* Middle Value Proposition */}
+        <div className="relative z-1 my-auto max-w-md space-y-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] text-[10px] font-mono uppercase tracking-wider text-[#6B7280] dark:text-[#A1A1A1]">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#111827] dark:text-[#FFFFFF]" />
+            Enterprise Access Gateway
           </div>
 
-          <div
-            style={{
-              fontFamily: "JetBrains Mono, monospace",
-              fontSize: 10,
-              color: "#64748B",
-              letterSpacing: "0.1em",
-            }}
-          >
-            🔒 SECURE HTTP-ONLY JWT SESSIONS · RESTRICTED ACCESS
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#111827] dark:text-[#FFFFFF] leading-tight">
+            Real Workflows. <br />
+            <span className="text-[#6B7280] dark:text-[#A1A1A1]">
+              Complete Auditability.
+            </span> <br />
+            Zero Disconnect.
+          </h1>
+
+          <p className="text-sm text-[#4B5563] dark:text-[#A1A1A1] leading-relaxed">
+            Integrated procurement lifecycle, multi-warehouse stock ledger, project cost tracking,
+            and strict 9-role authorization for construction enterprises.
+          </p>
+
+          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#E5E7EB] dark:border-[#2A2A2A]">
+            <div className="p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A]">
+              <div className="text-xl font-extrabold text-[#111827] dark:text-[#FFFFFF]">9 Roles</div>
+              <div className="text-xs text-[#6B7280] dark:text-[#A1A1A1] mt-0.5">Strict RBAC Enforced</div>
+            </div>
+            <div className="p-4 rounded-xl bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A]">
+              <div className="text-xl font-extrabold text-[#111827] dark:text-[#FFFFFF]">100% Traceable</div>
+              <div className="text-xs text-[#6B7280] dark:text-[#A1A1A1] mt-0.5">Dual-Entry Stock Ledger</div>
+            </div>
           </div>
+        </div>
+
+        {/* Bottom Security Note */}
+        <div className="relative z-1 flex items-center gap-2 text-[10px] font-mono text-[#9CA3AF] dark:text-[#777777] uppercase tracking-wider">
+          <Lock className="w-3.5 h-3.5" />
+          <span>Secure HTTP-Only JWT Sessions · Multi-Tenant Isolation</span>
         </div>
       </div>
 
-      {/* RIGHT PANEL — Form */}
-      <div
-        suppressHydrationWarning
-        className="flex-1 flex items-center justify-center p-6 md:p-10 overflow-y-auto bg-[#F4F5F7]"
-      >
-        <div className="w-full max-w-[440px]">
-          {/* Mode Toggle */}
-          <div
-            style={{
-              display: "inline-flex",
-              background: "#E2E8F0",
-              borderRadius: 6,
-              padding: 3,
-              marginBottom: 28,
-            }}
-          >
+      {/* RIGHT PANEL — Authentication Form Card */}
+      <div className="flex-1 flex items-center justify-center p-6 md:p-12 overflow-y-auto z-1">
+        <div className="w-full max-w-[440px] bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-3xl p-7 sm:p-9 shadow-xl space-y-6">
+          {/* Mode Switch Pills */}
+          <div className="inline-flex p-1 bg-[#F3F4F6] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-xl">
             {(["signin", "signup"] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => setMode(m)}
-                style={{
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  fontSize: 13,
-                  fontWeight: mode === m ? 600 : 400,
-                  padding: "7px 20px",
-                  borderRadius: 4,
-                  border: "none",
-                  cursor: "pointer",
-                  background: mode === m ? "#FFFFFF" : "transparent",
-                  color: mode === m ? "#0F172A" : "#64748B",
-                  boxShadow: mode === m ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
-                  transition: "all 0.18s ease",
-                }}
+                className={`px-5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                  mode === m
+                    ? "bg-[#FFFFFF] dark:bg-[#1F1F1F] text-[#111827] dark:text-[#FFFFFF] font-bold shadow-2xs border border-[#E5E7EB] dark:border-[#2A2A2A]"
+                    : "text-[#6B7280] dark:text-[#A1A1A1] hover:text-[#111827] dark:hover:text-[#FFFFFF]"
+                }`}
               >
                 {m === "signin" ? "Sign In" : "Register"}
               </button>
             ))}
           </div>
 
-          <div style={{ marginBottom: 24 }}>
-            <h2
-              style={{
-                fontFamily: "Roboto Slab, serif",
-                fontSize: 26,
-                fontWeight: 700,
-                color: A.text,
-                letterSpacing: "-0.02em",
-                marginBottom: 6,
-              }}
-            >
-              {mode === "signin" ? "Welcome back." : "Create ERP Account."}
+          <div>
+            <h2 className="text-2xl font-extrabold text-[#111827] dark:text-[#FFFFFF] tracking-tight">
+              {mode === "signin" ? "Welcome back" : "Create ERP Account"}
             </h2>
-            <p style={{ fontSize: 13, color: A.textDim, lineHeight: 1.5 }}>
+            <p className="mt-1 text-xs text-[#6B7280] dark:text-[#A1A1A1]">
               {mode === "signin"
-                ? "Sign in with your verified credentials or select a demo role."
+                ? "Sign in with your credentials or select a demo role below."
                 : "Register a new profile to access project operations and workflows."}
             </p>
           </div>
