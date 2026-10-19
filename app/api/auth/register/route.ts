@@ -23,7 +23,40 @@ export async function POST(request: Request) {
     }
 
     const input = await body(request, registerSchema);
-    await connectToDatabase();
+
+    // 1. Verify required environment variables
+    if (!process.env.MONGODB_URI || !process.env.MONGODB_URI.trim()) {
+      console.error("[Register API] Missing MONGODB_URI environment variable.");
+      return fail(
+        "CONFIGURATION_ERROR",
+        "Database service configuration is missing. Please configure MONGODB_URI in Vercel project settings.",
+        503
+      );
+    }
+
+    const hasJwtSecret = Boolean(
+      process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET
+    );
+    if (!hasJwtSecret) {
+      console.error("[Register API] Missing JWT_SECRET / NEXTAUTH_SECRET environment variable.");
+      return fail(
+        "CONFIGURATION_ERROR",
+        "Authentication security configuration is missing. Please configure JWT_SECRET or NEXTAUTH_SECRET in Vercel project settings.",
+        503
+      );
+    }
+
+    try {
+      await connectToDatabase();
+    } catch (dbErr: unknown) {
+      const errMsg = dbErr instanceof Error ? dbErr.message : String(dbErr);
+      console.error("[Register API] Database connection failure:", errMsg);
+      return fail(
+        "DATABASE_UNAVAILABLE",
+        "Database service is currently unavailable. Please verify MongoDB cluster status and network access.",
+        503
+      );
+    }
 
     const normalizedEmail = input.email.toLowerCase();
     const normalizedUsername = input.username.toLowerCase();

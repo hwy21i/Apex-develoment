@@ -1,59 +1,93 @@
 import dns from "node:dns";
 import mongoose from "mongoose";
 
-// Resolve DNS SRV timeouts on Windows/local networks by routing DNS through reliable public resolvers
-try {
-  dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
-} catch {
-  // Ignore in environments where setServers is restricted
+/**
+ * Strips sensitive credentials (username:password) from connection URIs or error messages
+ * to ensure database passwords are never exposed in serverless/Vercel runtime logs.
+ */
+export function sanitizeMongoUrl(text: string): string {
+  if (!text) return "";
+  return text.replace(/(mongodb(?:\+srv)?:\/\/)[^:]+:[^@]+@/gi, "$1<credentials-hidden>@");
 }
 
-type Cache = { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null };
-const globalCache = global as typeof globalThis & { mongooseCache?: Cache };
-const cache = globalCache.mongooseCache ?? (globalCache.mongooseCache = { conn: null, promise: null });
+// Only configure custom DNS servers on local Windows environments where ISP DNS loopback issues occur.
+// Never override DNS on Vercel / AWS Lambda (Linux) where outbound port 53 is restricted and
+// system DNS resolvers (/etc/resolv.conf) are required for SRV resolution.
+if (process.platform === "win32" && !process.env.VERCEL && !process.env.AWS_REGION) {
+  try {
+    dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
+  } catch {
+    // Ignore in environments where setServers is restricted
+  }
+}
 
-const DIRECT_URI = process.env.MONGODB_DIRECT_URI || process.env.MONGODB_URI;
+type MongooseCache = {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+};
 
-export async function connectToDatabase() {
-  const uri = process.env.MONGODB_URI;
-  if (!uri) {
-    throw new Error("MONGODB_URI environment variable is not defined in .env.local");
+const globalCache = globalThis as typeof globalThis & { mongooseCache?: MongooseCache };
+const cache: MongooseCache = globalCache.mongooseCache ?? (globalCache.mongooseCache = { conn: null, promise: null });
+
+export async function connectToDatabase(): Promise<typeof mongoose> {
+  const rawUri = process.env.MONGODB_URI;
+  if (!rawUri || !rawUri.trim()) {
+    throw new Error("MONGODB_URI environment variable is not defined");
   }
 
-  if (cache.conn) return cache.conn;
+  const uri = rawUri.trim();
 
-  async function tryConnect(targetUri: string) {
-    return mongoose.connect(targetUri, {
+  // If already connected and ready, return cached connection immediately
+  if (cache.conn && mongoose.connection.readyState === 1) {
+    return cache.conn;
+  }
+
+  // If connection dropped or in error state, reset promise and connection cache
+  if (mongoose.connection.readyState === 0) {
+    cache.promise = null;
+    cache.conn = null;
+  }
+
+  if (!cache.promise) {
+    const directUri = process.env.MONGODB_DIRECT_URI?.trim();
+
+    const connectOptions: mongoose.ConnectOptions = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 15000,
-      connectTimeoutMS: 20000,
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+    };
+
+    cache.promise = mongoose.connect(uri, connectOptions).catch(async (error: unknown) => {
+      cache.promise = null;
+      cache.conn = null;
+
+      const errMsg = error instanceof Error ? error.message : String(error);
+
+      // Fallback for environments where SRV DNS resolution fails but direct replica-set hosts are provided
+      if (
+        uri.startsWith("mongodb+srv://") &&
+        directUri &&
+        directUri !== uri &&
+        (errMsg.includes("querySrv") ||
+          errMsg.includes("ECONNREFUSED") ||
+          errMsg.includes("ETIMEOUT"))
+      ) {
+        console.warn("[MongoDB] SRV lookup timed out. Attempting fallback to direct replica set URI...");
+        try {
+          return await mongoose.connect(directUri, connectOptions);
+        } catch (fallbackErr: unknown) {
+          const fbMsg = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
+          console.error("[MongoDB] Direct fallback connection failed:", sanitizeMongoUrl(fbMsg));
+          throw fallbackErr;
+        }
+      }
+
+      console.error("[MongoDB] Connection failed:", sanitizeMongoUrl(errMsg));
+      throw error;
     });
   }
-
-  cache.promise = tryConnect(uri).catch(async (error) => {
-    // If SRV lookup fails due to Windows/local DNS loopback (ECONNREFUSED/ETIMEOUT), fallback to direct replica-set hosts
-    if (
-      uri.includes("mongodb+srv://") &&
-      DIRECT_URI &&
-      DIRECT_URI !== uri &&
-      (error.message.includes("querySrv") ||
-        error.message.includes("ECONNREFUSED") ||
-        error.message.includes("ETIMEOUT"))
-    ) {
-      console.warn("MongoDB SRV DNS failed. Switching to direct replica-set connection...");
-      try {
-        return await tryConnect(DIRECT_URI);
-      } catch (fallbackErr: unknown) {
-        cache.promise = null;
-        const msg = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
-        console.error("MongoDB Direct Fallback Failure:", msg);
-        throw fallbackErr;
-      }
-    }
-    cache.promise = null;
-    console.error("MongoDB Connection Failure:", error.message);
-    throw error;
-  });
 
   cache.conn = await cache.promise;
   return cache.conn;

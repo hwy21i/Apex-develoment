@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 import { RoleType, SessionUser } from "@/types/erp";
 
 const getSecretKey = () => {
-  const secret = process.env.JWT_SECRET;
+  const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET;
   if (!secret) {
-    throw new Error("JWT_SECRET environment variable is not configured. Add it to .env.local.");
+    throw new Error("JWT_SECRET (or NEXTAUTH_SECRET) environment variable is not configured. Please define it in your Vercel Project Settings or .env.local.");
   }
   return new TextEncoder().encode(secret);
 };

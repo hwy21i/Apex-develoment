@@ -36,9 +36,9 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   if (!token) return false;
 
-  const secret = process.env.JWT_SECRET;
+  const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET;
   if (!secret) {
-    console.error("JWT_SECRET environment variable is missing; rejecting session token.");
+    console.error("JWT_SECRET (or NEXTAUTH_SECRET) environment variable is missing; rejecting session token.");
     return false;
   }
 

@@ -81,3 +81,32 @@ test("RBAC - Helper Functions (hasAnyPermission, hasAllPermissions, getRolePermi
   assert.ok(perms.includes("GOODS_RECEIPT_CREATE"));
   assert.ok(perms.includes("inventory.receive"));
 });
+
+test("Security - sanitizeMongoUrl strips sensitive database credentials", () => {
+  const sanitizeMongoUrl = (text) =>
+    text ? text.replace(/(mongodb(?:\+srv)?:\/\/)[^:]+:[^@]+@/gi, "$1<credentials-hidden>@") : "";
+
+  const atlasSrv = "mongodb+srv://admin_user:SuperSecretPassword123@cluster0.zm7lnui.mongodb.net/construction_erp?retryWrites=true";
+  const sanitizedSrv = sanitizeMongoUrl(atlasSrv);
+  assert.ok(!sanitizedSrv.includes("SuperSecretPassword123"));
+  assert.ok(!sanitizedSrv.includes("admin_user:"));
+  assert.ok(sanitizedSrv.includes("<credentials-hidden>@"));
+
+  const directReplica = "mongodb://db_user:my_secret_pass@shard1.net:27017,shard2.net:27017/db?ssl=true";
+  const sanitizedDirect = sanitizeMongoUrl(directReplica);
+  assert.ok(!sanitizedDirect.includes("my_secret_pass"));
+  assert.ok(!sanitizedDirect.includes("db_user:"));
+  assert.ok(sanitizedDirect.includes("<credentials-hidden>@"));
+});
+
+test("Authentication - Secret Resolution Supports NEXTAUTH_SECRET and AUTH_SECRET Fallbacks", () => {
+  function resolveSecret(env) {
+    return env.JWT_SECRET || env.NEXTAUTH_SECRET || env.AUTH_SECRET || null;
+  }
+
+  assert.equal(resolveSecret({ JWT_SECRET: "jwt_key_123" }), "jwt_key_123");
+  assert.equal(resolveSecret({ NEXTAUTH_SECRET: "nextauth_key_456" }), "nextauth_key_456");
+  assert.equal(resolveSecret({ AUTH_SECRET: "auth_key_789" }), "auth_key_789");
+  assert.equal(resolveSecret({ JWT_SECRET: "jwt_primary", NEXTAUTH_SECRET: "nextauth_secondary" }), "jwt_primary");
+  assert.equal(resolveSecret({}), null);
+});

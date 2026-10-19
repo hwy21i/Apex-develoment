@@ -8,6 +8,7 @@
     "build": "next build --webpack",
     "start": "next start",
     "seed": "node --env-file=.env.local scripts/seed.mjs",
+    "seed:admin": "node --env-file=.env.local scripts/ensure-hawariya.mjs",
     "seed:projects": "node --env-file=.env.local scripts/add-sample-projects.mjs",
     "format": "oxfmt",
     "lint": "eslint .",

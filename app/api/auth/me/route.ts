@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { connectToDatabase } from "@/lib/db/mongodb";
 import { fail, handleError, ok } from "@/lib/api";
 import { currentUser } from "@/lib/auth/session";
@@ -10,8 +11,12 @@ export const runtime = "nodejs";
 export async function GET(request: Request) {
   try {
     const session = await currentUser(request);
-    if (!session) {
+    if (!session || !session.id) {
       return fail("UNAUTHORIZED", "Not authenticated", 401);
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(session.id)) {
+      return fail("UNAUTHORIZED", "Invalid session token identity", 401);
     }
 
     await connectToDatabase();
