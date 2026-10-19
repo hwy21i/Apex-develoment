@@ -26,10 +26,10 @@ interface InventoryRecord {
 const STATUSES = ["IN_STOCK", "LOW_STOCK", "OUT_OF_STOCK", "ON_ORDER"];
 
 const STATUS_BADGES: Record<string, string> = {
-  IN_STOCK: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-  LOW_STOCK: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
-  OUT_OF_STOCK: "bg-rose-500/10 text-rose-400 border border-rose-500/20",
-  ON_ORDER: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
+  IN_STOCK: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  LOW_STOCK: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  OUT_OF_STOCK: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  ON_ORDER: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
 };
 
 function mapRecord(r: OperationalRecord): InventoryRecord {
@@ -110,27 +110,27 @@ export default function InventoryPage() {
   const totalValuation = items.reduce((s, it) => s + it.totalValue, 0);
 
   const inputCls =
-    "w-full bg-[#141720] border border-[#262C3D] rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-blue-500";
+    "w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 text-xs text-[#000000] dark:text-[#FFFFFF] placeholder-[#666666] dark:placeholder-[#A3A3A3] outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]";
 
   return (
     <AppShell>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-blue-400 font-mono text-xs font-semibold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#666666] dark:text-[#A3A3A3] font-mono text-xs font-semibold uppercase tracking-wider mb-1">
               <Boxes className="w-4 h-4" /> Stock Control & Movements
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl font-bold text-[#000000] dark:text-[#FFFFFF] tracking-tight">
               Warehouse Inventory & Valuations
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-[#666666] dark:text-[#A3A3A3] mt-1">
               Real-time stock valuation across site depots, central yards, and storage facilities.
             </p>
           </div>
 
           <button
             onClick={openForm}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] text-xs font-semibold shadow-md transition-colors shrink-0"
           >
             <Plus className="w-4 h-4" /> Add Stock Item
           </button>
@@ -138,42 +138,42 @@ export default function InventoryPage() {
 
         {/* Valuation Summary */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-[#141720] border border-[#232733] rounded-xl p-5">
-            <span className="text-slate-400 text-xs font-semibold uppercase tracking-wider">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-5">
+            <span className="text-[#666666] dark:text-[#A3A3A3] text-xs font-semibold uppercase tracking-wider">
               Total Stock Valuation
             </span>
-            <div className="text-2xl font-bold text-white mt-1 font-mono">
+            <div className="text-2xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1 font-mono">
               ETB {totalValuation.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">Live moving average cost</span>
+            <span className="text-[11px] text-[#666666] dark:text-[#A3A3A3] mt-1 block">Live moving average cost</span>
           </div>
 
-          <div className="bg-[#141720] border border-[#232733] rounded-xl p-5">
-            <span className="text-slate-400 text-xs font-semibold uppercase tracking-wider">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-5">
+            <span className="text-[#666666] dark:text-[#A3A3A3] text-xs font-semibold uppercase tracking-wider">
               Stock Inbound (This Month)
             </span>
-            <div className="text-2xl font-bold text-emerald-400 mt-1 font-mono flex items-center gap-1">
+            <div className="text-2xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1 font-mono flex items-center gap-1">
               <TrendingUp className="w-5 h-5" /> ETB 6,200,000.00
             </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">Via verified Goods Receipts</span>
+            <span className="text-[11px] text-[#666666] dark:text-[#A3A3A3] mt-1 block">Via verified Goods Receipts</span>
           </div>
 
-          <div className="bg-[#141720] border border-[#232733] rounded-xl p-5">
-            <span className="text-slate-400 text-xs font-semibold uppercase tracking-wider">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-5">
+            <span className="text-[#666666] dark:text-[#A3A3A3] text-xs font-semibold uppercase tracking-wider">
               Site Issues (Consumed)
             </span>
-            <div className="text-2xl font-bold text-blue-400 mt-1 font-mono flex items-center gap-1">
+            <div className="text-2xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1 font-mono flex items-center gap-1">
               <TrendingDown className="w-5 h-5" /> ETB 4,180,000.00
             </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">Allocated to project cost</span>
+            <span className="text-[11px] text-[#666666] dark:text-[#A3A3A3] mt-1 block">Allocated to project cost</span>
           </div>
         </div>
 
         {/* Inventory Register */}
-        <div className="bg-[#141720] border border-[#232733] rounded-xl overflow-hidden shadow-sm">
+        <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-[#181B24] text-slate-400 uppercase tracking-wider font-mono text-[11px] border-b border-[#232733]">
+            <table className="w-full text-left text-xs text-[#333333] dark:text-[#D4D4D4]">
+              <thead className="bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider font-mono text-[11px] border-b border-[#D4D4D4] dark:border-[#303030]">
                 <tr>
                   <th className="px-5 py-3">Material & SKU</th>
                   <th className="px-5 py-3">Warehouse / Depot</th>
@@ -183,10 +183,10 @@ export default function InventoryPage() {
                   <th className="px-5 py-3">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#202432]">
+              <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030]">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-8 text-center text-slate-500">
+                    <td colSpan={6} className="px-5 py-8 text-center text-[#666666] dark:text-[#A3A3A3]">
                       <span className="inline-flex items-center gap-2">
                         <Loader2 className="w-4 h-4 animate-spin" /> Loading inventory records...
                       </span>
@@ -195,10 +195,10 @@ export default function InventoryPage() {
                 ) : error ? (
                   <tr>
                     <td colSpan={6} className="px-5 py-8 text-center">
-                      <p className="text-slate-400">{error}</p>
+                      <p className="text-[#888888] dark:text-[#888888]">{error}</p>
                       <button
                         onClick={() => reload()}
-                        className="mt-2 text-xs font-semibold text-blue-400 hover:text-blue-300"
+                        className="mt-2 text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] hover:text-[#000000] dark:text-[#FFFFFF]"
                       >
                         Retry
                       </button>
@@ -206,29 +206,29 @@ export default function InventoryPage() {
                   </tr>
                 ) : items.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-8 text-center text-slate-500">
+                    <td colSpan={6} className="px-5 py-8 text-center text-[#666666] dark:text-[#A3A3A3]">
                       No stock items in storage. Click &quot;Add Stock Item&quot; above.
                     </td>
                   </tr>
                 ) : (
                   items.map((it) => (
-                    <tr key={it._id} className="hover:bg-[#1A1E29] transition-colors">
+                    <tr key={it._id} className="hover:bg-[#FAFAFA] dark:hover:bg-[#171717] transition-colors">
                       <td className="px-5 py-3.5 font-semibold text-white">
                         {it.materialName}
-                        <span className="block font-mono text-blue-400 text-[11px] font-normal">
+                        <span className="block font-mono text-[#000000] dark:text-[#FFFFFF] text-[11px] font-normal">
                           {it.sku}
                         </span>
                       </td>
-                      <td className="px-5 py-3.5 text-slate-300">
+                      <td className="px-5 py-3.5 text-[#333333] dark:text-[#D4D4D4]">
                         {it.warehouseName}
                       </td>
                       <td className="px-5 py-3.5 font-mono text-white font-bold">
                         {it.quantityOnHand.toLocaleString()}
                       </td>
-                      <td className="px-5 py-3.5 font-mono text-slate-300">
+                      <td className="px-5 py-3.5 font-mono text-[#333333] dark:text-[#D4D4D4]">
                         ETB {it.unitCost.toLocaleString()}
                       </td>
-                      <td className="px-5 py-3.5 font-mono text-emerald-400 font-bold">
+                      <td className="px-5 py-3.5 font-mono text-[#000000] dark:text-[#FFFFFF] font-bold">
                         ETB {it.totalValue.toLocaleString()}
                       </td>
                       <td className="px-5 py-3.5">
@@ -252,17 +252,17 @@ export default function InventoryPage() {
       {/* Create modal */}
       {formOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-[#111420] border border-[#262C3D] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-[#232733] pb-4">
-              <h2 className="text-base font-bold text-white">Add Stock Item</h2>
-              <button onClick={() => setFormOpen(false)} className="text-slate-400 hover:text-white">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] pb-4">
+              <h2 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">Add Stock Item</h2>
+              <button onClick={() => setFormOpen(false)} className="text-[#888888] dark:text-[#888888] hover:text-[#000000] dark:hover:text-[#FFFFFF]">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">Project</label>
+                <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Project</label>
                 <select
                   className={inputCls}
                   value={form.projectId}
@@ -276,7 +276,7 @@ export default function InventoryPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Material Name *</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Material Name *</label>
                   <input
                     className={inputCls}
                     value={form.materialName}
@@ -285,7 +285,7 @@ export default function InventoryPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">SKU</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">SKU</label>
                   <input
                     className={inputCls}
                     value={form.sku}
@@ -295,7 +295,7 @@ export default function InventoryPage() {
                 </div>
               </div>
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">Warehouse / Depot</label>
+                <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Warehouse / Depot</label>
                 <input
                   className={inputCls}
                   value={form.warehouseName}
@@ -305,7 +305,7 @@ export default function InventoryPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Quantity on Hand</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Quantity on Hand</label>
                   <input
                     type="number"
                     min="0"
@@ -315,7 +315,7 @@ export default function InventoryPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Unit Cost (ETB)</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Unit Cost (ETB)</label>
                   <input
                     type="number"
                     min="0"
@@ -325,7 +325,7 @@ export default function InventoryPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Reorder Level</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Reorder Level</label>
                   <input
                     type="number"
                     min="0"
@@ -336,7 +336,7 @@ export default function InventoryPage() {
                 </div>
               </div>
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">Status</label>
+                <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Status</label>
                 <select
                   className={inputCls}
                   value={form.status}
@@ -347,19 +347,19 @@ export default function InventoryPage() {
               </div>
             </div>
 
-            {formError && <p className="text-xs text-rose-300">{formError}</p>}
+            {formError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF] bg-black/5 dark:bg-white/10 p-2 rounded">{formError}</p>}
 
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setFormOpen(false)}
-                className="bg-[#1A1E29] hover:bg-[#232733] text-white px-4 py-2 rounded-lg text-xs font-semibold"
+                className="bg-[#FAFAFA] hover:bg-[#E5E5E5] dark:bg-[#171717] dark:hover:bg-[#1F1F1F] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] px-4 py-2 rounded-lg text-xs font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={submit}
                 disabled={busy}
-                className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-semibold disabled:opacity-50 flex items-center gap-2"
+                className="bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-xs font-semibold disabled:opacity-50 flex items-center gap-2"
               >
                 {busy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Save Item

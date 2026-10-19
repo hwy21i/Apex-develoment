@@ -24,9 +24,9 @@ interface EquipmentAssignment {
 }
 
 const STATUS_BADGES: Record<string, string> = {
-  Active: "bg-green-500/20 text-green-400 border border-green-500/30",
-  Returned: "bg-gray-500/20 text-gray-400 border border-gray-500/30",
-  "Transfer Scheduled": "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
+  Active: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  Returned: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  "Transfer Scheduled": "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
 };
 
 const STATUSES = ["Active", "Transfer Scheduled", "Returned"];
@@ -179,21 +179,21 @@ export default function EquipmentAssignmentsPage() {
   };
 
   const inputCls =
-    "w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500";
+    "w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#666666] dark:placeholder-[#A3A3A3] focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]";
 
   return (
     <AppShell>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">Equipment Site Assignments</h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <h1 className="text-2xl font-bold text-[#000000] dark:text-[#FFFFFF]">Equipment Site Assignments</h1>
+            <p className="text-[#666666] dark:text-[#A3A3A3] text-sm mt-1">
               Fleet mobilization, operator dispatching, location tracking, and plant utilization
             </p>
           </div>
           <button
             onClick={openForm}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
             <Plus size={16} />
             Mobilize Equipment
@@ -202,25 +202,25 @@ export default function EquipmentAssignmentsPage() {
 
         {/* Top metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Deployed Assets</p>
-            <p className="text-xl font-bold text-white mt-1">{assignments.length}</p>
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-4">
+            <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Deployed Assets</p>
+            <p className="text-xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1">{assignments.length}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Active On Site</p>
-            <p className="text-xl font-bold text-green-400 mt-1">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-4">
+            <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Active On Site</p>
+            <p className="text-xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1">
               {assignments.filter((a) => a.status === "Active").length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Transfers Scheduled</p>
-            <p className="text-xl font-bold text-yellow-400 mt-1">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-4">
+            <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Transfers Scheduled</p>
+            <p className="text-xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1">
               {assignments.filter((a) => a.status === "Transfer Scheduled").length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Fleet Operating Hours</p>
-            <p className="text-xl font-bold text-blue-400 mt-1">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-4">
+            <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Fleet Operating Hours</p>
+            <p className="text-xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1">
               {assignments.reduce((s, a) => s + a.operatingHours, 0).toLocaleString()} hrs
             </p>
           </div>
@@ -228,31 +228,31 @@ export default function EquipmentAssignmentsPage() {
 
         {/* Search */}
         <div className="relative max-w-md">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666666] dark:text-[#A3A3A3]" />
           <input
             type="text"
             placeholder="Search by equipment, code, project, or operator..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl pl-9 pr-4 py-2 text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#666666] dark:placeholder-[#A3A3A3] focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]"
           />
         </div>
 
         {/* Table */}
-        <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+        <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl overflow-hidden">
           {loading ? (
-            <div className="flex items-center justify-center py-16 text-gray-400">
+            <div className="flex items-center justify-center py-16 text-[#666666] dark:text-[#A3A3A3]">
               <Loader2 size={24} className="animate-spin" />
             </div>
           ) : error ? (
             <div className="p-6 text-center">
-              <p className="text-sm text-red-300">{error}</p>
-              <button onClick={() => reload()} className="mt-3 text-xs font-medium text-blue-400 hover:text-blue-300">
+              <p className="text-sm text-[#000000] dark:text-[#FFFFFF] font-medium">{error}</p>
+              <button onClick={() => reload()} className="mt-3 text-xs font-medium text-[#000000] dark:text-[#FFFFFF] hover:text-[#000000] dark:text-[#FFFFFF]">
                 Retry
               </button>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-12 text-center text-gray-400">
+            <div className="p-12 text-center text-[#666666] dark:text-[#A3A3A3]">
               <Truck size={32} className="mx-auto mb-2 opacity-40" />
               <p className="text-sm">
                 {assignments.length === 0 ? "No equipment mobilized yet." : "No assignments match your search."}
@@ -261,41 +261,41 @@ export default function EquipmentAssignmentsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-900/50 border-b border-gray-700">
+                <thead className="bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border-b border-[#D4D4D4] dark:border-[#303030]">
                   <tr>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Asset Code & Machine</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Assigned Site</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Designated Operator</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Mobilization Period</th>
-                    <th className="text-center text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Total Run Hours</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Status</th>
-                    <th className="text-right text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Actions</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Asset Code & Machine</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Assigned Site</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Designated Operator</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Mobilization Period</th>
+                    <th className="text-center text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Total Run Hours</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Status</th>
+                    <th className="text-right text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
+                <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030]">
                   {filtered.map((a) => (
-                    <tr key={a._id} className="hover:bg-gray-700/30 transition-colors">
+                    <tr key={a._id} className="hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F] transition-colors">
                       <td className="px-4 py-3">
-                        <span className="font-mono text-blue-400 font-semibold text-xs">{a.assetCode}</span>
-                        <p className="text-white font-medium">{a.equipmentName}</p>
-                        <p className="text-gray-400 text-xs">{a.type}</p>
+                        <span className="font-mono text-[#000000] dark:text-[#FFFFFF] font-semibold text-xs">{a.assetCode}</span>
+                        <p className="text-[#000000] dark:text-[#FFFFFF] font-medium">{a.equipmentName}</p>
+                        <p className="text-[#666666] dark:text-[#A3A3A3] text-xs">{a.type}</p>
                       </td>
                       <td className="px-4 py-3">
                         <p className="text-white text-xs font-medium">{a.assignedProject}</p>
-                        <p className="text-gray-400 text-xs flex items-center gap-1 mt-0.5">
+                        <p className="text-[#666666] dark:text-[#A3A3A3] text-xs flex items-center gap-1 mt-0.5">
                           <MapPin size={11} /> {a.siteLocation}
                         </p>
                       </td>
                       <td className="px-4 py-3">
-                        <p className="text-gray-200 text-xs flex items-center gap-1">
+                        <p className="text-[#000000] dark:text-[#FFFFFF] text-xs flex items-center gap-1">
                           <User size={12} /> {a.assignedOperator}
                         </p>
                       </td>
-                      <td className="px-4 py-3 text-gray-300 text-xs">
+                      <td className="px-4 py-3 text-[#333333] dark:text-[#D4D4D4] text-xs">
                         {new Date(a.startDate).toLocaleDateString("en-ET")} →{" "}
                         {a.expectedEndDate ? new Date(a.expectedEndDate).toLocaleDateString("en-ET") : "—"}
                       </td>
-                      <td className="px-4 py-3 text-center font-mono text-white font-bold">
+                      <td className="px-4 py-3 text-center font-mono text-[#000000] dark:text-[#FFFFFF] font-bold">
                         {a.operatingHours.toLocaleString()} hrs
                       </td>
                       <td className="px-4 py-3">
@@ -304,7 +304,7 @@ export default function EquipmentAssignmentsPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <button onClick={() => openReassign(a)} className="text-blue-400 hover:text-blue-300 p-1" title="Transfer / Reassign">
+                        <button onClick={() => openReassign(a)} className="text-[#000000] dark:text-[#FFFFFF] hover:text-[#000000] dark:text-[#FFFFFF] p-1" title="Transfer / Reassign">
                           <ArrowRightLeft size={16} />
                         </button>
                       </td>
@@ -320,54 +320,54 @@ export default function EquipmentAssignmentsPage() {
       {/* Transfer / Reassign modal */}
       {reassigning && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-gray-700 pb-4">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] pb-4">
               <div>
-                <h2 className="text-lg font-bold text-white">Transfer / Reassign</h2>
-                <p className="text-gray-400 text-xs font-mono">{reassigning.assetCode} · {reassigning.equipmentName}</p>
+                <h2 className="text-lg font-bold text-[#000000] dark:text-[#FFFFFF]">Transfer / Reassign</h2>
+                <p className="text-[#666666] dark:text-[#A3A3A3] text-xs font-mono">{reassigning.assetCode} · {reassigning.equipmentName}</p>
               </div>
-              <button onClick={() => setReassigning(null)} className="text-gray-400 hover:text-white"><X size={18} /></button>
+              <button onClick={() => setReassigning(null)} className="text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF]"><X size={18} /></button>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Assigned project</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Assigned project</label>
                 <select className={inputCls} value={reassignForm.projectId} onChange={(e) => setReassignForm({ ...reassignForm, projectId: e.target.value })}>
                   {projects.length === 0 && <option value="">No accessible projects</option>}
                   {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Site location</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Site location</label>
                 <input className={inputCls} value={reassignForm.siteLocation} onChange={(e) => setReassignForm({ ...reassignForm, siteLocation: e.target.value })} />
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Designated operator</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Designated operator</label>
                 <input className={inputCls} value={reassignForm.assignedOperator} onChange={(e) => setReassignForm({ ...reassignForm, assignedOperator: e.target.value })} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Assignment start date</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Assignment start date</label>
                   <input type="date" className={inputCls} value={reassignForm.startDate} onChange={(e) => setReassignForm({ ...reassignForm, startDate: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Expected end date</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Expected end date</label>
                   <input type="date" className={inputCls} value={reassignForm.expectedEndDate} onChange={(e) => setReassignForm({ ...reassignForm, expectedEndDate: e.target.value })} />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Status</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Status</label>
                 <select className={inputCls} value={reassignForm.status} onChange={(e) => setReassignForm({ ...reassignForm, status: e.target.value })}>
                   {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
             </div>
 
-            {reassignError && <p className="text-xs text-red-300">{reassignError}</p>}
+            {reassignError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF]">{reassignError}</p>}
 
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setReassigning(null)} className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">Cancel</button>
-              <button onClick={submitReassign} disabled={reassignBusy} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
+              <button onClick={() => setReassigning(null)} className="bg-[#F5F5F5] dark:bg-[#1F1F1F] border border-[#D4D4D4] dark:border-[#303030] hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] text-[#000000] dark:text-[#FFFFFF] px-4 py-2 rounded-lg text-sm">Cancel</button>
+              <button onClick={submitReassign} disabled={reassignBusy} className="bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
                 {reassignBusy && <Loader2 size={14} className="animate-spin" />}
                 Save Assignment
               </button>
@@ -379,15 +379,15 @@ export default function EquipmentAssignmentsPage() {
       {/* Create modal */}
       {formOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-gray-700 pb-4">
-              <h2 className="text-lg font-bold text-white">Mobilize Equipment</h2>
-              <button onClick={() => setFormOpen(false)} className="text-gray-400 hover:text-white"><X size={18} /></button>
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] pb-4">
+              <h2 className="text-lg font-bold text-[#000000] dark:text-[#FFFFFF]">Mobilize Equipment</h2>
+              <button onClick={() => setFormOpen(false)} className="text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF]"><X size={18} /></button>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Assigned project</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Assigned project</label>
                 <select className={inputCls} value={form.projectId} onChange={(e) => setForm({ ...form, projectId: e.target.value })}>
                   {projects.length === 0 && <option value="">No accessible projects</option>}
                   {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
@@ -395,45 +395,45 @@ export default function EquipmentAssignmentsPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Asset code</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Asset code</label>
                   <input className={inputCls} value={form.assetCode} onChange={(e) => setForm({ ...form, assetCode: e.target.value })} placeholder="EQ-EXC-04" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Equipment type</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Equipment type</label>
                   <select className={inputCls} value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
                     {TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Equipment name</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Equipment name</label>
                 <input className={inputCls} value={form.equipmentName} onChange={(e) => setForm({ ...form, equipmentName: e.target.value })} />
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Site location</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Site location</label>
                 <input className={inputCls} value={form.siteLocation} onChange={(e) => setForm({ ...form, siteLocation: e.target.value })} />
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Designated operator</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Designated operator</label>
                 <input className={inputCls} value={form.assignedOperator} onChange={(e) => setForm({ ...form, assignedOperator: e.target.value })} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Assignment start date</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Assignment start date</label>
                   <input type="date" className={inputCls} value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Expected end date</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Expected end date</label>
                   <input type="date" className={inputCls} value={form.expectedEndDate} onChange={(e) => setForm({ ...form, expectedEndDate: e.target.value })} />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Operating hours</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Operating hours</label>
                   <input type="number" min="0" className={inputCls} value={form.operatingHours} onChange={(e) => setForm({ ...form, operatingHours: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Status</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Status</label>
                   <select className={inputCls} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
                     {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
@@ -441,11 +441,11 @@ export default function EquipmentAssignmentsPage() {
               </div>
             </div>
 
-            {formError && <p className="text-xs text-red-300">{formError}</p>}
+            {formError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF]">{formError}</p>}
 
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setFormOpen(false)} className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">Cancel</button>
-              <button onClick={submit} disabled={busy} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
+              <button onClick={() => setFormOpen(false)} className="bg-[#F5F5F5] dark:bg-[#1F1F1F] border border-[#D4D4D4] dark:border-[#303030] hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] text-[#000000] dark:text-[#FFFFFF] px-4 py-2 rounded-lg text-sm">Cancel</button>
+              <button onClick={submit} disabled={busy} className="bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
                 {busy && <Loader2 size={14} className="animate-spin" />}
                 Mobilize
               </button>

@@ -25,9 +25,9 @@ interface MaintenanceRecord {
 }
 
 const STATUS_BADGES: Record<string, string> = {
-  Completed: "bg-green-500/20 text-green-400 border border-green-500/30",
-  "In Progress": "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
-  Scheduled: "bg-blue-500/20 text-blue-400 border border-blue-500/30",
+  Completed: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  "In Progress": "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  Scheduled: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
 };
 
 const SERVICE_TYPES = [
@@ -139,21 +139,21 @@ export default function EquipmentMaintenancePage() {
   };
 
   const inputCls =
-    "w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500";
+    "w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#666666] dark:placeholder-[#A3A3A3] focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]";
 
   return (
     <AppShell>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">Equipment Maintenance & Service Logs</h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <h1 className="text-2xl font-bold text-[#000000] dark:text-[#FFFFFF]">Equipment Maintenance & Service Logs</h1>
+            <p className="text-[#666666] dark:text-[#A3A3A3] text-sm mt-1">
               Preventive service schedules, breakdown repairs, OEM parts replacement, and inspection certifications
             </p>
           </div>
           <button
             onClick={openForm}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
             <Plus size={16} />
             Log Maintenance
@@ -162,55 +162,55 @@ export default function EquipmentMaintenancePage() {
 
         {/* Top metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Total Work Orders</p>
-            <p className="text-xl font-bold text-white mt-1">{maintenanceLogs.length}</p>
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-4">
+            <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Total Work Orders</p>
+            <p className="text-xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1">{maintenanceLogs.length}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Completed Service</p>
-            <p className="text-xl font-bold text-green-400 mt-1">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-4">
+            <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Completed Service</p>
+            <p className="text-xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1">
               {maintenanceLogs.filter((r) => r.status === "Completed").length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Current In-Shop / Overhaul</p>
-            <p className="text-xl font-bold text-yellow-400 mt-1">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-4">
+            <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Current In-Shop / Overhaul</p>
+            <p className="text-xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1">
               {maintenanceLogs.filter((r) => r.status === "In Progress").length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Total Maintenance Spend</p>
-            <p className="text-xl font-bold text-blue-400 mt-1">{fmt(totalSpent)}</p>
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-4">
+            <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Total Maintenance Spend</p>
+            <p className="text-xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1">{fmt(totalSpent)}</p>
           </div>
         </div>
 
         {/* Search */}
         <div className="relative max-w-md">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666666] dark:text-[#A3A3A3]" />
           <input
             type="text"
             placeholder="Search by equipment, asset code, service type..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+            className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl pl-9 pr-4 py-2 text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#666666] dark:placeholder-[#A3A3A3] focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]"
           />
         </div>
 
         {/* Maintenance records table */}
-        <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+        <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl overflow-hidden">
           {loading ? (
-            <div className="flex items-center justify-center py-16 text-gray-400">
+            <div className="flex items-center justify-center py-16 text-[#666666] dark:text-[#A3A3A3]">
               <Loader2 size={24} className="animate-spin" />
             </div>
           ) : error ? (
             <div className="p-6 text-center">
-              <p className="text-sm text-red-300">{error}</p>
-              <button onClick={() => reload()} className="mt-3 text-xs font-medium text-blue-400 hover:text-blue-300">
+              <p className="text-sm text-[#000000] dark:text-[#FFFFFF] font-medium">{error}</p>
+              <button onClick={() => reload()} className="mt-3 text-xs font-medium text-[#000000] dark:text-[#FFFFFF] hover:text-[#000000] dark:text-[#FFFFFF]">
                 Retry
               </button>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-12 text-center text-gray-400">
+            <div className="p-12 text-center text-[#666666] dark:text-[#A3A3A3]">
               <Wrench size={32} className="mx-auto mb-2 opacity-40" />
               <p className="text-sm">
                 {maintenanceLogs.length === 0 ? "No maintenance work orders logged yet." : "No records match your search."}
@@ -219,36 +219,36 @@ export default function EquipmentMaintenancePage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-900/50 border-b border-gray-700">
+                <thead className="bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border-b border-[#D4D4D4] dark:border-[#303030]">
                   <tr>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Log # & Equipment</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Service Type</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Service Date</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Next Due Date</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Provider / Shop</th>
-                    <th className="text-right text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Cost</th>
-                    <th className="text-center text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Status</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Log # & Equipment</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Service Type</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Service Date</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Next Due Date</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Provider / Shop</th>
+                    <th className="text-right text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Cost</th>
+                    <th className="text-center text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
+                <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030]">
                   {filtered.map((r) => (
-                    <tr key={r._id} className="hover:bg-gray-700/30 transition-colors">
+                    <tr key={r._id} className="hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F] transition-colors">
                       <td className="px-4 py-3">
-                        <span className="font-mono text-blue-400 text-xs font-semibold">{r.maintenanceCode}</span>
-                        <p className="text-white font-medium">{r.equipmentName}</p>
-                        <p className="font-mono text-gray-500 text-xs">{r.assetCode}</p>
+                        <span className="font-mono text-[#000000] dark:text-[#FFFFFF] text-xs font-semibold">{r.maintenanceCode}</span>
+                        <p className="text-[#000000] dark:text-[#FFFFFF] font-medium">{r.equipmentName}</p>
+                        <p className="font-mono text-[#666666] dark:text-[#A3A3A3] text-xs">{r.assetCode}</p>
                       </td>
                       <td className="px-4 py-3">
                         <p className="text-white text-xs font-medium">{r.serviceType}</p>
-                        <p className="text-gray-400 text-xs mt-0.5 line-clamp-1">{r.description}</p>
+                        <p className="text-[#666666] dark:text-[#A3A3A3] text-xs mt-0.5 line-clamp-1">{r.description}</p>
                       </td>
-                      <td className="px-4 py-3 text-gray-300 text-xs">
+                      <td className="px-4 py-3 text-[#333333] dark:text-[#D4D4D4] text-xs">
                         {new Date(r.serviceDate).toLocaleDateString("en-ET")}
                       </td>
-                      <td className="px-4 py-3 text-blue-400 text-xs font-medium">
+                      <td className="px-4 py-3 text-[#000000] dark:text-[#FFFFFF] text-xs font-medium">
                         {r.nextServiceDue ? new Date(r.nextServiceDue).toLocaleDateString("en-ET") : "—"}
                       </td>
-                      <td className="px-4 py-3 text-gray-300 text-xs">{r.serviceProvider}</td>
+                      <td className="px-4 py-3 text-[#333333] dark:text-[#D4D4D4] text-xs">{r.serviceProvider}</td>
                       <td className="px-4 py-3 text-right font-bold text-white">{fmt(r.costETB)}</td>
                       <td className="px-4 py-3 text-center">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_BADGES[r.status] || STATUS_BADGES.Scheduled}`}>
@@ -267,15 +267,15 @@ export default function EquipmentMaintenancePage() {
       {/* Create modal */}
       {formOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-gray-700 pb-4">
-              <h2 className="text-lg font-bold text-white">Log Maintenance</h2>
-              <button onClick={() => setFormOpen(false)} className="text-gray-400 hover:text-white"><X size={18} /></button>
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] pb-4">
+              <h2 className="text-lg font-bold text-[#000000] dark:text-[#FFFFFF]">Log Maintenance</h2>
+              <button onClick={() => setFormOpen(false)} className="text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF]"><X size={18} /></button>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Project</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Project</label>
                 <select className={inputCls} value={form.projectId} onChange={(e) => setForm({ ...form, projectId: e.target.value })}>
                   {projects.length === 0 && <option value="">No accessible projects</option>}
                   {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
@@ -283,27 +283,27 @@ export default function EquipmentMaintenancePage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Work order #</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Work order #</label>
                   <input className={inputCls} value={form.maintenanceCode} onChange={(e) => setForm({ ...form, maintenanceCode: e.target.value })} placeholder="MNT-2026-0001" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Asset code</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Asset code</label>
                   <input className={inputCls} value={form.assetCode} onChange={(e) => setForm({ ...form, assetCode: e.target.value })} placeholder="EQ-EXC-04" />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Equipment name</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Equipment name</label>
                 <input className={inputCls} value={form.equipmentName} onChange={(e) => setForm({ ...form, equipmentName: e.target.value })} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Service type</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Service type</label>
                   <select className={inputCls} value={form.serviceType} onChange={(e) => setForm({ ...form, serviceType: e.target.value })}>
                     {SERVICE_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Status</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Status</label>
                   <select className={inputCls} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
                     {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
@@ -311,39 +311,39 @@ export default function EquipmentMaintenancePage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Service date</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Service date</label>
                   <input type="date" className={inputCls} value={form.serviceDate} onChange={(e) => setForm({ ...form, serviceDate: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Next service due</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Next service due</label>
                   <input type="date" className={inputCls} value={form.nextServiceDue} onChange={(e) => setForm({ ...form, nextServiceDue: e.target.value })} />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Cost (ETB)</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Cost (ETB)</label>
                   <input type="number" min="0" className={inputCls} value={form.costETB} onChange={(e) => setForm({ ...form, costETB: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Technician / service provider</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Technician / service provider</label>
                   <input className={inputCls} value={form.serviceProvider} onChange={(e) => setForm({ ...form, serviceProvider: e.target.value })} />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Description / notes</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Description / notes</label>
                 <textarea className={inputCls} rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Parts replaced</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Parts replaced</label>
                 <input className={inputCls} value={form.partsReplaced} onChange={(e) => setForm({ ...form, partsReplaced: e.target.value })} />
               </div>
             </div>
 
-            {formError && <p className="text-xs text-red-300">{formError}</p>}
+            {formError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF]">{formError}</p>}
 
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setFormOpen(false)} className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">Cancel</button>
-              <button onClick={submit} disabled={busy} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
+              <button onClick={() => setFormOpen(false)} className="bg-[#F5F5F5] dark:bg-[#1F1F1F] border border-[#D4D4D4] dark:border-[#303030] hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] text-[#000000] dark:text-[#FFFFFF] px-4 py-2 rounded-lg text-sm">Cancel</button>
+              <button onClick={submit} disabled={busy} className="bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
                 {busy && <Loader2 size={14} className="animate-spin" />}
                 Save Work Order
               </button>

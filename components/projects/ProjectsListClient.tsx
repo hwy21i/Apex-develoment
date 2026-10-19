@@ -61,7 +61,7 @@ export default function ProjectsListClient({
       {/* Search and Filter Toolbar */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF] dark:text-[#777777]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#666666] dark:text-[#A3A3A3]" />
           <input
             type="text"
             placeholder="Search projects by name, code, client, or site location..."
@@ -70,12 +70,12 @@ export default function ProjectsListClient({
               setLocalQuery(e.target.value);
               setGlobalQuery(e.target.value);
             }}
-            className="w-full bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] text-[#111827] dark:text-[#FFFFFF] placeholder-[#9CA3AF] dark:placeholder-[#777777] text-xs rounded-xl pl-9 pr-8 py-2.5 outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF] transition-all shadow-2xs"
+            className="w-full bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] placeholder-[#666666] dark:placeholder-[#A3A3A3] text-xs rounded-xl pl-9 pr-8 py-2.5 outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF] transition-all shadow-2xs"
           />
           {(localQuery || globalQuery) && (
             <button
               onClick={handleClear}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#111827] dark:text-[#777777] dark:hover:text-[#FFFFFF] p-0.5 rounded-full"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#666666] hover:text-[#000000] dark:text-[#A3A3A3] dark:hover:text-[#FFFFFF] p-0.5 rounded-full"
               title="Clear search"
             >
               <X className="w-3.5 h-3.5" />
@@ -91,8 +91,8 @@ export default function ProjectsListClient({
               onClick={() => setStatusFilter(st)}
               className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 statusFilter === st
-                  ? "bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] font-bold shadow-2xs"
-                  : "bg-[#FFFFFF] dark:bg-[#1F1F1F] text-[#6B7280] dark:text-[#A1A1A1] hover:text-[#111827] dark:hover:text-[#FFFFFF] border border-[#E5E7EB] dark:border-[#2A2A2A]"
+                  ? "bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] font-bold shadow-2xs"
+                  : "bg-[#FFFFFF] dark:bg-[#1F1F1F] text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]"
               }`}
             >
               {st}
@@ -103,12 +103,12 @@ export default function ProjectsListClient({
 
       {/* Projects Grid or Empty State */}
       {filteredProjects.length === 0 ? (
-        <section className="rounded-2xl border border-dashed border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#1F1F1F] p-12 text-center shadow-xs">
-          <Building2 className="w-10 h-10 text-[#9CA3AF] dark:text-[#777777] mx-auto mb-3" />
-          <h2 className="text-base font-semibold text-[#111827] dark:text-[#FFFFFF]">
+        <section className="rounded-2xl border border-dashed border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#1F1F1F] p-12 text-center shadow-xs">
+          <Building2 className="w-10 h-10 text-[#666666] dark:text-[#A3A3A3] mx-auto mb-3" />
+          <h2 className="text-base font-semibold text-[#000000] dark:text-[#FFFFFF]">
             {effectiveQuery ? `No projects matching "${effectiveQuery}"` : "No projects found"}
           </h2>
-          <p className="mt-1 text-xs text-[#6B7280] dark:text-[#A1A1A1] max-w-sm mx-auto">
+          <p className="mt-1 text-xs text-[#666666] dark:text-[#A3A3A3] max-w-sm mx-auto">
             {effectiveQuery
               ? "Try adjusting your search terms or clearing your filters."
               : "Create the first project to start managing site execution."}
@@ -117,7 +117,7 @@ export default function ProjectsListClient({
             {effectiveQuery && (
               <button
                 onClick={handleClear}
-                className="px-4 py-2 rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] text-xs font-semibold text-[#111827] dark:text-[#FFFFFF] hover:bg-[#F3F4F6] dark:hover:bg-[#252525]"
+                className="px-4 py-2 rounded-xl border border-[#D4D4D4] dark:border-[#303030] text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FAFAFA] dark:hover:bg-[#171717]"
               >
                 Clear Search
               </button>
@@ -125,7 +125,7 @@ export default function ProjectsListClient({
             {canCreate && (
               <Link
                 href="/projects/new"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] text-xs font-bold hover:opacity-90 transition-opacity shadow-xs"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] text-xs font-bold hover:opacity-90 transition-opacity shadow-xs"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Create Project</span>
@@ -145,31 +145,31 @@ export default function ProjectsListClient({
               <Link
                 key={project._id}
                 href={`/projects/${project._id}/overview`}
-                className="group rounded-2xl border border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#1F1F1F] p-5 transition-all hover:-translate-y-1 hover:border-[#111827] dark:hover:border-[#FFFFFF] flex flex-col justify-between shadow-xs"
+                className="group rounded-2xl border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#1F1F1F] p-5 transition-all hover:-translate-y-1 hover:border-[#000000] dark:hover:border-[#FFFFFF] flex flex-col justify-between shadow-xs"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <span className="text-[11px] font-mono text-[#6B7280] dark:text-[#A1A1A1] font-bold">
+                      <span className="text-[11px] font-mono text-[#666666] dark:text-[#A3A3A3] font-bold">
                         {project.projectCode}
                       </span>
-                      <h2 className="mt-1 text-base font-bold text-[#111827] dark:text-[#FFFFFF] group-hover:underline transition-all">
+                      <h2 className="mt-1 text-base font-bold text-[#000000] dark:text-[#FFFFFF] group-hover:underline transition-all">
                         {project.name}
                       </h2>
                     </div>
                     <StatusBadge value={project.healthStatus || project.status} />
                   </div>
 
-                  <div className="mt-3 space-y-1.5 text-xs text-[#6B7280] dark:text-[#A1A1A1]">
+                  <div className="mt-3 space-y-1.5 text-xs text-[#666666] dark:text-[#A3A3A3]">
                     <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-[#9CA3AF] dark:text-[#777777] shrink-0" />
+                      <MapPin className="w-3.5 h-3.5 text-[#666666] dark:text-[#A3A3A3] shrink-0" />
                       <span className="truncate">{project.location || "Addis Ababa, Ethiopia"}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <DollarSign className="w-3.5 h-3.5 text-[#9CA3AF] dark:text-[#777777] shrink-0" />
+                      <DollarSign className="w-3.5 h-3.5 text-[#666666] dark:text-[#A3A3A3] shrink-0" />
                       <span>
                         Budget:{" "}
-                        <strong className="text-[#111827] dark:text-[#FFFFFF]">
+                        <strong className="text-[#000000] dark:text-[#FFFFFF]">
                           {formattedBudget}
                         </strong>
                       </span>
@@ -177,10 +177,10 @@ export default function ProjectsListClient({
                   </div>
                 </div>
 
-                <div className="mt-5 pt-3 border-t border-[#E5E7EB] dark:border-[#2A2A2A]">
+                <div className="mt-5 pt-3 border-t border-[#D4D4D4] dark:border-[#303030]">
                   <div className="flex justify-between text-[11px] mb-1.5">
-                    <span className="text-[#6B7280] dark:text-[#A1A1A1] font-medium">Progress</span>
-                    <span className="text-[#111827] dark:text-[#FFFFFF] font-mono font-bold">
+                    <span className="text-[#666666] dark:text-[#A3A3A3] font-medium">Progress</span>
+                    <span className="text-[#000000] dark:text-[#FFFFFF] font-mono font-bold">
                       {project.progressPercentage}%
                     </span>
                   </div>

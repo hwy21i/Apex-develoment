@@ -3,6 +3,7 @@ import { fail, handleError, ok } from "@/lib/api";
 import { currentUser } from "@/lib/auth/session";
 import { getRolePermissions } from "@/lib/rbac/permissions";
 import { User } from "@/models/User";
+import { RoleType } from "@/types/erp";
 
 export const runtime = "nodejs";
 
@@ -14,19 +15,21 @@ export async function GET(request: Request) {
     }
 
     await connectToDatabase();
-    const user = await User.findById(session.id).select("-passwordHash");
+    const user = await User.findById(session.id)
+      .select("-passwordHash")
+      .lean();
 
     if (!user || !user.isActive) {
       return fail("USER_NOT_FOUND", "User account not found or inactive", 404);
     }
 
-    const rolePermissions = getRolePermissions(user.role);
+    const rolePermissions = getRolePermissions(user.role as RoleType);
     const customPermissions = (user.customPermissions || []).map(String);
     const permissions = Array.from(new Set([...rolePermissions, ...customPermissions]));
 
     return ok({
       user: {
-        id: user.id,
+        id: String(user._id),
         fullName: user.fullName,
         username: user.username,
         email: user.email,

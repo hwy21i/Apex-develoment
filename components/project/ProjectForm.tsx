@@ -1,8 +1,16 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, Calendar, DollarSign, MapPin, CheckCircle2 } from "lucide-react";
+import {
+  Building2,
+  Calendar,
+  DollarSign,
+  MapPin,
+  CheckCircle2,
+  User,
+  FileText,
+} from "lucide-react";
 import HierarchicalLocationSelector, {
   HierarchicalLocationValue,
 } from "@/components/location/HierarchicalLocationSelector";
@@ -15,33 +23,78 @@ import {
   FormTextarea,
   FormActions,
 } from "@/components/ui/Form";
+import { ProjectSummary } from "@/types/project";
 
-const initialForm = {
-  name: "",
-  projectCode: "",
-  client: "",
-  description: "",
-  startDate: "",
-  expectedEndDate: "",
-  contractValue: "",
-  totalBudget: "",
-  status: "planning",
-};
+interface ManagerOption {
+  _id: string;
+  fullName: string;
+  email: string;
+  role: string;
+}
 
-export default function ProjectForm() {
+interface ProjectFormProps {
+  initialProject?: ProjectSummary;
+}
+
+export default function ProjectForm({ initialProject }: ProjectFormProps) {
   const router = useRouter();
-  const [form, setForm] = useState(initialForm);
+  const isEditing = Boolean(initialProject);
+
+  const [form, setForm] = useState({
+    name: initialProject?.name || "",
+    projectCode: initialProject?.projectCode || "",
+    client: initialProject?.client || "",
+    description: initialProject?.description || "",
+    startDate: initialProject?.startDate
+      ? new Date(initialProject.startDate).toISOString().slice(0, 10)
+      : "",
+    expectedEndDate: initialProject?.expectedEndDate
+      ? new Date(initialProject.expectedEndDate).toISOString().slice(0, 10)
+      : "",
+    contractValue: initialProject?.contractValue
+      ? String(initialProject.contractValue)
+      : "",
+    totalBudget: initialProject?.totalBudget
+      ? String(initialProject.totalBudget)
+      : "",
+    status: initialProject?.status || "planning",
+    projectManager: typeof initialProject?.projectManager === "string"
+      ? initialProject.projectManager
+      : initialProject?.projectManager?._id || "",
+    notes: (initialProject as { notes?: string })?.notes || "",
+  });
+
   const [hierarchy, setHierarchy] = useState<HierarchicalLocationValue>({
     countryId: "",
     regionId: "",
     cityId: "",
     district: "",
-    address: "",
+    address: initialProject?.location || "",
   });
+
+  const [managers, setManagers] = useState<ManagerOption[]>([]);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const update = (key: keyof typeof initialForm, value: string) =>
+  useEffect(() => {
+    async function loadManagers() {
+      try {
+        const res = await fetch("/api/users?limit=100", { cache: "no-store" });
+        const json = await res.json();
+        if (res.ok && json.success && Array.isArray(json.data?.items)) {
+          setManagers(
+            json.data.items.filter(
+              (u: ManagerOption) =>
+                u.role === "Project Manager" || u.role === "Admin" || u.role === "Site Engineer"
+            )
+          );
+        }
+      } catch {}
+    }
+    loadManagers();
+  }, []);
+
+  const update = (key: keyof typeof form, value: string) =>
     setForm((current) => ({ ...current, [key]: value }));
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -59,29 +112,47 @@ export default function ProjectForm() {
     ].filter(Boolean);
 
     const locationString =
-      locationParts.length > 0 ? locationParts.join(", ") : "Addis Ababa, Ethiopia";
+      locationParts.length > 0
+        ? locationParts.join(", ")
+        : form.description
+        ? initialProject?.location || "Addis Ababa, Ethiopia"
+        : "Addis Ababa, Ethiopia";
 
     try {
-      const response = await fetch("/api/projects", {
-        method: "POST",
+      const endpoint = isEditing ? `/api/projects/${initialProject?._id}` : "/api/projects";
+      const method = isEditing ? "PATCH" : "POST";
+
+      const payload = {
+        name: form.name.trim(),
+        projectCode: form.projectCode.trim() || undefined,
+        client: form.client.trim(),
+        description: form.description.trim(),
+        location: locationString,
+        startDate: form.startDate,
+        expectedEndDate: form.expectedEndDate,
+        contractValue: Number(form.contractValue || 0),
+        totalBudget: Number(form.totalBudget),
+        status: form.status,
+        projectManager: form.projectManager || undefined,
+        notes: form.notes.trim() || undefined,
+      };
+
+      const response = await fetch(endpoint, {
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          location: locationString,
-          contractValue: Number(form.contractValue || 0),
-          totalBudget: Number(form.totalBudget),
-        }),
+        body: JSON.stringify(payload),
       });
 
-      const payload = await response.json();
-      if (!response.ok || !payload.success) {
-        throw new Error(payload.error?.message || "Unable to create project");
+      const resJson = await response.json();
+      if (!response.ok || !resJson.success) {
+        throw new Error(resJson.error?.message || `Unable to ${isEditing ? "update" : "create"} project`);
       }
 
-      router.push(`/projects/${payload.data._id}/overview`);
+      const targetId = isEditing ? initialProject?._id : resJson.data._id;
+      router.push(`/projects/${targetId}/overview`);
       router.refresh();
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Unable to create project");
+      setError(caught instanceof Error ? caught.message : "Unable to save project");
     } finally {
       setSaving(false);
     }
@@ -92,7 +163,7 @@ export default function ProjectForm() {
       {error && (
         <div
           role="alert"
-          className="rounded-xl border border-rose-300 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/20 p-4 text-xs text-rose-800 dark:text-rose-300 font-medium"
+          className="rounded-xl border border-[#000000] dark:border-[#FFFFFF] bg-[#FAFAFA] dark:bg-[#171717] p-4 text-xs text-[#000000] dark:text-[#FFFFFF] font-medium"
         >
           {error}
         </div>
@@ -118,6 +189,7 @@ export default function ProjectForm() {
             value={form.projectCode}
             onChange={(e) => update("projectCode", e.target.value)}
             placeholder="e.g. PRJ-AH-001"
+            disabled={isEditing}
           />
         </FormField>
 
@@ -128,6 +200,20 @@ export default function ProjectForm() {
             onChange={(e) => update("client", e.target.value)}
             placeholder="e.g. Commercial Bank of Ethiopia"
           />
+        </FormField>
+
+        <FormField label="Project Manager">
+          <FormSelect
+            value={form.projectManager}
+            onChange={(e) => update("projectManager", e.target.value)}
+          >
+            <option value="">Select Project Manager...</option>
+            {managers.map((m) => (
+              <option key={m._id} value={m._id}>
+                {m.fullName} ({m.role})
+              </option>
+            ))}
+          </FormSelect>
         </FormField>
 
         <FormField label="Project Status">
@@ -204,19 +290,28 @@ export default function ProjectForm() {
         subtitle="Hierarchical geographical assignment and technical specifications"
         icon={MapPin}
       >
-        <div className="md:col-span-2 p-4 rounded-xl bg-slate-50 dark:bg-[#2E4156]/30 border border-slate-200 dark:border-[#AAB7B7]/25 space-y-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#C0C8CA] block">
+        <div className="md:col-span-2 p-4 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] space-y-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3] block">
             Hierarchical Location (Country → Region → City → Site Address)
           </span>
           <HierarchicalLocationSelector value={hierarchy} onChange={setHierarchy} />
         </div>
 
-        <FormField label="Scope & Description" fullWidth>
+        <FormField label="Engineering Scope & Objectives" fullWidth>
           <FormTextarea
             value={form.description}
             onChange={(e) => update("description", e.target.value)}
             rows={3}
             placeholder="Detailed engineering scope, structural blueprints, architectural objectives..."
+          />
+        </FormField>
+
+        <FormField label="Project Notes & Special Conditions" fullWidth>
+          <FormTextarea
+            value={form.notes}
+            onChange={(e) => update("notes", e.target.value)}
+            rows={2}
+            placeholder="Permit numbers, site access caveats, soil study references..."
           />
         </FormField>
       </FormSection>
@@ -226,21 +321,21 @@ export default function ProjectForm() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 dark:border-[#AAB7B7]/25 text-xs font-semibold text-slate-700 dark:text-[#D4D8DD] hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
+          className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-[#D4D4D4] dark:border-[#303030] text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FAFAFA] dark:hover:bg-[#1F1F1F] transition-colors cursor-pointer"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={saving}
-          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#C0C8CA] hover:bg-white text-[#1A2D42] font-bold text-xs shadow-md disabled:opacity-50 transition-all flex items-center justify-center gap-1.5"
+          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] font-bold text-xs shadow-md disabled:opacity-50 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
         >
           {saving ? (
             <span>Saving Project...</span>
           ) : (
             <>
               <CheckCircle2 className="w-4 h-4" />
-              <span>Save Project</span>
+              <span>{isEditing ? "Save Project Changes" : "Save Project"}</span>
             </>
           )}
         </button>

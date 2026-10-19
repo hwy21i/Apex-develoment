@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, createContext, useContext } from "react";
+import { usePathname } from "next/navigation";
 import AppSidebar from "./AppSidebar";
 import AppHeader from "./AppHeader";
 import { RoleType } from "@/types/erp";
@@ -45,10 +46,10 @@ export default function AppShell({
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // Resolve user identity: explicit prop → context → undefined (never hardcode a name/role)
-  const userName = nameProp || user?.fullName || "";
-  const userRole = roleProp || user?.role;
-  const resolvedEmail = userEmail || user?.email;
+  // Resolve user identity: authenticated context → explicit prop fallback → empty
+  const userName = user?.fullName || nameProp || "";
+  const userRole = user?.role || roleProp;
+  const resolvedEmail = user?.email || userEmail;
 
   // Responsive sidebar auto-collapse on tablet (768px - 1023px)
   useEffect(() => {
@@ -92,9 +93,11 @@ export default function AppShell({
     }
   };
 
+  const pathname = usePathname();
+
   return (
     <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
-      <div className="min-h-screen w-full overflow-x-hidden bg-[#F9FAFB] dark:bg-[#0B0B0B] font-sans text-[#111827] dark:text-[#FFFFFF] transition-colors relative">
+      <div className="min-h-screen w-full overflow-x-hidden bg-[#FAFAFA] dark:bg-[#000000] font-sans text-[#000000] dark:text-[#FFFFFF] transition-colors relative">
         <AppSidebar
           isMobileOpen={isMobileOpen}
           onMobileClose={() => setIsMobileOpen(false)}
@@ -125,8 +128,11 @@ export default function AppShell({
             onSearchChange={setSearchQuery}
           />
 
-          {/* Dynamic Page Content */}
-          <main className="mx-auto w-full max-w-[1800px] flex-1 overflow-x-hidden p-3.5 sm:p-5 lg:p-7 relative z-1">
+          {/* Dynamic Page Content with Smooth Transition */}
+          <main
+            key={pathname}
+            className="mx-auto w-full max-w-[1800px] flex-1 overflow-x-hidden p-3.5 sm:p-5 lg:p-7 relative z-1 animate-slide-up"
+          >
             {children}
           </main>
         </div>
@@ -134,25 +140,25 @@ export default function AppShell({
         {/* Logout Confirmation Modal */}
         {showLogoutModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
-            <div className="w-full max-w-sm bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-2xl p-6 shadow-2xl space-y-4">
+            <div className="w-full max-w-sm bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-6 shadow-2xl space-y-4">
               <div className="flex items-start justify-between">
-                <div className="w-10 h-10 rounded-xl bg-[#F3F4F6] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A] text-[#111827] dark:text-[#FFFFFF] flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] flex items-center justify-center shrink-0">
                   <LogOut className="w-5 h-5" />
                 </div>
                 <button
                   onClick={() => setShowLogoutModal(false)}
                   disabled={isLoggingOut}
-                  className="p-1.5 rounded-lg text-[#6B7280] dark:text-[#A1A1A1] hover:bg-[#F3F4F6] dark:hover:bg-[#252525] transition-colors"
+                  className="p-1.5 rounded-lg text-[#666666] dark:text-[#A3A3A3] hover:bg-[#FAFAFA] dark:hover:bg-[#1F1F1F] transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <div>
-                <h3 className="text-base font-bold text-[#111827] dark:text-[#FFFFFF]">
+                <h3 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">
                   Confirm Sign Out
                 </h3>
-                <p className="mt-1 text-xs text-[#6B7280] dark:text-[#A1A1A1] leading-relaxed">
+                <p className="mt-1 text-xs text-[#666666] dark:text-[#A3A3A3] leading-relaxed">
                   Are you sure you want to log out of APEX ERP{userName ? `, ${userName}` : ""}? All active tokens and role sessions will be cleared.
                 </p>
               </div>
@@ -162,7 +168,7 @@ export default function AppShell({
                   type="button"
                   onClick={() => setShowLogoutModal(false)}
                   disabled={isLoggingOut}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#111827] dark:text-[#FFFFFF] hover:bg-[#F3F4F6] dark:hover:bg-[#252525] border border-[#E5E7EB] dark:border-[#2A2A2A] transition-colors"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FAFAFA] dark:hover:bg-[#1F1F1F] border border-[#D4D4D4] dark:border-[#303030] transition-colors"
                 >
                   Cancel
                 </button>
@@ -170,7 +176,7 @@ export default function AppShell({
                   type="button"
                   onClick={handleConfirmLogout}
                   disabled={isLoggingOut}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-[#FFFFFF] dark:text-[#111111] bg-[#111111] dark:bg-[#FFFFFF] hover:opacity-90 border border-transparent transition-opacity shadow-xs"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-[#FFFFFF] dark:text-[#000000] bg-[#000000] dark:bg-[#FFFFFF] hover:opacity-90 border border-transparent transition-opacity shadow-xs"
                 >
                   {isLoggingOut ? (
                     <>

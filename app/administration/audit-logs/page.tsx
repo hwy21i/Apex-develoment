@@ -21,13 +21,13 @@ interface AuditLogEntry {
 }
 
 const ACTION_COLORS: Record<string, string> = {
-  CREATE: "bg-green-500/20 text-green-400 border border-green-500/30",
-  UPDATE: "bg-blue-500/20 text-blue-400 border border-blue-500/30",
-  DELETE: "bg-red-500/20 text-red-400 border border-red-500/30",
-  APPROVE: "bg-purple-500/20 text-purple-400 border border-purple-500/30",
-  DISPATCH: "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
-  LOGIN: "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30",
-  USER_REGISTERED: "bg-green-500/20 text-green-400 border border-green-500/30",
+  CREATE: "bg-black/5 dark:bg-white/10 text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  UPDATE: "bg-black/5 dark:bg-white/10 text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  DELETE: "bg-[#000000] text-[#FFFFFF] dark:bg-[#FFFFFF] dark:text-[#000000] border border-[#000000] dark:border-[#FFFFFF]",
+  APPROVE: "bg-black/5 dark:bg-white/10 text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  DISPATCH: "bg-black/5 dark:bg-white/10 text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  LOGIN: "bg-black/5 dark:bg-white/10 text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  USER_REGISTERED: "bg-black/5 dark:bg-white/10 text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
 };
 
 export default function AuditLogsPage() {
@@ -75,10 +75,10 @@ export default function AuditLogsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1E22] dark:text-[#D4D8DD] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#000000] dark:text-[#FFFFFF] tracking-tight">
               Security &amp; Operation Audit Logs
             </h1>
-            <p className="text-xs sm:text-sm text-[#6B7078] dark:text-[#AAB7B7] mt-1">
+            <p className="text-xs sm:text-sm text-[#666666] dark:text-[#A3A3A3] mt-1">
               Immutable ledger of all state mutations, financial approvals, user logins, and data transactions
             </p>
           </div>
@@ -86,29 +86,29 @@ export default function AuditLogsPage() {
 
         {/* Search bar */}
         <div className="relative max-w-md">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#AAB7B7]" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666666] dark:text-[#A3A3A3]" />
           <input
             type="text"
             placeholder="Search by user, action, entity, or ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white dark:bg-[#1A2D42]/80 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 focus:outline-none focus:border-[#C0C8CA] shadow-xs transition-colors"
+            className="w-full bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#000000] dark:text-[#FFFFFF] placeholder-[#888888] dark:placeholder-[#666666] dark:placeholder-[#A3A3A3] focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF] shadow-xs transition-colors"
           />
         </div>
 
         {/* Audit logs table */}
-        <div className="glass-card border border-slate-200 dark:border-[#AAB7B7]/20 rounded-2xl overflow-hidden shadow-xs">
+        <div className="glass-card border border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030] rounded-2xl overflow-hidden shadow-xs">
           {loading ? (
-            <div className="flex items-center justify-center py-16 text-slate-400">
-              <Loader2 size={24} className="animate-spin text-[#C0C8CA]" />
+            <div className="flex items-center justify-center py-16 text-[#888888] dark:text-[#888888]">
+              <Loader2 size={24} className="animate-spin text-[#666666] dark:text-[#A3A3A3]" />
             </div>
           ) : error ? (
             <div className="p-6 text-center">
-              <p className="text-sm text-rose-500">{error}</p>
+              <p className="text-sm text-[#000000] dark:text-[#FFFFFF]">{error}</p>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-12 text-center text-slate-400">
-              <ShieldCheck size={32} className="mx-auto mb-2 opacity-40 text-[#C0C8CA]" />
+            <div className="p-12 text-center text-[#888888] dark:text-[#888888]">
+              <ShieldCheck size={32} className="mx-auto mb-2 opacity-40 text-[#666666] dark:text-[#A3A3A3]" />
               <p className="text-sm">
                 {search ? "No audit entries match your search." : "No audit entries recorded yet."}
               </p>
@@ -116,39 +116,39 @@ export default function AuditLogsPage() {
           ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 dark:bg-[#1A2D42]/90 border-b border-slate-200 dark:border-[#AAB7B7]/20">
+              <thead className="bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#111111] border-b border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030]">
                 <tr>
-                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3">Timestamp</th>
-                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3">Actor &amp; Role</th>
-                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3">Action</th>
-                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3">Entity Affected</th>
-                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3">Entity Ref</th>
-                  <th className="text-left text-xs font-semibold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3">IP Address</th>
-                  <th className="text-right text-xs font-semibold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3">Payload</th>
+                  <th className="text-left text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Timestamp</th>
+                  <th className="text-left text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Actor &amp; Role</th>
+                  <th className="text-left text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Action</th>
+                  <th className="text-left text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Entity Affected</th>
+                  <th className="text-left text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Entity Ref</th>
+                  <th className="text-left text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">IP Address</th>
+                  <th className="text-right text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Payload</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-[#AAB7B7]/15">
+              <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030] dark:divide-[#303030]">
                 {filtered.map((l) => (
-                  <tr key={l._id} className="hover:bg-slate-50 dark:hover:bg-[#2E4156]/30 transition-colors">
-                    <td className="px-4 py-3 font-mono text-slate-500 dark:text-[#AAB7B7] text-xs whitespace-nowrap">
+                  <tr key={l._id} className="hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F] dark:hover:bg-[#1F1F1F]/30 transition-colors">
+                    <td className="px-4 py-3 font-mono text-[#666666] dark:text-[#A3A3A3] text-xs whitespace-nowrap">
                       {new Date(l.createdAt).toLocaleString("en-ET")}
                     </td>
                     <td className="px-4 py-3">
-                      <p className="text-slate-900 dark:text-[#D4D8DD] font-medium text-xs">{l.userName || "System"}</p>
-                      <p className="text-slate-400 dark:text-[#AAB7B7] text-[11px]">{l.userRole || "Service"}</p>
+                      <p className="text-[#000000] dark:text-[#FFFFFF] font-medium text-xs">{l.userName || "System"}</p>
+                      <p className="text-[#888888] dark:text-[#888888] dark:text-[#A3A3A3] text-[11px]">{l.userRole || "Service"}</p>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded text-xs font-bold ${ACTION_COLORS[l.action] || "bg-slate-200 dark:bg-[#2E4156] text-slate-700 dark:text-[#D4D8DD]"}`}>
+                      <span className={`px-2 py-0.5 rounded text-xs font-bold ${ACTION_COLORS[l.action] || "bg-[#E5E5E5] dark:bg-[#303030] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF]"}`}>
                         {l.action}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-800 dark:text-[#D4D8DD] text-xs font-medium">{l.entity}</td>
-                    <td className="px-4 py-3 font-mono text-[#C0C8CA] text-xs">{l.entityId || "--"}</td>
-                    <td className="px-4 py-3 font-mono text-slate-400 dark:text-[#AAB7B7] text-xs">{l.ipAddress || "Internal"}</td>
+                    <td className="px-4 py-3 text-[#000000] dark:text-[#FFFFFF] dark:text-[#FFFFFF] text-xs font-medium">{l.entity}</td>
+                    <td className="px-4 py-3 font-mono text-[#666666] dark:text-[#A3A3A3] text-xs">{l.entityId || "--"}</td>
+                    <td className="px-4 py-3 font-mono text-[#888888] dark:text-[#888888] dark:text-[#A3A3A3] text-xs">{l.ipAddress || "Internal"}</td>
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => setSelectedLog(l)}
-                        className="text-[#C0C8CA] hover:text-white text-xs font-mono inline-flex items-center gap-1 font-semibold"
+                        className="text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:text-[#FFFFFF] text-xs font-mono inline-flex items-center gap-1 font-semibold"
                       >
                         <Eye size={14} /> JSON
                       </button>
@@ -164,23 +164,23 @@ export default function AuditLogsPage() {
         {/* JSON Inspector modal */}
         {selectedLog && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-            <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl w-full max-w-xl p-6 space-y-4 shadow-2xl">
-              <div className="flex items-start justify-between border-b border-slate-100 dark:border-[#AAB7B7]/20 pb-4">
+            <div className="bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full max-w-xl p-6 space-y-4 shadow-2xl">
+              <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030] pb-4">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-[#D4D8DD]">Audit Log Payload</h2>
-                  <p className="text-[#AAB7B7] text-xs font-mono">{selectedLog._id}</p>
+                  <h2 className="text-lg font-bold text-[#000000] dark:text-[#FFFFFF]">Audit Log Payload</h2>
+                  <p className="text-[#666666] dark:text-[#A3A3A3] text-xs font-mono">{selectedLog._id}</p>
                 </div>
-                <button onClick={() => setSelectedLog(null)} className="text-[#AAB7B7] hover:text-white transition-colors">✕</button>
+                <button onClick={() => setSelectedLog(null)} className="text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF] transition-colors">✕</button>
               </div>
 
-              <div className="bg-slate-900 dark:bg-[#0F1A26] rounded-xl p-4 font-mono text-xs text-[#A8C5B5] overflow-x-auto max-h-96 border border-[#AAB7B7]/20">
+              <div className="bg-[#FAFAFA] dark:bg-[#111111] rounded-xl p-4 font-mono text-xs text-[#000000] dark:text-[#FFFFFF] overflow-x-auto max-h-96 border border-[#D4D4D4] dark:border-[#303030]">
                 <pre>{JSON.stringify({ previous: selectedLog.previousValue, new: selectedLog.newValue }, null, 2)}</pre>
               </div>
 
               <div className="flex justify-end">
                 <button
                   onClick={() => setSelectedLog(null)}
-                  className="bg-[#C0C8CA] hover:bg-white text-[#1A2D42] font-bold px-4 py-2 rounded-xl text-xs transition-colors shadow-xs"
+                  className="bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] font-bold px-4 py-2 rounded-xl text-xs transition-colors shadow-xs"
                 >
                   Close
                 </button>

@@ -1,10 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" fill="none">
-  <!-- Minimalist Architectural Geometric "A" Symbol -->
-  <rect width="36" height="36" rx="8" fill="#111111"/>
-  <!-- Outer architectural triangle/strut -->
-  <path d="M18 6L7 28H12.2L14.8 22.8H21.2L23.8 28H29L18 6Z" fill="#FFFFFF"/>
-  <!-- Inner negative triangular space -->
-  <path d="M18 12.8L15.6 18.2H20.4L18 12.8Z" fill="#111111"/>
-  <!-- Structural tie beam -->
-  <rect x="11.5" y="20.8" width="13" height="2" rx="1" fill="#FFFFFF" fill-opacity="0.85"/>
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- APEX Architectural Stencil Emblem -->
+  <!-- Upper Triangular Apex Cap -->
+  <polygon points="50,12 36,40 43,40 50,26 57,40 64,40" fill="currentColor" />
+  
+  <!-- Lower Left Leg -->
+  <polygon points="34,44 42,44 26,86 16,86" fill="currentColor" />
+  
+  <!-- Lower Right Leg -->
+  <polygon points="66,44 58,44 74,86 84,86" fill="currentColor" />
+  
+  <!-- Suspended Curved Chevron Crossbar -->
+  <path d="M34,60 C42,66 58,66 66,60 C66,67 58,74 50,74 C42,74 34,67 34,60 Z" fill="currentColor" />
 </svg>

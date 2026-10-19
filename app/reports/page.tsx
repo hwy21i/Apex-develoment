@@ -68,13 +68,13 @@ export default function ReportsPage() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-blue-400 font-mono text-xs font-semibold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#666666] dark:text-[#A3A3A3] font-mono text-xs font-semibold uppercase tracking-wider mb-1">
               <FileText className="w-4 h-4" /> Enterprise Business Intelligence
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl font-bold text-[#000000] dark:text-[#FFFFFF] tracking-tight">
               Reports & Executive Analytics
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-[#666666] dark:text-[#A3A3A3] mt-1">
               Generate and export operational, financial, and workforce analytics across all construction projects.
             </p>
           </div>
@@ -87,29 +87,29 @@ export default function ReportsPage() {
             return (
               <div
                 key={rep.title}
-                className="rounded-xl border border-[#232733] bg-[#141720] p-5 shadow-sm flex flex-col justify-between hover:border-blue-500/50 transition-colors"
+                className="rounded-xl border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] p-5 shadow-sm flex flex-col justify-between hover:border-[#000000] dark:hover:border-[#FFFFFF] transition-colors"
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
+                    <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3] bg-[#F5F5F5] dark:bg-[#171717] px-2 py-0.5 rounded border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF]">
                       {rep.category}
                     </span>
-                    <Icon className="w-4 h-4 text-slate-400" />
+                    <Icon className="w-4 h-4 text-[#666666] dark:text-[#A3A3A3]" />
                   </div>
-                  <h3 className="text-base font-semibold text-white leading-snug">
+                  <h3 className="text-base font-semibold text-[#000000] dark:text-[#FFFFFF] leading-snug">
                     {rep.title}
                   </h3>
-                  <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                  <p className="text-xs text-[#666666] dark:text-[#A3A3A3] mt-2 leading-relaxed">
                     {rep.desc}
                   </p>
                 </div>
 
-                <div className="mt-5 pt-3 border-t border-[#1F2330] flex items-center justify-between">
-                  <span className="text-[11px] text-slate-500 font-mono">Format: PDF / XLSX</span>
+                <div className="mt-5 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] flex items-center justify-between">
+                  <span className="text-[11px] text-[#666666] dark:text-[#A3A3A3] font-mono">Format: PDF / XLSX</span>
                   <button
                     type="button"
                     onClick={() => handleExportReport(rep)}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] hover:underline"
                   >
                     <Download className="w-3.5 h-3.5" /> Export Report
                   </button>

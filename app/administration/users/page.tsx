@@ -29,15 +29,15 @@ interface SystemUser {
 }
 
 const ROLE_COLORS: Record<string, string> = {
-  Admin: "bg-red-500/20 text-red-400 border border-red-500/30",
-  "Project Manager": "bg-blue-500/20 text-blue-400 border border-blue-500/30",
-  "Site Engineer": "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
-  "Procurement Officer": "bg-purple-500/20 text-purple-400 border border-purple-500/30",
-  "Warehouse Manager": "bg-indigo-500/20 text-indigo-400 border border-indigo-500/30",
-  Accountant: "bg-green-500/20 text-green-400 border border-green-500/30",
-  "HR Manager": "bg-pink-500/20 text-pink-400 border border-pink-500/30",
-  Worker: "bg-gray-500/20 text-gray-400 border border-gray-500/30",
-  Client: "bg-cyan-500/20 text-cyan-400 border border-cyan-500/30",
+  Admin: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  "Project Manager": "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  "Site Engineer": "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  "Procurement Officer": "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  "Warehouse Manager": "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  Accountant: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  "HR Manager": "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  Worker: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  Client: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
 };
 
 function projectNames(list: (AssignedProject | string)[]): string {
@@ -198,21 +198,21 @@ export default function UserManagementPage() {
   };
 
   const inputCls =
-    "w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500";
+    "w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#666666] dark:placeholder-[#A3A3A3] focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]";
 
   return (
     <AppShell>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">User Accounts &amp; Access Credentials</h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <h1 className="text-2xl font-bold text-[#000000] dark:text-[#FFFFFF]">User Accounts &amp; Access Credentials</h1>
+            <p className="text-[#666666] dark:text-[#A3A3A3] text-sm mt-1">
               Provision ERP accounts, assign operational roles, reset credentials, and monitor session status
             </p>
           </div>
           <button
             onClick={openInvite}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
             <Plus size={16} />
             Invite User
@@ -221,25 +221,25 @@ export default function UserManagementPage() {
 
         {/* Top metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Total System Users</p>
-            <p className="text-xl font-bold text-white mt-1">{users.length}</p>
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-4">
+            <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Total System Users</p>
+            <p className="text-xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1">{users.length}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Active Accounts</p>
-            <p className="text-xl font-bold text-green-400 mt-1">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-4">
+            <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Active Accounts</p>
+            <p className="text-xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1">
               {users.filter((u) => u.isActive).length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Administrators</p>
-            <p className="text-xl font-bold text-red-400 mt-1">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-4">
+            <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Administrators</p>
+            <p className="text-xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1">
               {users.filter((u) => u.role === "Admin").length}
             </p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-            <p className="text-xs text-gray-400">Site Engineers &amp; PMs</p>
-            <p className="text-xl font-bold text-blue-400 mt-1">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-4">
+            <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Site Engineers &amp; PMs</p>
+            <p className="text-xl font-bold text-[#000000] dark:text-[#FFFFFF] mt-1">
               {users.filter((u) => u.role === "Project Manager" || u.role === "Site Engineer").length}
             </p>
           </div>
@@ -248,19 +248,19 @@ export default function UserManagementPage() {
         {/* Filters */}
         <div className="flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-[220px]">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666666] dark:text-[#A3A3A3]" />
             <input
               type="text"
               placeholder="Search by user name, email, or phone..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl pl-9 pr-4 py-2 text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#666666] dark:placeholder-[#A3A3A3] focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]"
             />
           </div>
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+            className="bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 text-sm text-[#000000] dark:text-[#FFFFFF] focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]"
           >
             <option value="All">All Roles</option>
             {SYSTEM_ROLES.map((r) => (
@@ -270,23 +270,23 @@ export default function UserManagementPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+        <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl overflow-hidden">
           {loading ? (
-            <div className="flex items-center justify-center py-16 text-gray-400">
+            <div className="flex items-center justify-center py-16 text-[#666666] dark:text-[#A3A3A3]">
               <Loader2 size={24} className="animate-spin" />
             </div>
           ) : error ? (
             <div className="p-6 text-center">
-              <p className="text-sm text-red-300">{error}</p>
+              <p className="text-sm text-[#000000] dark:text-[#FFFFFF] font-medium">{error}</p>
               <button
                 onClick={() => { setLoading(true); load(); }}
-                className="mt-3 text-xs font-medium text-blue-400 hover:text-blue-300"
+                className="mt-3 text-xs font-medium text-[#000000] dark:text-[#FFFFFF] hover:text-[#000000] dark:text-[#FFFFFF]"
               >
                 Retry
               </button>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-12 text-center text-gray-400">
+            <div className="p-12 text-center text-[#666666] dark:text-[#A3A3A3]">
               <ShieldCheck size={32} className="mx-auto mb-2 opacity-40" />
               <p className="text-sm">
                 {users.length === 0 ? "No user accounts found." : "No users match your filters."}
@@ -295,40 +295,40 @@ export default function UserManagementPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-900/50 border-b border-gray-700">
+                <thead className="bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border-b border-[#D4D4D4] dark:border-[#303030]">
                   <tr>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">User &amp; Email</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">ERP Role</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Phone</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Assigned Projects</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Last Active</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Status</th>
-                    <th className="text-right text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Actions</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">User &amp; Email</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">ERP Role</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Phone</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Assigned Projects</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Last Active</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Status</th>
+                    <th className="text-right text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
+                <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030]">
                   {filtered.map((u) => (
-                    <tr key={u._id} className="hover:bg-gray-700/30 transition-colors">
+                    <tr key={u._id} className="hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F] transition-colors">
                       <td className="px-4 py-3">
-                        <p className="text-white font-medium">{u.fullName}</p>
-                        <p className="text-gray-400 text-xs font-mono">{u.email}</p>
+                        <p className="text-[#000000] dark:text-[#FFFFFF] font-medium">{u.fullName}</p>
+                        <p className="text-[#666666] dark:text-[#A3A3A3] text-xs font-mono">{u.email}</p>
                       </td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${ROLE_COLORS[u.role] || ROLE_COLORS.Worker}`}>
                           {u.role}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-300 text-xs">{u.phone || "—"}</td>
-                      <td className="px-4 py-3 text-gray-300 text-xs">
+                      <td className="px-4 py-3 text-[#333333] dark:text-[#D4D4D4] text-xs">{u.phone || "—"}</td>
+                      <td className="px-4 py-3 text-[#333333] dark:text-[#D4D4D4] text-xs">
                         {projectNames(u.assignedProjects)}
                       </td>
-                      <td className="px-4 py-3 text-gray-400 text-xs font-mono">{formatDate(u.lastLogin)}</td>
+                      <td className="px-4 py-3 text-[#666666] dark:text-[#A3A3A3] text-xs font-mono">{formatDate(u.lastLogin)}</td>
                       <td className="px-4 py-3">
                         <span
                           className={`px-2 py-0.5 rounded-full text-xs font-medium border ${
                             u.isActive
-                              ? "bg-green-500/20 text-green-400 border-green-500/30"
-                              : "bg-gray-500/20 text-gray-400 border-gray-500/30"
+                              ? "bg-black/5 dark:bg-white/10 text-[#000000] dark:text-[#FFFFFF] border-[#D4D4D4] dark:border-[#303030]"
+                              : "bg-[#888888]/20 text-[#666666] dark:text-[#A3A3A3] border-[#888888]/30"
                           }`}
                         >
                           {u.isActive ? "Active" : "Inactive"}
@@ -337,7 +337,7 @@ export default function UserManagementPage() {
                       <td className="px-4 py-3 text-right">
                         <button
                           onClick={() => openEdit(u)}
-                          className="text-blue-400 hover:text-blue-300 p-1"
+                          className="text-[#000000] dark:text-[#FFFFFF] hover:text-[#000000] dark:text-[#FFFFFF] p-1"
                           title="Edit role & status"
                         >
                           <Edit size={16} />
@@ -355,28 +355,28 @@ export default function UserManagementPage() {
       {/* Invite modal */}
       {inviteOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-gray-700 pb-4">
-              <h2 className="text-lg font-bold text-white">Invite New User</h2>
-              <button onClick={() => setInviteOpen(false)} className="text-gray-400 hover:text-white">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] pb-4">
+              <h2 className="text-lg font-bold text-[#000000] dark:text-[#FFFFFF]">Invite New User</h2>
+              <button onClick={() => setInviteOpen(false)} className="text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF]">
                 <X size={18} />
               </button>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Full name</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Full name</label>
                 <input className={inputCls} value={inviteForm.fullName}
                   onChange={(e) => setInviteForm({ ...inviteForm, fullName: e.target.value })} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Username</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Username</label>
                   <input className={inputCls} value={inviteForm.username}
                     onChange={(e) => setInviteForm({ ...inviteForm, username: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Role</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Role</label>
                   <select className={inputCls} value={inviteForm.role}
                     onChange={(e) => setInviteForm({ ...inviteForm, role: e.target.value as RoleType })}>
                     {SYSTEM_ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
@@ -384,43 +384,43 @@ export default function UserManagementPage() {
                 </div>
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Email</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Email</label>
                 <input type="email" className={inputCls} value={inviteForm.email}
                   onChange={(e) => setInviteForm({ ...inviteForm, email: e.target.value })} />
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Temporary password</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Temporary password</label>
                 <input type="password" className={inputCls} value={inviteForm.password}
                   onChange={(e) => setInviteForm({ ...inviteForm, password: e.target.value })} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Phone</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Phone</label>
                   <input className={inputCls} value={inviteForm.phone}
                     onChange={(e) => setInviteForm({ ...inviteForm, phone: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Department</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Department</label>
                   <input className={inputCls} value={inviteForm.department}
                     onChange={(e) => setInviteForm({ ...inviteForm, department: e.target.value })} />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Position</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Position</label>
                 <input className={inputCls} value={inviteForm.position}
                   onChange={(e) => setInviteForm({ ...inviteForm, position: e.target.value })} />
               </div>
             </div>
 
-            {inviteError && <p className="text-xs text-red-300">{inviteError}</p>}
+            {inviteError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF]">{inviteError}</p>}
 
             <div className="flex justify-end gap-2 pt-2">
               <button onClick={() => setInviteOpen(false)}
-                className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">
+                className="bg-[#F5F5F5] dark:bg-[#1F1F1F] border border-[#D4D4D4] dark:border-[#303030] hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] text-[#000000] dark:text-[#FFFFFF] px-4 py-2 rounded-lg text-sm">
                 Cancel
               </button>
               <button onClick={submitInvite} disabled={inviteBusy}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
+                className="bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
                 {inviteBusy && <Loader2 size={14} className="animate-spin" />}
                 Create User
               </button>
@@ -432,26 +432,26 @@ export default function UserManagementPage() {
       {/* Edit modal */}
       {editTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl">
-            <div className="flex items-start justify-between border-b border-gray-700 pb-4">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full max-w-md p-6 space-y-4 shadow-2xl">
+            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] pb-4">
               <div>
-                <h2 className="text-lg font-bold text-white">Edit Access</h2>
-                <p className="text-gray-400 text-xs font-mono">{editTarget.email}</p>
+                <h2 className="text-lg font-bold text-[#000000] dark:text-[#FFFFFF]">Edit Access</h2>
+                <p className="text-[#666666] dark:text-[#A3A3A3] text-xs font-mono">{editTarget.email}</p>
               </div>
-              <button onClick={() => setEditTarget(null)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setEditTarget(null)} className="text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF]">
                 <X size={18} />
               </button>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-gray-400 block mb-1">ERP Role</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">ERP Role</label>
                 <select className={inputCls} value={editRole}
                   onChange={(e) => setEditRole(e.target.value as RoleType)}>
                   {SYSTEM_ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
                 </select>
               </div>
-              <label className="flex items-center gap-2 text-sm text-gray-200">
+              <label className="flex items-center gap-2 text-sm text-[#000000] dark:text-[#FFFFFF]">
                 <input type="checkbox" checked={editActive}
                   onChange={(e) => setEditActive(e.target.checked)}
                   className="w-4 h-4 accent-blue-600" />
@@ -459,15 +459,15 @@ export default function UserManagementPage() {
               </label>
             </div>
 
-            {editError && <p className="text-xs text-red-300">{editError}</p>}
+            {editError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF]">{editError}</p>}
 
             <div className="flex justify-end gap-2 pt-2">
               <button onClick={() => setEditTarget(null)}
-                className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">
+                className="bg-[#F5F5F5] dark:bg-[#1F1F1F] border border-[#D4D4D4] dark:border-[#303030] hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] text-[#000000] dark:text-[#FFFFFF] px-4 py-2 rounded-lg text-sm">
                 Cancel
               </button>
               <button onClick={submitEdit} disabled={editBusy}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
+                className="bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
                 {editBusy && <Loader2 size={14} className="animate-spin" />}
                 Save Changes
               </button>

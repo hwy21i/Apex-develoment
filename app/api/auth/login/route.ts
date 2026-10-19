@@ -49,9 +49,8 @@ export async function POST(request: Request) {
       return fail("INVALID_CREDENTIALS", "Invalid email/username or password", 401);
     }
 
-    // Update last login timestamp
-    user.lastLogin = new Date();
-    await user.save();
+    // Update last login timestamp efficiently without full document validation overhead
+    await User.updateOne({ _id: user._id }, { $set: { lastLogin: new Date() } });
 
     const sessionPayload = {
       id: user.id,

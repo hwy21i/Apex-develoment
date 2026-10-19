@@ -61,15 +61,15 @@ export default function FinancialReportsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">Financial & Commercial Reports</h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <h1 className="text-2xl font-bold text-[#000000] dark:text-[#FFFFFF]">Financial & Commercial Reports</h1>
+            <p className="text-[#666666] dark:text-[#A3A3A3] text-sm mt-1">
               Project profitability statements, cash flow forecasts, cost accounting, and tax filings
             </p>
           </div>
           <button
             type="button"
             onClick={handleExportLedger}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
             <FileText size={16} />
             Export Ledger
@@ -80,25 +80,25 @@ export default function FinancialReportsPage() {
           {reports.map((r, i) => (
             <div
               key={i}
-              className="bg-gray-800 border border-gray-700 rounded-xl p-5 flex flex-col justify-between hover:border-gray-600 transition-colors"
+              className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-5 flex flex-col justify-between hover:border-[#000000] dark:hover:border-[#FFFFFF] transition-colors"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs px-2 py-0.5 rounded bg-green-500/20 text-green-400 font-medium">
+                  <span className="text-xs px-2 py-0.5 rounded bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] font-medium">
                     {r.type}
                   </span>
-                  <span className="text-xs text-gray-400">{r.format}</span>
+                  <span className="text-xs text-[#666666] dark:text-[#A3A3A3]">{r.format}</span>
                 </div>
-                <h3 className="text-base font-bold text-white mt-2">{r.title}</h3>
-                <p className="text-xs text-gray-400 mt-1">Reporting Period: {r.period}</p>
-                <p className="text-xs text-gray-500 mt-0.5">Generated: {r.generatedDate} • {r.size}</p>
+                <h3 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF] mt-2">{r.title}</h3>
+                <p className="text-xs text-[#666666] dark:text-[#A3A3A3] mt-1">Reporting Period: {r.period}</p>
+                <p className="text-xs text-[#666666] dark:text-[#A3A3A3] mt-0.5">Generated: {r.generatedDate} • {r.size}</p>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-gray-700 flex justify-end">
+              <div className="mt-4 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] flex justify-end">
                 <button
                   type="button"
                   onClick={() => handleDownload(r)}
-                  className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 font-semibold"
+                  className="flex items-center gap-1 text-xs text-[#000000] dark:text-[#FFFFFF] hover:underline font-semibold"
                 >
                   <Download size={14} /> Download Report
                 </button>

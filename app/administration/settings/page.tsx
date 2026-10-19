@@ -45,15 +45,15 @@ export default function SystemSettingsPage() {
       <div className="space-y-6 max-w-4xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-[#D4D8DD] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#000000] dark:text-[#FFFFFF] dark:text-[#FFFFFF] tracking-tight">
               System Global Settings
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-[#AAB7B7] mt-1">
+            <p className="text-xs sm:text-sm text-[#666666] dark:text-[#A3A3A3] mt-1">
               Company legal entity data, Ethiopian Birr financial parameters, tax rates, and security enforcement
             </p>
           </div>
           {saved && (
-            <span className="inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 text-xs bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40 px-3.5 py-1.5 rounded-xl font-semibold shrink-0">
+            <span className="inline-flex items-center gap-1.5 text-[#000000] dark:text-[#FFFFFF] dark:text-[#000000] dark:text-[#FFFFFF] text-xs bg-black/5 dark:bg-white/10 dark:bg-black/5 dark:bg-white/10 border border-[#D4D4D4] dark:border-[#303030] dark:border-[#D4D4D4] dark:border-[#303030] px-3.5 py-1.5 rounded-xl font-semibold shrink-0">
               <CheckCircle size={14} /> Settings Saved
             </span>
           )}
@@ -152,9 +152,9 @@ export default function SystemSettingsPage() {
                 id="twoFactor"
                 checked={formData.twoFactorEnforced}
                 onChange={(e) => setFormData({ ...formData, twoFactorEnforced: e.target.checked })}
-                className="w-4 h-4 rounded border-slate-300 dark:border-[#2E4156] accent-[#1A2D42] dark:accent-[#C0C8CA] focus:ring-[#C0C8CA]"
+                className="w-4 h-4 rounded border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030] accent-[#000000] dark:accent-[#FFFFFF] focus:ring-0"
               />
-              <label htmlFor="twoFactor" className="text-xs text-slate-700 dark:text-[#D4D8DD] font-medium cursor-pointer">
+              <label htmlFor="twoFactor" className="text-xs text-[#000000] dark:text-[#FFFFFF] font-medium cursor-pointer">
                 Enforce Two-Factor Authentication (2FA) for Managers & Admins
               </label>
             </div>
@@ -163,7 +163,7 @@ export default function SystemSettingsPage() {
           <FormActions>
             <button
               type="submit"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#C0C8CA] hover:bg-white text-[#1A2D42] px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md"
             >
               <Save size={15} />
               Save Configuration

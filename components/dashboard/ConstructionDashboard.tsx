@@ -29,7 +29,7 @@ import type { ProjectLocationItem } from "./ProjectLocationsMap";
 const ProjectLocationsMap = dynamic(() => import("./ProjectLocationsMap"), {
   ssr: false,
   loading: () => (
-    <div className="h-[460px] rounded-2xl bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] animate-pulse flex items-center justify-center text-xs font-mono text-[#6B7280] dark:text-[#A1A1A1]">
+    <div className="h-[460px] rounded-2xl bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] animate-pulse flex items-center justify-center text-xs font-mono text-[#666666] dark:text-[#A3A3A3]">
       Loading Construction Sites Map...
     </div>
   ),
@@ -230,21 +230,23 @@ export default function ConstructionDashboard({
   }, []);
 
   const resolvedName = userName || user?.fullName || "";
-  const displayName = resolvedName ? resolvedName.split(" ")[0] : "Admin";
+  const displayName = resolvedName
+    ? resolvedName.split(" ")[0]
+    : user?.username || (user?.role ? user.role : "Builder");
 
   // Loading skeleton state
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-20 bg-[#FFFFFF] dark:bg-[#1F1F1F] rounded-2xl w-full border border-[#E5E7EB] dark:border-[#2A2A2A]" />
+        <div className="h-20 bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl w-full border border-[#D4D4D4] dark:border-[#303030]" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-32 bg-[#FFFFFF] dark:bg-[#1F1F1F] rounded-2xl border border-[#E5E7EB] dark:border-[#2A2A2A]" />
+            <div key={i} className="h-32 bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl border border-[#D4D4D4] dark:border-[#303030]" />
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 h-96 bg-[#FFFFFF] dark:bg-[#1F1F1F] rounded-2xl border border-[#E5E7EB] dark:border-[#2A2A2A]" />
-          <div className="h-96 bg-[#FFFFFF] dark:bg-[#1F1F1F] rounded-2xl border border-[#E5E7EB] dark:border-[#2A2A2A]" />
+          <div className="lg:col-span-2 h-96 bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl border border-[#D4D4D4] dark:border-[#303030]" />
+          <div className="h-96 bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl border border-[#D4D4D4] dark:border-[#303030]" />
         </div>
       </div>
     );
@@ -253,12 +255,12 @@ export default function ConstructionDashboard({
   // Error fallback
   if (error && !data) {
     return (
-      <div className="rounded-2xl border border-[#EF4444]/40 bg-[#EF4444]/10 p-6 text-[#111827] dark:text-[#FFFFFF]">
+      <div className="rounded-2xl border border-[#303030] dark:border-[#D4D4D4] bg-[#FAFAFA] dark:bg-[#171717] p-6 text-[#000000] dark:text-[#FFFFFF]">
         <h2 className="font-bold text-base flex items-center gap-2">
-          <AlertTriangle className="w-5 h-5 text-[#EF4444]" />
+          <AlertTriangle className="w-5 h-5 text-[#666666] dark:text-[#A3A3A3]" />
           Unable to synchronize dashboard
         </h2>
-        <p className="mt-2 text-sm text-[#6B7280] dark:text-[#A1A1A1]">{error}</p>
+        <p className="mt-2 text-sm text-[#666666] dark:text-[#A3A3A3]">{error}</p>
         <button
           onClick={() => window.location.reload()}
           className="mt-4 px-4 py-2 bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] rounded-xl text-xs font-semibold"
@@ -411,17 +413,17 @@ export default function ConstructionDashboard({
   return (
     <div className="space-y-6 max-w-full min-w-0">
       {/* ─── 1. Welcome Section & Contextual Greeting ─── */}
-      <section className="relative overflow-hidden rounded-2xl p-6 sm:p-7 bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <section className="relative overflow-hidden rounded-2xl p-6 sm:p-7 bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#6B7280] dark:text-[#A1A1A1] mb-1">
+          <div className="flex items-center gap-2 text-xs font-mono text-[#666666] dark:text-[#A3A3A3] mb-1">
             <span>{currentDateString}</span>
             <span>•</span>
-            <span className="text-[#111827] dark:text-[#FFFFFF] font-semibold">Active Session</span>
+            <span className="text-[#000000] dark:text-[#FFFFFF] font-semibold">Active Session</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#111827] dark:text-[#FFFFFF] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#000000] dark:text-[#FFFFFF] tracking-tight">
             Welcome back, {displayName}
           </h1>
-          <p className="mt-1 text-xs sm:text-sm text-[#6B7280] dark:text-[#A1A1A1]">
+          <p className="mt-1 text-xs sm:text-sm text-[#666666] dark:text-[#A3A3A3]">
             Portfolio execution, active construction sites &amp; fiscal intelligence.
           </p>
         </div>
@@ -450,97 +452,97 @@ export default function ConstructionDashboard({
       {/* ─── 2. Top 4 Monochrome KPI Cards ─── */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Active Projects */}
-        <div className="p-5 border border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#1F1F1F] rounded-2xl shadow-xs transition-all hover:border-[#111827] dark:hover:border-[#FFFFFF]">
+        <div className="p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#6B7280] dark:text-[#A1A1A1]">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3]">
               Active Projects
             </span>
-            <span className="p-2 rounded-xl bg-[#F3F4F6] dark:bg-[#141414] text-[#111827] dark:text-[#FFFFFF] border border-[#E5E7EB] dark:border-[#2A2A2A]">
+            <span className="p-2 rounded-xl bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
               <Building2 className="w-4 h-4" />
             </span>
           </div>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-extrabold text-[#111827] dark:text-[#FFFFFF]">
+            <span className="text-2xl sm:text-3xl font-extrabold text-[#000000] dark:text-[#FFFFFF]">
               {activeProjectsCount}
             </span>
-            <span className="inline-flex items-center text-xs font-semibold text-[#10B981] gap-0.5">
+            <span className="inline-flex items-center text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] gap-0.5">
               <TrendingUp className="w-3.5 h-3.5" />
               +8.4%
             </span>
           </div>
-          <p className="mt-2 text-[11px] text-[#9CA3AF] dark:text-[#777777]">
+          <p className="mt-2 text-[11px] text-[#A3A3A3] dark:text-[#777777]">
             from last month
           </p>
         </div>
 
         {/* Card 2: Total Contract Value */}
-        <div className="p-5 border border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#1F1F1F] rounded-2xl shadow-xs transition-all hover:border-[#111827] dark:hover:border-[#FFFFFF]">
+        <div className="p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#6B7280] dark:text-[#A1A1A1]">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3]">
               Total Contract Value
             </span>
-            <span className="p-2 rounded-xl bg-[#F3F4F6] dark:bg-[#141414] text-[#111827] dark:text-[#FFFFFF] border border-[#E5E7EB] dark:border-[#2A2A2A]">
+            <span className="p-2 rounded-xl bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
               <Banknote className="w-4 h-4" />
             </span>
           </div>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-extrabold text-[#111827] dark:text-[#FFFFFF] tracking-tight truncate">
+            <span className="text-2xl sm:text-3xl font-extrabold text-[#000000] dark:text-[#FFFFFF] tracking-tight truncate">
               {formatCurrency(totalBudgetVal, true)}
             </span>
-            <span className="inline-flex items-center text-xs font-bold text-[#10B981] gap-0.5">
+            <span className="inline-flex items-center text-xs font-bold text-[#000000] dark:text-[#FFFFFF] gap-0.5">
               <TrendingUp className="w-3.5 h-3.5" />
               +4.2%
             </span>
           </div>
-          <p className="mt-2 text-[11px] text-[#9CA3AF] dark:text-[#777777]">
+          <p className="mt-2 text-[11px] text-[#A3A3A3] dark:text-[#777777]">
             Portfolio commitment
           </p>
         </div>
 
         {/* Card 3: Total Expenses */}
-        <div className="p-5 border border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#1F1F1F] rounded-2xl shadow-xs transition-all hover:border-[#111827] dark:hover:border-[#FFFFFF]">
+        <div className="p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#6B7280] dark:text-[#A1A1A1]">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3]">
               Total Expenses
             </span>
-            <span className="p-2 rounded-xl bg-[#F3F4F6] dark:bg-[#141414] text-[#111827] dark:text-[#FFFFFF] border border-[#E5E7EB] dark:border-[#2A2A2A]">
+            <span className="p-2 rounded-xl bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
               <ClipboardList className="w-4 h-4" />
             </span>
           </div>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-extrabold text-[#111827] dark:text-[#FFFFFF] truncate">
+            <span className="text-2xl sm:text-3xl font-extrabold text-[#000000] dark:text-[#FFFFFF] truncate">
               {formatCurrency(totalExpensesVal, true)}
             </span>
-            <span className="inline-flex items-center text-xs font-semibold text-[#EF4444] gap-0.5">
+            <span className="inline-flex items-center text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] gap-0.5">
               <TrendingDown className="w-3.5 h-3.5" />
               -2.1%
             </span>
           </div>
-          <p className="mt-2 text-[11px] text-[#9CA3AF] dark:text-[#777777]">
+          <p className="mt-2 text-[11px] text-[#A3A3A3] dark:text-[#777777]">
             from last month
           </p>
         </div>
 
         {/* Card 4: Project Progress */}
-        <div className="p-5 border border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#1F1F1F] rounded-2xl shadow-xs transition-all hover:border-[#111827] dark:hover:border-[#FFFFFF]">
+        <div className="p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
           <div className="flex items-start justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#6B7280] dark:text-[#A1A1A1]">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3]">
               Project Progress
             </span>
-            <span className="p-2 rounded-xl bg-[#F3F4F6] dark:bg-[#141414] text-[#111827] dark:text-[#FFFFFF] border border-[#E5E7EB] dark:border-[#2A2A2A]">
+            <span className="p-2 rounded-xl bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
               <TrendingUp className="w-4 h-4" />
             </span>
           </div>
           <div className="mt-3 flex items-baseline justify-between">
-            <span className="text-2xl sm:text-3xl font-extrabold text-[#111827] dark:text-[#FFFFFF]">
+            <span className="text-2xl sm:text-3xl font-extrabold text-[#000000] dark:text-[#FFFFFF]">
               {overallProgressVal}%
             </span>
-            <span className="inline-flex items-center text-xs font-semibold text-[#10B981] gap-0.5">
+            <span className="inline-flex items-center text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] gap-0.5">
               <TrendingUp className="w-3.5 h-3.5" />
               +6.3%
             </span>
           </div>
-          <p className="mt-2 text-[11px] text-[#9CA3AF] dark:text-[#777777]">
+          <p className="mt-2 text-[11px] text-[#A3A3A3] dark:text-[#777777]">
             from last month
           </p>
         </div>
@@ -549,28 +551,28 @@ export default function ConstructionDashboard({
       {/* ─── 3. Main Analytics: Progress Overview (Line) + Tasks Overview (Donut) ─── */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Project Progress Overview: Monochrome Line Chart Card */}
-        <div className="lg:col-span-2 border border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#1F1F1F] text-[#111827] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
+        <div className="lg:col-span-2 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
           <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#E5E7EB] dark:border-[#2A2A2A]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#D4D4D4] dark:border-[#303030]">
               <div>
-                <h2 className="text-base font-bold text-[#111827] dark:text-[#FFFFFF]">
+                <h2 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">
                   Project Progress Overview
                 </h2>
-                <p className="text-xs text-[#6B7280] dark:text-[#A1A1A1] mt-0.5">
+                <p className="text-xs text-[#666666] dark:text-[#A3A3A3] mt-0.5">
                   Portfolio execution, budget realization &amp; task milestones
                 </p>
               </div>
 
               {/* Timeframe filters: Day, Week, Month, Year */}
-              <div className="flex items-center gap-1 p-1 bg-[#F3F4F6] dark:bg-[#141414] rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] self-start sm:self-auto">
+              <div className="flex items-center gap-1 p-1 bg-[#F5F5F5] dark:bg-[#171717] rounded-xl border border-[#D4D4D4] dark:border-[#303030] self-start sm:self-auto">
                 {(["Day", "Week", "Month", "Year"] as const).map((filter) => (
                   <button
                     key={filter}
                     onClick={() => setTimeFilter(filter)}
                     className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
                       timeFilter === filter
-                        ? "bg-[#FFFFFF] dark:bg-[#1F1F1F] text-[#111827] dark:text-[#FFFFFF] font-bold shadow-2xs border border-[#E5E7EB] dark:border-[#2A2A2A]"
-                        : "text-[#6B7280] dark:text-[#A1A1A1] hover:text-[#111827] dark:hover:text-[#FFFFFF]"
+                        ? "bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] font-bold shadow-2xs border border-[#D4D4D4] dark:border-[#303030]"
+                        : "text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF]"
                     }`}
                   >
                     {filter}
@@ -582,21 +584,21 @@ export default function ConstructionDashboard({
             {/* KPI metric summary below title */}
             <div className="mt-4 flex flex-wrap items-baseline gap-4 sm:gap-6">
               <div>
-                <span className="text-2xl sm:text-3xl font-extrabold text-[#111827] dark:text-[#FFFFFF]">
+                <span className="text-2xl sm:text-3xl font-extrabold text-[#000000] dark:text-[#FFFFFF]">
                   {formatCurrency(totalBudgetVal * TIMEFRAME_CONFIG[timeFilter].multiplier, true)}
                 </span>
-                <span className="ml-2 inline-flex items-center text-xs font-bold text-[#10B981] gap-0.5">
+                <span className="ml-2 inline-flex items-center text-xs font-bold text-[#000000] dark:text-[#FFFFFF] gap-0.5">
                   <TrendingUp className="w-3.5 h-3.5" />
                   {TIMEFRAME_CONFIG[timeFilter].trend}
                 </span>
               </div>
-              <div className="text-xs text-[#6B7280] dark:text-[#A1A1A1] flex items-center gap-4">
+              <div className="text-xs text-[#666666] dark:text-[#A3A3A3] flex items-center gap-4">
                 <span className="flex items-center gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#111111] dark:bg-[#FFFFFF]" />
                   Planned Trajectory
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#9CA3AF] dark:bg-[#777777]" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#A3A3A3] dark:bg-[#777777]" />
                   Actual Disbursed
                 </span>
               </div>
@@ -617,9 +619,9 @@ export default function ConstructionDashboard({
                 </defs>
 
                 {/* Horizontal Grid lines */}
-                <line x1="0" y1="40" x2="600" y2="40" stroke="currentColor" className="text-[#E5E7EB] dark:text-[#2A2A2A]" strokeDasharray="3 3" />
-                <line x1="0" y1="90" x2="600" y2="90" stroke="currentColor" className="text-[#E5E7EB] dark:text-[#2A2A2A]" strokeDasharray="3 3" />
-                <line x1="0" y1="140" x2="600" y2="140" stroke="currentColor" className="text-[#E5E7EB] dark:text-[#2A2A2A]" strokeDasharray="3 3" />
+                <line x1="0" y1="40" x2="600" y2="40" stroke="currentColor" className="text-[#D4D4D4] dark:text-[#303030]" strokeDasharray="3 3" />
+                <line x1="0" y1="90" x2="600" y2="90" stroke="currentColor" className="text-[#D4D4D4] dark:text-[#303030]" strokeDasharray="3 3" />
+                <line x1="0" y1="140" x2="600" y2="140" stroke="currentColor" className="text-[#D4D4D4] dark:text-[#303030]" strokeDasharray="3 3" />
 
                 {/* Secondary Line: Actual Disbursed */}
                 <path
@@ -628,7 +630,7 @@ export default function ConstructionDashboard({
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeDasharray="4 4"
-                  className="text-[#9CA3AF] dark:text-[#777777] transition-all duration-300"
+                  className="text-[#A3A3A3] dark:text-[#777777] transition-all duration-300"
                 />
 
                 {/* Area Gradient Fill under Primary Line */}
@@ -663,20 +665,20 @@ export default function ConstructionDashboard({
             </div>
 
             {/* Dynamic labels */}
-            <div className="mt-2 flex justify-between text-[11px] font-mono text-[#9CA3AF] dark:text-[#777777] px-2">
+            <div className="mt-2 flex justify-between text-[11px] font-mono text-[#A3A3A3] dark:text-[#777777] px-2">
               {TIMEFRAME_CONFIG[timeFilter].labels.map((lbl, idx) => (
                 <span key={idx}>{lbl}</span>
               ))}
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-[#E5E7EB] dark:border-[#2A2A2A] flex items-center justify-between text-xs">
-            <span className="text-[#6B7280] dark:text-[#A1A1A1]">
-              Realization rate: <strong className="text-[#111827] dark:text-[#FFFFFF]">92.4% on schedule</strong>
+          <div className="mt-4 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] flex items-center justify-between text-xs">
+            <span className="text-[#666666] dark:text-[#A3A3A3]">
+              Realization rate: <strong className="text-[#000000] dark:text-[#FFFFFF]">92.4% on schedule</strong>
             </span>
             <Link
               href="/projects"
-              className="inline-flex items-center gap-1 font-semibold text-[#111827] dark:text-[#FFFFFF] hover:underline transition-colors"
+              className="inline-flex items-center gap-1 font-semibold text-[#000000] dark:text-[#FFFFFF] hover:underline transition-colors"
             >
               View detailed report <ChevronRight className="w-3.5 h-3.5" />
             </Link>
@@ -684,20 +686,20 @@ export default function ConstructionDashboard({
         </div>
 
         {/* Tasks Overview: Circular Donut Visualization (Section 4.G) */}
-        <div className="border border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#1F1F1F] text-[#111827] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
+        <div className="border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB] dark:border-[#2A2A2A]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#D4D4D4] dark:border-[#303030]">
               <div>
-                <h2 className="text-base font-bold text-[#111827] dark:text-[#FFFFFF]">
+                <h2 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">
                   Tasks Overview
                 </h2>
-                <p className="text-xs text-[#6B7280] dark:text-[#A1A1A1] mt-0.5">
+                <p className="text-xs text-[#666666] dark:text-[#A3A3A3] mt-0.5">
                   Real-time work order breakdown
                 </p>
               </div>
               <Link
                 href="/tasks"
-                className="p-1.5 rounded-lg text-[#6B7280] dark:text-[#A1A1A1] hover:bg-[#F3F4F6] dark:hover:bg-[#252525] transition-colors"
+                className="p-1.5 rounded-lg text-[#666666] dark:text-[#A3A3A3] hover:bg-[#F5F5F5] dark:hover:bg-[#252525] transition-colors"
                 title="View all tasks"
               >
                 <ArrowUpRight className="w-4 h-4" />
@@ -716,7 +718,7 @@ export default function ConstructionDashboard({
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="12"
-                    className="text-[#F3F4F6] dark:text-[#141414]"
+                    className="text-[#F5F5F5] dark:text-[#171717]"
                   />
                   {/* Completed Segment */}
                   <circle
@@ -740,7 +742,7 @@ export default function ConstructionDashboard({
                     strokeWidth="12"
                     strokeDasharray={`${lenInProgress} ${C}`}
                     strokeDashoffset={-offsetInProgress}
-                    className="text-[#6B7280] dark:text-[#A1A1A1] transition-all duration-500"
+                    className="text-[#666666] dark:text-[#A3A3A3] transition-all duration-500"
                   />
                   {/* Pending Segment */}
                   <circle
@@ -761,21 +763,21 @@ export default function ConstructionDashboard({
                       cy="70"
                       r="52"
                       fill="none"
-                      stroke="#EF4444"
+                      stroke="currentColor"
                       strokeWidth="12"
                       strokeDasharray={`${lenOverdue} ${C}`}
                       strokeDashoffset={-offsetOverdue}
-                      className="transition-all duration-500"
+                      className="text-[#666666] dark:text-[#A3A3A3] transition-all duration-500"
                     />
                   )}
                 </svg>
 
                 {/* Center Percentage Display */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
-                  <span className="text-3xl font-extrabold text-[#111827] dark:text-[#FFFFFF] tracking-tight">
+                  <span className="text-3xl font-extrabold text-[#000000] dark:text-[#FFFFFF] tracking-tight">
                     {taskTotals}
                   </span>
-                  <span className="text-[11px] font-bold text-[#6B7280] dark:text-[#A1A1A1] tracking-wide">
+                  <span className="text-[11px] font-bold text-[#666666] dark:text-[#A3A3A3] tracking-wide">
                     {pctCompleted}% Completed
                   </span>
                 </div>
@@ -784,59 +786,59 @@ export default function ConstructionDashboard({
 
             {/* Task Breakdown Legend */}
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-2.5 rounded-xl bg-[#F9FAFB] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A]">
-                <div className="flex items-center gap-1.5 text-[11px] text-[#6B7280] dark:text-[#A1A1A1]">
+              <div className="p-2.5 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]">
+                <div className="flex items-center gap-1.5 text-[11px] text-[#666666] dark:text-[#A3A3A3]">
                   <span className="w-2 h-2 rounded-full bg-[#111111] dark:bg-[#FFFFFF]" />
                   <span>Completed</span>
                 </div>
                 <div className="mt-1 flex items-baseline justify-between font-mono">
-                  <span className="font-bold text-[#111827] dark:text-[#FFFFFF]">{taskCompleted}</span>
-                  <span className="text-[10px] text-[#9CA3AF] dark:text-[#777777]">{pctCompleted}%</span>
+                  <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">{taskCompleted}</span>
+                  <span className="text-[10px] text-[#A3A3A3] dark:text-[#777777]">{pctCompleted}%</span>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-[#F9FAFB] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A]">
-                <div className="flex items-center gap-1.5 text-[11px] text-[#6B7280] dark:text-[#A1A1A1]">
-                  <span className="w-2 h-2 rounded-full bg-[#6B7280] dark:bg-[#A1A1A1]" />
+              <div className="p-2.5 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]">
+                <div className="flex items-center gap-1.5 text-[11px] text-[#666666] dark:text-[#A3A3A3]">
+                  <span className="w-2 h-2 rounded-full bg-[#666666] dark:bg-[#A3A3A3]" />
                   <span>In Progress</span>
                 </div>
                 <div className="mt-1 flex items-baseline justify-between font-mono">
-                  <span className="font-bold text-[#111827] dark:text-[#FFFFFF]">{taskInProgress}</span>
-                  <span className="text-[10px] text-[#9CA3AF] dark:text-[#777777]">{pctInProgress}%</span>
+                  <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">{taskInProgress}</span>
+                  <span className="text-[10px] text-[#A3A3A3] dark:text-[#777777]">{pctInProgress}%</span>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-[#F9FAFB] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A]">
-                <div className="flex items-center gap-1.5 text-[11px] text-[#6B7280] dark:text-[#A1A1A1]">
+              <div className="p-2.5 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]">
+                <div className="flex items-center gap-1.5 text-[11px] text-[#666666] dark:text-[#A3A3A3]">
                   <span className="w-2 h-2 rounded-full bg-[#D1D5DB] dark:bg-[#383838]" />
                   <span>Pending</span>
                 </div>
                 <div className="mt-1 flex items-baseline justify-between font-mono">
-                  <span className="font-bold text-[#111827] dark:text-[#FFFFFF]">{taskPending}</span>
-                  <span className="text-[10px] text-[#9CA3AF] dark:text-[#777777]">{pctPending}%</span>
+                  <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">{taskPending}</span>
+                  <span className="text-[10px] text-[#A3A3A3] dark:text-[#777777]">{pctPending}%</span>
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-[#F9FAFB] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A]">
-                <div className="flex items-center gap-1.5 text-[11px] text-[#EF4444]">
-                  <span className="w-2 h-2 rounded-full bg-[#EF4444]" />
+              <div className="p-2.5 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]">
+                <div className="flex items-center gap-1.5 text-[11px] text-[#666666] dark:text-[#A3A3A3]">
+                  <span className="w-2 h-2 rounded-full bg-[#666666] dark:bg-[#A3A3A3]" />
                   <span>Overdue</span>
                 </div>
                 <div className="mt-1 flex items-baseline justify-between font-mono">
-                  <span className="font-bold text-[#EF4444]">{taskOverdue}</span>
-                  <span className="text-[10px] text-[#EF4444]">{pctOverdue}%</span>
+                  <span className="font-bold text-[#666666] dark:text-[#A3A3A3]">{taskOverdue}</span>
+                  <span className="text-[10px] text-[#666666] dark:text-[#A3A3A3]">{pctOverdue}%</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-[#E5E7EB] dark:border-[#2A2A2A] flex items-center justify-between text-xs">
-            <span className="text-[#6B7280] dark:text-[#A1A1A1]">
-              Total assigned: <strong className="text-[#111827] dark:text-[#FFFFFF]">{taskTotals} tasks</strong>
+          <div className="mt-4 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] flex items-center justify-between text-xs">
+            <span className="text-[#666666] dark:text-[#A3A3A3]">
+              Total assigned: <strong className="text-[#000000] dark:text-[#FFFFFF]">{taskTotals} tasks</strong>
             </span>
             <Link
               href="/tasks"
-              className="text-[#111827] dark:text-[#FFFFFF] font-semibold hover:underline"
+              className="text-[#000000] dark:text-[#FFFFFF] font-semibold hover:underline"
             >
               Task Board →
             </Link>
@@ -847,20 +849,20 @@ export default function ConstructionDashboard({
       {/* ─── 4. Secondary Grid: Active Projects + Project Locations (Section 4.F) ─── */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left 5 Cols: Active Construction Projects List */}
-        <div className="lg:col-span-5 border border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#1F1F1F] text-[#111827] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
+        <div className="lg:col-span-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
           <div>
-            <div className="flex items-center justify-between pb-4 border-b border-[#E5E7EB] dark:border-[#2A2A2A]">
+            <div className="flex items-center justify-between pb-4 border-b border-[#D4D4D4] dark:border-[#303030]">
               <div>
-                <h2 className="text-base font-bold text-[#111827] dark:text-[#FFFFFF]">
+                <h2 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">
                   Active Construction Sites
                 </h2>
-                <p className="text-xs text-[#6B7280] dark:text-[#A1A1A1] mt-0.5">
+                <p className="text-xs text-[#666666] dark:text-[#A3A3A3] mt-0.5">
                   Ongoing engineering sites &amp; execution progress
                 </p>
               </div>
               <Link
                 href="/projects"
-                className="p-1.5 rounded-lg text-[#6B7280] dark:text-[#A1A1A1] hover:bg-[#F3F4F6] dark:hover:bg-[#252525] transition-colors"
+                className="p-1.5 rounded-lg text-[#666666] dark:text-[#A3A3A3] hover:bg-[#F5F5F5] dark:hover:bg-[#252525] transition-colors"
                 title="View all projects"
               >
                 <ArrowUpRight className="w-4 h-4" />
@@ -868,7 +870,7 @@ export default function ConstructionDashboard({
             </div>
 
             {/* List of active projects */}
-            <div className="mt-4 divide-y divide-[#E5E7EB] dark:divide-[#2A2A2A]">
+            <div className="mt-4 divide-y divide-[#D4D4D4] dark:divide-[#303030]">
               {activeProjectsList.length > 0 ? (
                 activeProjectsList.map((project) => (
                   <div key={project.id} className="py-3.5 first:pt-0 last:pb-0 space-y-2">
@@ -876,15 +878,15 @@ export default function ConstructionDashboard({
                       <div className="min-w-0">
                         <Link
                           href={`/projects/${project.id}/overview`}
-                          className="text-xs font-bold text-[#111827] dark:text-[#FFFFFF] hover:underline transition-all truncate block"
+                          className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF] hover:underline transition-all truncate block"
                         >
                           {project.name}
                         </Link>
-                        <div className="flex items-center gap-2 mt-0.5 text-[11px] text-[#6B7280] dark:text-[#A1A1A1]">
+                        <div className="flex items-center gap-2 mt-0.5 text-[11px] text-[#666666] dark:text-[#A3A3A3]">
                           <span className="font-mono">{project.projectCode}</span>
                           <span>•</span>
                           <span className="flex items-center gap-0.5 truncate">
-                            <MapPin className="w-3 h-3 text-[#9CA3AF] dark:text-[#777777] shrink-0" />
+                            <MapPin className="w-3 h-3 text-[#A3A3A3] dark:text-[#777777] shrink-0" />
                             {project.location || "Addis Ababa"}
                           </span>
                         </div>
@@ -894,9 +896,9 @@ export default function ConstructionDashboard({
 
                     {/* Progress Bar */}
                     <div className="space-y-1">
-                      <div className="flex justify-between text-[10px] text-[#6B7280] dark:text-[#A1A1A1] font-mono">
+                      <div className="flex justify-between text-[10px] text-[#666666] dark:text-[#A3A3A3] font-mono">
                         <span>Milestone Progress</span>
-                        <span className="font-bold text-[#111827] dark:text-[#FFFFFF]">
+                        <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">
                           {project.progress}%
                         </span>
                       </div>
@@ -905,19 +907,19 @@ export default function ConstructionDashboard({
                   </div>
                 ))
               ) : (
-                <div className="py-8 text-center text-xs text-[#6B7280] dark:text-[#A1A1A1]">
+                <div className="py-8 text-center text-xs text-[#666666] dark:text-[#A3A3A3]">
                   No active projects currently available.
                 </div>
               )}
             </div>
           </div>
 
-          <div className="mt-5 pt-3 border-t border-[#E5E7EB] dark:border-[#2A2A2A]">
+          <div className="mt-5 pt-3 border-t border-[#D4D4D4] dark:border-[#303030]">
             <Link
               href="/projects/new"
-              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-[#F3F4F6] dark:bg-[#141414] hover:bg-[#E5E7EB] dark:hover:bg-[#252525] text-[#111827] dark:text-[#FFFFFF] font-semibold text-xs rounded-xl border border-[#E5E7EB] dark:border-[#2A2A2A] transition-all"
+              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-[#F5F5F5] dark:bg-[#171717] hover:bg-[#D4D4D4] dark:hover:bg-[#252525] text-[#000000] dark:text-[#FFFFFF] font-semibold text-xs rounded-xl border border-[#D4D4D4] dark:border-[#303030] transition-all"
             >
-              <Plus className="w-4 h-4 text-[#111827] dark:text-[#FFFFFF]" />
+              <Plus className="w-4 h-4 text-[#000000] dark:text-[#FFFFFF]" />
               <span>Add New Construction Site</span>
             </Link>
           </div>
@@ -925,18 +927,18 @@ export default function ConstructionDashboard({
 
         {/* Right 7 Cols: Project Locations Map Component (Section 4.F) */}
         <div className="lg:col-span-7 flex flex-col">
-          <ProjectLocationsMap locations={mappedLocations} />
+          <ProjectLocationsMap locations={mappedLocations} projects={projectsList} />
         </div>
       </section>
 
       {/* ─── 5. Recent Activity / Table with Filtering & CSV Export ─── */}
-      <section className="border border-[#E5E7EB] dark:border-[#2A2A2A] bg-[#FFFFFF] dark:bg-[#1F1F1F] text-[#111827] dark:text-[#FFFFFF] rounded-2xl overflow-hidden shadow-xs">
-        <div className="p-5 sm:p-6 border-b border-[#E5E7EB] dark:border-[#2A2A2A] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <section className="border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl overflow-hidden shadow-xs">
+        <div className="p-5 sm:p-6 border-b border-[#D4D4D4] dark:border-[#303030] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-base font-bold text-[#111827] dark:text-[#FFFFFF]">
+            <h2 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">
               Recent Project Activity
             </h2>
-            <p className="text-xs text-[#6B7280] dark:text-[#A1A1A1] mt-0.5">
+            <p className="text-xs text-[#666666] dark:text-[#A3A3A3] mt-0.5">
               Live task execution, supervisor logs, and expenditure entries
             </p>
           </div>
@@ -946,10 +948,10 @@ export default function ConstructionDashboard({
             {/* Customize: toggle compact density */}
             <button
               onClick={() => setIsCompact(!isCompact)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all border border-[#E5E7EB] dark:border-[#2A2A2A] ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all border border-[#D4D4D4] dark:border-[#303030] ${
                 isCompact
                   ? "bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] font-bold shadow-2xs"
-                  : "text-[#111827] dark:text-[#FFFFFF] bg-[#F9FAFB] dark:bg-[#141414] hover:bg-[#F3F4F6] dark:hover:bg-[#252525]"
+                  : "text-[#000000] dark:text-[#FFFFFF] bg-[#FAFAFA] dark:bg-[#171717] hover:bg-[#F5F5F5] dark:hover:bg-[#252525]"
               }`}
               title="Toggle table row density"
             >
@@ -961,10 +963,10 @@ export default function ConstructionDashboard({
             <div className="relative">
               <button
                 onClick={() => setShowFilterMenu(!showFilterMenu)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all border border-[#E5E7EB] dark:border-[#2A2A2A] ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all border border-[#D4D4D4] dark:border-[#303030] ${
                   activityFilter !== "ALL"
                     ? "bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] font-bold"
-                    : "text-[#111827] dark:text-[#FFFFFF] bg-[#F9FAFB] dark:bg-[#141414] hover:bg-[#F3F4F6] dark:hover:bg-[#252525]"
+                    : "text-[#000000] dark:text-[#FFFFFF] bg-[#FAFAFA] dark:bg-[#171717] hover:bg-[#F5F5F5] dark:hover:bg-[#252525]"
                 }`}
               >
                 <Filter className="w-3.5 h-3.5" />
@@ -972,7 +974,7 @@ export default function ConstructionDashboard({
               </button>
 
               {showFilterMenu && (
-                <div className="absolute right-0 mt-2 w-44 bg-[#FFFFFF] dark:bg-[#1F1F1F] border border-[#E5E7EB] dark:border-[#2A2A2A] rounded-2xl shadow-xl py-1 z-30 animate-in fade-in zoom-in-95 duration-100">
+                <div className="absolute right-0 mt-2 w-44 bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl shadow-xl py-1 z-30 animate-in fade-in zoom-in-95 duration-100">
                   {["ALL", "In Progress", "On Track", "At Risk", "Delayed"].map((statusOpt) => (
                     <button
                       key={statusOpt}
@@ -982,8 +984,8 @@ export default function ConstructionDashboard({
                       }}
                       className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors ${
                         activityFilter === statusOpt
-                          ? "bg-[#F3F4F6] dark:bg-[#252525] text-[#111827] dark:text-[#FFFFFF] font-bold"
-                          : "text-[#6B7280] dark:text-[#A1A1A1] hover:bg-[#F3F4F6] dark:hover:bg-[#252525]"
+                          ? "bg-[#F5F5F5] dark:bg-[#252525] text-[#000000] dark:text-[#FFFFFF] font-bold"
+                          : "text-[#666666] dark:text-[#A3A3A3] hover:bg-[#F5F5F5] dark:hover:bg-[#252525]"
                       }`}
                     >
                       {statusOpt === "ALL" ? "All Activities" : statusOpt}
@@ -1008,7 +1010,7 @@ export default function ConstructionDashboard({
         {/* Desktop Table View */}
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#F9FAFB] dark:bg-[#141414] text-[#6B7280] dark:text-[#A1A1A1] font-semibold uppercase tracking-wider text-[10px] border-b border-[#E5E7EB] dark:border-[#2A2A2A]">
+            <thead className="bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] font-semibold uppercase tracking-wider text-[10px] border-b border-[#D4D4D4] dark:border-[#303030]">
               <tr>
                 <th className={`px-5 ${isCompact ? "py-2" : "py-3"}`}>Project</th>
                 <th className={`px-4 ${isCompact ? "py-2" : "py-3"}`}>Task</th>
@@ -1019,20 +1021,20 @@ export default function ConstructionDashboard({
                 <th className={`px-5 text-right ${isCompact ? "py-2" : "py-3"}`}>Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E5E7EB] dark:divide-[#2A2A2A]">
+            <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030]">
               {filteredActivities.length > 0 ? (
                 filteredActivities.map((act) => (
-                  <tr key={act.id} className="hover:bg-[#F9FAFB] dark:hover:bg-[#252525] transition-colors">
-                    <td className={`px-5 font-semibold text-[#111827] dark:text-[#FFFFFF] ${isCompact ? "py-2" : "py-3.5"}`}>
+                  <tr key={act.id} className="hover:bg-[#FAFAFA] dark:hover:bg-[#252525] transition-colors">
+                    <td className={`px-5 font-semibold text-[#000000] dark:text-[#FFFFFF] ${isCompact ? "py-2" : "py-3.5"}`}>
                       <Link href={`/projects/${act.id}/overview`} className="hover:underline transition-all">
                         {act.projectName}
                       </Link>
-                      <span className="block text-[10px] text-[#9CA3AF] dark:text-[#777777] font-mono mt-0.5">{act.projectCode}</span>
+                      <span className="block text-[10px] text-[#A3A3A3] dark:text-[#777777] font-mono mt-0.5">{act.projectCode}</span>
                     </td>
-                    <td className={`px-4 text-[#111827] dark:text-[#FFFFFF] ${isCompact ? "py-2" : "py-3.5"}`}>{act.task}</td>
-                    <td className={`px-4 text-[#6B7280] dark:text-[#A1A1A1] ${isCompact ? "py-2" : "py-3.5"}`}>{act.assignedTo}</td>
-                    <td className={`px-4 text-[#6B7280] dark:text-[#A1A1A1] whitespace-nowrap ${isCompact ? "py-2" : "py-3.5"}`}>{act.date}</td>
-                    <td className={`px-4 font-semibold text-[#111827] dark:text-[#FFFFFF] ${isCompact ? "py-2" : "py-3.5"}`}>
+                    <td className={`px-4 text-[#000000] dark:text-[#FFFFFF] ${isCompact ? "py-2" : "py-3.5"}`}>{act.task}</td>
+                    <td className={`px-4 text-[#666666] dark:text-[#A3A3A3] ${isCompact ? "py-2" : "py-3.5"}`}>{act.assignedTo}</td>
+                    <td className={`px-4 text-[#666666] dark:text-[#A3A3A3] whitespace-nowrap ${isCompact ? "py-2" : "py-3.5"}`}>{act.date}</td>
+                    <td className={`px-4 font-semibold text-[#000000] dark:text-[#FFFFFF] ${isCompact ? "py-2" : "py-3.5"}`}>
                       {formatCurrency(act.budget, true)}
                     </td>
                     <td className={`px-4 ${isCompact ? "py-2" : "py-3.5"}`}>
@@ -1041,7 +1043,7 @@ export default function ConstructionDashboard({
                     <td className={`px-5 text-right ${isCompact ? "py-2" : "py-3.5"}`}>
                       <Link
                         href={`/projects/${act.id}/overview`}
-                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#111827] dark:text-[#FFFFFF] hover:underline transition-colors"
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] hover:underline transition-colors"
                       >
                         Details <ChevronRight className="w-3.5 h-3.5" />
                       </Link>
@@ -1050,7 +1052,7 @@ export default function ConstructionDashboard({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-[#6B7280] dark:text-[#A1A1A1]">
+                  <td colSpan={7} className="py-12 text-center text-[#666666] dark:text-[#A3A3A3]">
                     No activity records match your selected filter ({activityFilter}).
                   </td>
                 </tr>
@@ -1060,7 +1062,7 @@ export default function ConstructionDashboard({
         </div>
 
         {/* Mobile Cards View */}
-        <div className="md:hidden divide-y divide-[#E5E7EB] dark:divide-[#2A2A2A]">
+        <div className="md:hidden divide-y divide-[#D4D4D4] dark:divide-[#303030]">
           {filteredActivities.length > 0 ? (
             filteredActivities.map((act) => (
               <div key={act.id} className="p-4 space-y-2">
@@ -1068,32 +1070,32 @@ export default function ConstructionDashboard({
                   <div className="min-w-0">
                     <Link
                       href={`/projects/${act.id}/overview`}
-                      className="text-xs font-bold text-[#111827] dark:text-[#FFFFFF] hover:underline truncate block"
+                      className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF] hover:underline truncate block"
                     >
                       {act.projectName}
                     </Link>
-                    <span className="text-[10px] text-[#9CA3AF] dark:text-[#777777] font-mono">{act.projectCode}</span>
+                    <span className="text-[10px] text-[#A3A3A3] dark:text-[#777777] font-mono">{act.projectCode}</span>
                   </div>
                   <StatusBadge value={act.status} />
                 </div>
 
-                <div className="text-xs text-[#111827] dark:text-[#FFFFFF]">
-                  <span className="font-medium text-[#6B7280] dark:text-[#A1A1A1]">Task: </span>
+                <div className="text-xs text-[#000000] dark:text-[#FFFFFF]">
+                  <span className="font-medium text-[#666666] dark:text-[#A3A3A3]">Task: </span>
                   {act.task}
                 </div>
 
-                <div className="flex items-center justify-between text-[11px] text-[#6B7280] dark:text-[#A1A1A1] pt-1">
+                <div className="flex items-center justify-between text-[11px] text-[#666666] dark:text-[#A3A3A3] pt-1">
                   <span>Assigned: {act.assignedTo}</span>
                   <span>{act.date}</span>
                 </div>
 
-                <div className="flex items-center justify-between text-xs pt-1 border-t border-[#E5E7EB] dark:border-[#2A2A2A]">
-                  <span className="font-bold text-[#111827] dark:text-[#FFFFFF]">
+                <div className="flex items-center justify-between text-xs pt-1 border-t border-[#D4D4D4] dark:border-[#303030]">
+                  <span className="font-bold text-[#000000] dark:text-[#FFFFFF]">
                     {formatCurrency(act.budget, true)}
                   </span>
                   <Link
                     href={`/projects/${act.id}/overview`}
-                    className="text-xs font-semibold text-[#111827] dark:text-[#FFFFFF] hover:underline flex items-center gap-1"
+                    className="text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] hover:underline flex items-center gap-1"
                   >
                     View <ChevronRight className="w-3.5 h-3.5" />
                   </Link>
@@ -1101,7 +1103,7 @@ export default function ConstructionDashboard({
               </div>
             ))
           ) : (
-            <div className="p-8 text-center text-xs text-[#6B7280] dark:text-[#A1A1A1]">
+            <div className="p-8 text-center text-xs text-[#666666] dark:text-[#A3A3A3]">
               No recent activity records available.
             </div>
           )}

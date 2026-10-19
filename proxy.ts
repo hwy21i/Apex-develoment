@@ -55,6 +55,15 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // 0. Static assets, images, and public files with extensions
+  if (
+    pathname.startsWith("/images/") ||
+    pathname.startsWith("/data/") ||
+    pathname.match(/\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|json|mp4|webm)$/i)
+  ) {
+    return NextResponse.next();
+  }
+
   // 1. API routes — let individual handlers do their own auth.
   if (pathname.startsWith("/api")) {
     return withSecurityHeaders(NextResponse.next());
@@ -78,5 +87,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|images/|data/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|json)$).*)",
+  ],
 };

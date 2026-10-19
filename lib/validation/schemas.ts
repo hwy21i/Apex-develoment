@@ -94,6 +94,7 @@ export const taskSchema = z.object({
   title: z.string().min(2, "Task title is required").max(200),
   description: z.string().max(3000).optional(),
   projectId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Project ID"),
+  phaseId: z.string().regex(/^[a-f\d]{24}$/i).optional().nullable(),
   assignedTo: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Assigned User ID"),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "CRITICAL"]).default("MEDIUM"),
   status: z.enum(["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "DELAYED", "BLOCKED"]).default("NOT_STARTED"),

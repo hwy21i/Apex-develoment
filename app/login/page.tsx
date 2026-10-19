@@ -15,12 +15,14 @@ function LoginScreen() {
     router.replace(next && next.startsWith("/") ? next : "/dashboard");
   };
 
-  return <AuthPage onEnter={handleEnter} />;
+  const initialPreset = searchParams.get("preset") || searchParams.get("role") || "";
+
+  return <AuthPage onEnter={handleEnter} initialPreset={initialPreset} />;
 }
 
 function LoginFallback() {
   return (
-    <div className="min-h-screen bg-[#F9FAFB] dark:bg-[#0B0B0B] flex items-center justify-center">
+    <div className="min-h-screen bg-[#FAFAFA] dark:bg-[#000000] flex items-center justify-center">
       <div className="w-8 h-8 rounded-full border-2 border-[#111111] dark:border-[#FFFFFF] border-t-transparent animate-spin" />
     </div>
   );

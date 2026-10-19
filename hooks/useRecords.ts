@@ -34,7 +34,7 @@ export interface CreatePayload {
  * Loads the records for a kind plus the projects the caller can access (used to
  * resolve project names and populate create-form project pickers).
  */
-export function useRecords(kind: string) {
+export function useRecords(kind: string, projectId?: string) {
   const [records, setRecords] = useState<OperationalRecord[]>([]);
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,8 +42,11 @@ export function useRecords(kind: string) {
 
   const load = useCallback(async () => {
     try {
+      const recUrl = projectId
+        ? `/api/records/${kind}?projectId=${encodeURIComponent(projectId)}`
+        : `/api/records/${kind}`;
       const [recRes, projRes] = await Promise.all([
-        fetch(`/api/records/${kind}`, { cache: "no-store" }),
+        fetch(recUrl, { cache: "no-store" }),
         fetch(`/api/projects?limit=100`, { cache: "no-store" }),
       ]);
       const recJson = await recRes.json();
@@ -71,7 +74,7 @@ export function useRecords(kind: string) {
     } finally {
       setLoading(false);
     }
-  }, [kind]);
+  }, [kind, projectId]);
 
   useEffect(() => {
     let ignore = false;
@@ -124,5 +127,20 @@ export function useRecords(kind: string) {
     [kind, load]
   );
 
-  return { records, projects, projectName, loading, error, reload: load, create, update };
+  const remove = useCallback(
+    async (recordId: string) => {
+      const res = await fetch(`/api/records/${kind}?recordId=${encodeURIComponent(recordId)}`, {
+        method: "DELETE",
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.error?.message || "Failed to delete record");
+      }
+      await load();
+      return json.data;
+    },
+    [kind, load]
+  );
+
+  return { records, projects, projectName, loading, error, reload: load, create, update, remove };
 }

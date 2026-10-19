@@ -19,5 +19,5 @@ export interface ProjectSummary {
   status: ProjectStatus;
   currentPhase?: string;
   healthStatus?: "ON_TRACK" | "AT_RISK" | "DELAYED" | "CRITICAL";
-  projectManager?: { fullName?: string } | string;
+  projectManager?: { _id?: string; fullName?: string; username?: string } | string;
 }

@@ -21,9 +21,9 @@ interface ProjectDrawing {
 }
 
 const STATUS_BADGES: Record<string, string> = {
-  "Issued for Construction (IFC)": "bg-green-500/20 text-green-400 border border-green-500/30",
-  "Under Review": "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
-  Superseded: "bg-gray-500/20 text-gray-400 border border-gray-500/30",
+  "Issued for Construction (IFC)": "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  "Under Review": "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  Superseded: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
 };
 
 const DISCIPLINES = ["Architectural", "Structural", "MEP", "Geotechnical", "Landscape"];
@@ -115,21 +115,21 @@ export default function ProjectDocumentsPage() {
   };
 
   const inputCls =
-    "w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500";
+    "w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#666666] dark:placeholder-[#A3A3A3] focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]";
 
   return (
     <AppShell>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">Project Engineering Drawings (IFC)</h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <h1 className="text-2xl font-bold text-[#000000] dark:text-[#FFFFFF]">Project Engineering Drawings (IFC)</h1>
+            <p className="text-[#666666] dark:text-[#A3A3A3] text-sm mt-1">
               Architectural blueprints, structural CAD revisions, MEP schematics, and site specifications
             </p>
           </div>
           <button
             onClick={openForm}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
             <Plus size={16} />
             Register Drawing
@@ -139,19 +139,19 @@ export default function ProjectDocumentsPage() {
         {/* Filter bar */}
         <div className="flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-[220px]">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#666666] dark:text-[#A3A3A3]" />
             <input
               type="text"
               placeholder="Search drawings by code, title, or project..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-9 pr-4 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
+              className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl pl-9 pr-4 py-2 text-sm text-[#000000] dark:text-[#FFFFFF] placeholder-[#666666] dark:placeholder-[#A3A3A3] focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]"
             />
           </div>
           <select
             value={disciplineFilter}
             onChange={(e) => setDisciplineFilter(e.target.value)}
-            className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+            className="bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 text-sm text-[#000000] dark:text-[#FFFFFF] focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]"
           >
             <option value="All">All</option>
             {DISCIPLINES.map((disc) => <option key={disc} value={disc}>{disc}</option>)}
@@ -159,52 +159,52 @@ export default function ProjectDocumentsPage() {
         </div>
 
         {/* Drawings table */}
-        <div className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden">
+        <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl overflow-hidden">
           {loading ? (
-            <div className="flex items-center justify-center py-16 text-gray-400"><Loader2 size={24} className="animate-spin" /></div>
+            <div className="flex items-center justify-center py-16 text-[#666666] dark:text-[#A3A3A3]"><Loader2 size={24} className="animate-spin" /></div>
           ) : error ? (
             <div className="p-6 text-center">
-              <p className="text-sm text-red-300">{error}</p>
-              <button onClick={() => reload()} className="mt-3 text-xs font-medium text-blue-400 hover:text-blue-300">Retry</button>
+              <p className="text-sm text-[#000000] dark:text-[#FFFFFF] font-medium">{error}</p>
+              <button onClick={() => reload()} className="mt-3 text-xs font-medium text-[#000000] dark:text-[#FFFFFF] hover:text-[#000000] dark:text-[#FFFFFF]">Retry</button>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-12 text-center text-gray-400">
+            <div className="p-12 text-center text-[#666666] dark:text-[#A3A3A3]">
               <Layers size={32} className="mx-auto mb-2 opacity-40" />
               <p className="text-sm">{docs.length === 0 ? "No drawings registered yet." : "No drawings match your filters."}</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-900/50 border-b border-gray-700">
+                <thead className="bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border-b border-[#D4D4D4] dark:border-[#303030]">
                   <tr>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Code &amp; Revision</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Drawing Title</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Discipline</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Project</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Approved By</th>
-                    <th className="text-left text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Status</th>
-                    <th className="text-right text-xs font-medium text-gray-400 uppercase tracking-wider px-4 py-3">Actions</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Code &amp; Revision</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Drawing Title</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Discipline</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Project</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Approved By</th>
+                    <th className="text-left text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Status</th>
+                    <th className="text-right text-xs font-medium text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
+                <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030]">
                   {filtered.map((d) => (
-                    <tr key={d._id} className="hover:bg-gray-700/30 transition-colors">
+                    <tr key={d._id} className="hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F] transition-colors">
                       <td className="px-4 py-3">
-                        <span className="font-mono text-blue-400 font-semibold text-xs">{d.docCode}</span>
-                        <span className="ml-2 bg-blue-500/20 text-blue-300 text-[11px] px-1.5 py-0.5 rounded font-bold">{d.revision}</span>
+                        <span className="font-mono text-[#000000] dark:text-[#FFFFFF] font-semibold text-xs">{d.docCode}</span>
+                        <span className="ml-2 bg-black/5 dark:bg-white/10 text-[#000000] dark:text-[#FFFFFF] text-[11px] px-1.5 py-0.5 rounded font-bold">{d.revision}</span>
                       </td>
                       <td className="px-4 py-3">
-                        <p className="text-white font-medium">{d.title}</p>
-                        <p className="text-gray-500 text-xs">{d.fileSize}</p>
+                        <p className="text-[#000000] dark:text-[#FFFFFF] font-medium">{d.title}</p>
+                        <p className="text-[#666666] dark:text-[#A3A3A3] text-xs">{d.fileSize}</p>
                       </td>
-                      <td className="px-4 py-3 text-gray-300 text-xs">{d.discipline}</td>
-                      <td className="px-4 py-3 text-gray-300 text-xs">{projectName(d.projectId)}</td>
-                      <td className="px-4 py-3 text-gray-300 text-xs">{d.approvedBy}</td>
+                      <td className="px-4 py-3 text-[#333333] dark:text-[#D4D4D4] text-xs">{d.discipline}</td>
+                      <td className="px-4 py-3 text-[#333333] dark:text-[#D4D4D4] text-xs">{projectName(d.projectId)}</td>
+                      <td className="px-4 py-3 text-[#333333] dark:text-[#D4D4D4] text-xs">{d.approvedBy}</td>
                       <td className="px-4 py-3">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_BADGES[d.status] || STATUS_BADGES["Under Review"]}`}>{d.status}</span>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <button onClick={() => setViewing(d)} className="text-blue-400 hover:text-blue-300 p-1" title="View details"><Eye size={16} /></button>
+                        <button onClick={() => setViewing(d)} className="text-[#000000] dark:text-[#FFFFFF] hover:text-[#000000] dark:text-[#FFFFFF] p-1" title="View details"><Eye size={16} /></button>
                       </td>
                     </tr>
                   ))}
@@ -218,25 +218,25 @@ export default function ProjectDocumentsPage() {
       {/* Details modal */}
       {viewing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl">
-            <div className="flex items-start justify-between border-b border-gray-700 pb-4">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl">
+            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] pb-4">
               <div>
-                <h2 className="text-lg font-bold text-white">{viewing.title}</h2>
-                <p className="text-gray-400 text-xs font-mono">{viewing.docCode} · {viewing.revision}</p>
+                <h2 className="text-lg font-bold text-[#000000] dark:text-[#FFFFFF]">{viewing.title}</h2>
+                <p className="text-[#666666] dark:text-[#A3A3A3] text-xs font-mono">{viewing.docCode} · {viewing.revision}</p>
               </div>
-              <button onClick={() => setViewing(null)} className="text-gray-400 hover:text-white"><X size={18} /></button>
+              <button onClick={() => setViewing(null)} className="text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF]"><X size={18} /></button>
             </div>
             <dl className="grid grid-cols-2 gap-3 text-sm">
-              <div><dt className="text-gray-400 text-xs">Discipline</dt><dd className="text-white">{viewing.discipline}</dd></div>
-              <div><dt className="text-gray-400 text-xs">Project</dt><dd className="text-white">{projectName(viewing.projectId)}</dd></div>
-              <div><dt className="text-gray-400 text-xs">Approved by</dt><dd className="text-white">{viewing.approvedBy}</dd></div>
-              <div><dt className="text-gray-400 text-xs">Status</dt><dd className="text-white">{viewing.status}</dd></div>
-              <div><dt className="text-gray-400 text-xs">File size</dt><dd className="text-white">{viewing.fileSize}</dd></div>
-              <div><dt className="text-gray-400 text-xs">Uploaded</dt><dd className="text-white">{viewing.uploadDate ? new Date(viewing.uploadDate).toLocaleDateString("en-ET") : "—"}</dd></div>
+              <div><dt className="text-[#666666] dark:text-[#A3A3A3] text-xs">Discipline</dt><dd className="text-white">{viewing.discipline}</dd></div>
+              <div><dt className="text-[#666666] dark:text-[#A3A3A3] text-xs">Project</dt><dd className="text-white">{projectName(viewing.projectId)}</dd></div>
+              <div><dt className="text-[#666666] dark:text-[#A3A3A3] text-xs">Approved by</dt><dd className="text-white">{viewing.approvedBy}</dd></div>
+              <div><dt className="text-[#666666] dark:text-[#A3A3A3] text-xs">Status</dt><dd className="text-white">{viewing.status}</dd></div>
+              <div><dt className="text-[#666666] dark:text-[#A3A3A3] text-xs">File size</dt><dd className="text-white">{viewing.fileSize}</dd></div>
+              <div><dt className="text-[#666666] dark:text-[#A3A3A3] text-xs">Uploaded</dt><dd className="text-white">{viewing.uploadDate ? new Date(viewing.uploadDate).toLocaleDateString("en-ET") : "—"}</dd></div>
             </dl>
-            <p className="text-[11px] text-gray-500">File storage is not yet provisioned; this record stores drawing metadata only.</p>
+            <p className="text-[11px] text-[#666666] dark:text-[#A3A3A3]">File storage is not yet provisioned; this record stores drawing metadata only.</p>
             <div className="flex justify-end">
-              <button onClick={() => setViewing(null)} className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">Close</button>
+              <button onClick={() => setViewing(null)} className="bg-[#F5F5F5] dark:bg-[#1F1F1F] border border-[#D4D4D4] dark:border-[#303030] hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] text-[#000000] dark:text-[#FFFFFF] px-4 py-2 rounded-lg text-sm">Close</button>
             </div>
           </div>
         </div>
@@ -245,14 +245,14 @@ export default function ProjectDocumentsPage() {
       {/* Create modal */}
       {formOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-gray-700 pb-4">
-              <h2 className="text-lg font-bold text-white">Register Drawing</h2>
-              <button onClick={() => setFormOpen(false)} className="text-gray-400 hover:text-white"><X size={18} /></button>
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] pb-4">
+              <h2 className="text-lg font-bold text-[#000000] dark:text-[#FFFFFF]">Register Drawing</h2>
+              <button onClick={() => setFormOpen(false)} className="text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF]"><X size={18} /></button>
             </div>
             <div className="space-y-3">
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Project</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Project</label>
                 <select className={inputCls} value={form.projectId} onChange={(e) => setForm({ ...form, projectId: e.target.value })}>
                   {projects.length === 0 && <option value="">No accessible projects</option>}
                   {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
@@ -260,27 +260,27 @@ export default function ProjectDocumentsPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Drawing code</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Drawing code</label>
                   <input className={inputCls} value={form.docCode} onChange={(e) => setForm({ ...form, docCode: e.target.value })} placeholder="DWG-ARC-0104" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Revision</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Revision</label>
                   <input className={inputCls} value={form.revision} onChange={(e) => setForm({ ...form, revision: e.target.value })} placeholder="Rev A" />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-gray-400 block mb-1">Drawing title</label>
+                <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Drawing title</label>
                 <input className={inputCls} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Discipline</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Discipline</label>
                   <select className={inputCls} value={form.discipline} onChange={(e) => setForm({ ...form, discipline: e.target.value })}>
                     {DISCIPLINES.map((d) => <option key={d} value={d}>{d}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Status</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Status</label>
                   <select className={inputCls} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
                     {DRAWING_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
@@ -288,19 +288,19 @@ export default function ProjectDocumentsPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">Approved by</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">Approved by</label>
                   <input className={inputCls} value={form.approvedBy} onChange={(e) => setForm({ ...form, approvedBy: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1">File size</label>
+                  <label className="text-xs text-[#666666] dark:text-[#A3A3A3] block mb-1">File size</label>
                   <input className={inputCls} value={form.fileSize} onChange={(e) => setForm({ ...form, fileSize: e.target.value })} placeholder="e.g. 14.2 MB" />
                 </div>
               </div>
             </div>
-            {formError && <p className="text-xs text-red-300">{formError}</p>}
+            {formError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF]">{formError}</p>}
             <div className="flex justify-end gap-2 pt-2">
-              <button onClick={() => setFormOpen(false)} className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm">Cancel</button>
-              <button onClick={submit} disabled={busy} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
+              <button onClick={() => setFormOpen(false)} className="bg-[#F5F5F5] dark:bg-[#1F1F1F] border border-[#D4D4D4] dark:border-[#303030] hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] text-[#000000] dark:text-[#FFFFFF] px-4 py-2 rounded-lg text-sm">Cancel</button>
+              <button onClick={submit} disabled={busy} className="bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 flex items-center gap-2">
                 {busy && <Loader2 size={14} className="animate-spin" />}
                 Save Drawing
               </button>

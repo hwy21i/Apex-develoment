@@ -1,50 +1,92 @@
 import React from "react";
 
-type StatusTone = "green" | "blue" | "amber" | "red" | "slate";
+type StatusTone = "solid" | "subtle" | "dashed" | "inverted" | "muted";
 
 const toneFor = (value: string): StatusTone => {
   const normalized = value.toLowerCase();
-  if (normalized.includes("complete") || normalized.includes("track") || normalized.includes("paid") || normalized.includes("verified")) return "green";
-  if (normalized.includes("delay") || normalized.includes("critical") || normalized.includes("block") || normalized.includes("discrepancy")) return "red";
-  if (normalized.includes("hold") || normalized.includes("risk") || normalized.includes("low") || normalized.includes("pending")) return "amber";
-  if (normalized.includes("active") || normalized.includes("progress") || normalized.includes("planning") || normalized.includes("approved")) return "blue";
-  return "slate";
+  if (
+    normalized.includes("complete") ||
+    normalized.includes("track") ||
+    normalized.includes("paid") ||
+    normalized.includes("verified") ||
+    normalized.includes("active")
+  ) {
+    return "solid";
+  }
+  if (
+    normalized.includes("progress") ||
+    normalized.includes("approved") ||
+    normalized.includes("planning")
+  ) {
+    return "subtle";
+  }
+  if (
+    normalized.includes("hold") ||
+    normalized.includes("risk") ||
+    normalized.includes("low") ||
+    normalized.includes("pending")
+  ) {
+    return "dashed";
+  }
+  if (
+    normalized.includes("delay") ||
+    normalized.includes("critical") ||
+    normalized.includes("block") ||
+    normalized.includes("discrepancy") ||
+    normalized.includes("cancelled")
+  ) {
+    return "inverted";
+  }
+  return "muted";
 };
 
-// Monochrome status badges with subtle dot indicators
+// Strict Monochrome Status Badges distinguished by typography, borders, and geometry
 const styles: Record<StatusTone, { badge: string; dot: string }> = {
-  green: {
-    badge: "bg-[#F3F4F6] dark:bg-[#1F1F1F] text-[#111827] dark:text-[#FFFFFF] border border-[#E5E7EB] dark:border-[#2A2A2A]",
-    dot: "bg-[#10B981]",
+  solid: {
+    badge:
+      "bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] border border-[#111111] dark:border-[#FFFFFF] font-semibold",
+    dot: "bg-[#FFFFFF] dark:bg-[#000000]",
   },
-  blue: {
-    badge: "bg-[#F3F4F6] dark:bg-[#1F1F1F] text-[#111827] dark:text-[#FFFFFF] border border-[#E5E7EB] dark:border-[#2A2A2A]",
-    dot: "bg-[#6B7280] dark:bg-[#A1A1A1]",
+  subtle: {
+    badge:
+      "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+    dot: "bg-[#000000] dark:bg-[#FFFFFF]",
   },
-  amber: {
-    badge: "bg-[#F3F4F6] dark:bg-[#1F1F1F] text-[#111827] dark:text-[#FFFFFF] border border-[#E5E7EB] dark:border-[#2A2A2A]",
-    dot: "bg-[#F59E0B]",
+  dashed: {
+    badge:
+      "bg-transparent text-[#666666] dark:text-[#A3A3A3] border border-dashed border-[#D4D4D4] dark:border-[#303030]",
+    dot: "border border-current bg-transparent",
   },
-  red: {
-    badge: "bg-[#FEF2F2] dark:bg-[#2A1515] text-[#991B1B] dark:text-[#FCA5A5] border border-[#FECACA] dark:border-[#5C2323]",
-    dot: "bg-[#EF4444]",
+  inverted: {
+    badge:
+      "bg-[#F0F0F0] dark:bg-[#1F1F1F] text-[#000000] dark:text-[#FFFFFF] border border-[#000000] dark:border-[#FFFFFF] font-mono",
+    dot: "bg-[#000000] dark:bg-[#FFFFFF]",
   },
-  slate: {
-    badge: "bg-[#F3F4F6] dark:bg-[#1F1F1F] text-[#6B7280] dark:text-[#A1A1A1] border border-[#E5E7EB] dark:border-[#2A2A2A]",
-    dot: "bg-[#9CA3AF] dark:bg-[#777777]",
+  muted: {
+    badge:
+      "bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border border-[#D4D4D4] dark:border-[#303030]",
+    dot: "bg-[#A3A3A3] dark:bg-[#666666]",
   },
 };
 
-export function StatusBadge({ value, className = "" }: { value: string; className?: string }) {
+export function StatusBadge({
+  value,
+  className = "",
+}: {
+  value: string;
+  className?: string;
+}) {
   const tone = toneFor(value);
   const cfg = styles[tone];
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[10px] font-semibold tracking-wide capitalize shadow-2xs ${cfg.badge} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[10px] tracking-wide capitalize shadow-2xs transition-colors ${cfg.badge} ${className}`}
     >
-      <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot}`} />
       <span>{value.replaceAll("_", " ").replaceAll("-", " ")}</span>
     </span>
   );
 }
+
+export default StatusBadge;

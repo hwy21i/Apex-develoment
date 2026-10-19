@@ -57,21 +57,21 @@ const content: Record<PageKind, PageContent> = {
 };
 
 const styles = {
-  page: { minHeight: "100vh", background: "#1A2D42", color: "#D4D8DD", fontFamily: "Work Sans, sans-serif" } as React.CSSProperties,
-  header: { padding: "22px 48px", borderBottom: "1px solid #2E4156", display: "flex", justifyContent: "space-between", alignItems: "center" } as React.CSSProperties,
-  brand: { color: "#D4D8DD", fontFamily: "Roboto Slab, serif", fontWeight: 700, textDecoration: "none" } as React.CSSProperties,
+  page: { minHeight: "100vh", background: "#000000", color: "#FFFFFF", fontFamily: "Work Sans, sans-serif" } as React.CSSProperties,
+  header: { padding: "22px 48px", borderBottom: "1px solid #303030", display: "flex", justifyContent: "space-between", alignItems: "center" } as React.CSSProperties,
+  brand: { color: "#FFFFFF", fontFamily: "Roboto Slab, serif", fontWeight: 700, textDecoration: "none" } as React.CSSProperties,
   nav: { display: "flex", gap: 24 } as React.CSSProperties,
-  navLink: { color: "#AAB7B7", fontSize: 13, textDecoration: "none" } as React.CSSProperties,
+  navLink: { color: "#A3A3A3", fontSize: 13, textDecoration: "none" } as React.CSSProperties,
   container: { maxWidth: 1120, margin: "0 auto", padding: "112px 48px 80px" } as React.CSSProperties,
-  eyebrow: { color: "#C0C8CA", fontFamily: "JetBrains Mono, monospace", fontSize: 11, letterSpacing: ".16em", textTransform: "uppercase" } as React.CSSProperties,
-  title: { maxWidth: 760, margin: "20px 0", fontFamily: "Roboto Slab, serif", fontSize: 52, lineHeight: 1.08, letterSpacing: "-.03em", color: "#D4D8DD" } as React.CSSProperties,
-  summary: { maxWidth: 650, color: "#AAB7B7", fontSize: 18, lineHeight: 1.7 } as React.CSSProperties,
+  eyebrow: { color: "#A3A3A3", fontFamily: "JetBrains Mono, monospace", fontSize: 11, letterSpacing: ".16em", textTransform: "uppercase" } as React.CSSProperties,
+  title: { maxWidth: 760, margin: "20px 0", fontFamily: "Roboto Slab, serif", fontSize: 52, lineHeight: 1.08, letterSpacing: "-.03em", color: "#FFFFFF" } as React.CSSProperties,
+  summary: { maxWidth: 650, color: "#A3A3A3", fontSize: 18, lineHeight: 1.7 } as React.CSSProperties,
   grid: { display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 18, marginTop: 64 } as React.CSSProperties,
-  card: { background: "rgba(46, 65, 86, 0.35)", border: "1px solid #2E4156", borderRadius: 12, padding: 28 } as React.CSSProperties,
-  accent: { width: 28, height: 3, background: "#C0C8CA", marginBottom: 24 } as React.CSSProperties,
-  cardTitle: { fontFamily: "Roboto Slab, serif", fontSize: 21, color: "#D4D8DD" } as React.CSSProperties,
-  cardBody: { color: "#AAB7B7", lineHeight: 1.7 } as React.CSSProperties,
-  demoButton: { display: "inline-block", marginTop: 48, background: "#C0C8CA", borderRadius: 6, color: "#1A2D42", fontWeight: 700, padding: "13px 24px", textDecoration: "none" } as React.CSSProperties,
+  card: { background: "#111111", border: "1px solid #303030", borderRadius: 12, padding: 28 } as React.CSSProperties,
+  accent: { width: 28, height: 3, background: "#FFFFFF", marginBottom: 24 } as React.CSSProperties,
+  cardTitle: { fontFamily: "Roboto Slab, serif", fontSize: 21, color: "#FFFFFF" } as React.CSSProperties,
+  cardBody: { color: "#A3A3A3", lineHeight: 1.7 } as React.CSSProperties,
+  demoButton: { display: "inline-block", marginTop: 48, background: "#FFFFFF", borderRadius: 6, color: "#000000", fontWeight: 700, padding: "13px 24px", textDecoration: "none" } as React.CSSProperties,
 };
 
 const NAV: [string, string][] = [["Platform", "/platform"], ["Projects", "/projects"], ["About", "/about"]];
@@ -104,7 +104,7 @@ export default function MarketingPage({ kind }: { kind: PageKind }) {
     <main style={styles.page}>
       <header style={styles.header}>
         <Link href="/" style={styles.brand}>
-          Apex <span style={{ color: "#C0C8CA" }}>Developments</span>
+          Apex <span style={{ color: "#A3A3A3" }}>Developments</span>
         </Link>
         <Nav />
       </header>

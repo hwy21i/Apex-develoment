@@ -190,3 +190,56 @@ export async function PATCH(
     return handleError(error);
   }
 }
+
+export async function DELETE(
+  request: Request,
+  context: { params: Promise<{ kind: string }> }
+) {
+  const { kind } = await context.params;
+  const permission = mutatePermissionsMap[kind] || permissionsMap[kind] || "PROJECT_UPDATE";
+  const guard = await requirePermission(permission, request);
+  if (guard.error) return guard.error;
+
+  try {
+    const { searchParams } = new URL(request.url);
+    const recordId = searchParams.get("recordId");
+    if (!recordId) {
+      return fail("BAD_REQUEST", "recordId is required", 400);
+    }
+
+    await connectToDatabase();
+    const existing = await Operational.findOne({ _id: recordId, kind });
+    if (!existing) {
+      return fail("NOT_FOUND", "Record not found", 404);
+    }
+
+    if (!(await canAccessProject(guard.user, String(existing.projectId)))) {
+      return fail("FORBIDDEN", "You do not have access to this project", 403);
+    }
+
+    await Operational.findByIdAndDelete(recordId);
+
+    await logAudit({
+      userId: guard.user.id,
+      userName: guard.user.fullName,
+      userRole: guard.user.role,
+      action: `RECORD_${kind.toUpperCase()}_DELETED`,
+      entity: "Operational",
+      entityId: recordId,
+      projectId: String(existing.projectId),
+      previousValue: { title: existing.title, status: existing.status },
+    });
+
+    if (["expenses", "progress", "milestones"].includes(kind)) {
+      try {
+        const { refreshProjectMetrics } = await import("@/lib/calculations/project");
+        await refreshProjectMetrics(String(existing.projectId));
+      } catch {}
+    }
+
+    return ok({ success: true }, "Record deleted successfully");
+  } catch (error) {
+    return handleError(error);
+  }
+}
+

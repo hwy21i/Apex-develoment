@@ -31,9 +31,11 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                   if (resolved === 'dark') {
                     root.classList.add('dark');
                     root.setAttribute('data-theme', 'dark');
+                    root.style.colorScheme = 'dark';
                   } else {
                     root.classList.remove('dark');
                     root.setAttribute('data-theme', 'light');
+                    root.style.colorScheme = 'light';
                   }
                 } catch (e) {}
               })();

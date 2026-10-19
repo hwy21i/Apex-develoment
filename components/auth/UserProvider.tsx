@@ -6,7 +6,9 @@ import React, {
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from "react";
+import { usePathname } from "next/navigation";
 import { RoleType } from "@/types/erp";
 
 export interface CurrentUser {
@@ -26,6 +28,7 @@ export interface CurrentUser {
 interface UserContextType {
   user: CurrentUser | null;
   loading: boolean;
+  setUserImmediate: (user: CurrentUser) => void;
   refetch: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -33,21 +36,42 @@ interface UserContextType {
 const UserContext = createContext<UserContextType>({
   user: null,
   loading: true,
+  setUserImmediate: () => {},
   refetch: async () => {},
   logout: async () => {},
 });
 
+const PUBLIC_ROUTES = new Set(["/", "/entrypage", "/login", "/authpage"]);
+const USER_SESSION_KEY = "apex_user_session";
+
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<CurrentUser | null>(null);
-  const [loading, setLoading] = useState(() => {
+  const pathname = usePathname();
+  const [user, setUser] = useState<CurrentUser | null>(() => {
     if (typeof window !== "undefined") {
-      const p = window.location.pathname.toLowerCase();
-      if (p === "/" || p === "/entrypage" || p === "/login" || p === "/authpage") {
-        return false;
-      }
+      try {
+        const cached = sessionStorage.getItem(USER_SESSION_KEY);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.id) return parsed;
+        }
+      } catch {}
     }
-    return true;
+    return null;
   });
+  const [loading, setLoading] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cached = sessionStorage.getItem(USER_SESSION_KEY);
+        if (cached) return false;
+      } catch {}
+    }
+    return false;
+  });
+  const userRef = useRef<CurrentUser | null>(null);
+
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
 
   const fetchUser = useCallback(async () => {
     try {
@@ -56,7 +80,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         const json = await res.json();
         if (json.success && json.data?.user) {
           const u = json.data.user;
-          setUser({
+          const mapped: CurrentUser = {
             id: u.id ?? u._id ?? "",
             fullName: u.fullName ?? "",
             username: u.username ?? "",
@@ -68,14 +92,26 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             organizationId: u.organizationId,
             customPermissions: u.customPermissions,
             permissions: json.data.permissions || [],
-          });
+          };
+          setUser(mapped);
+          try {
+            sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(mapped));
+          } catch {}
           return;
         }
+      } else if (res.status === 401) {
+        // Explicitly unauthenticated
+        setUser(null);
+        try {
+          sessionStorage.removeItem(USER_SESSION_KEY);
+        } catch {}
       }
     } catch {
-      // Network error — keep existing user state if any
+      // Network or transient error: keep existing user state rather than clearing
+      if (!userRef.current) {
+        setUser(null);
+      }
     }
-    setUser(null);
   }, []);
 
   const logout = useCallback(async () => {
@@ -89,8 +125,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     if (typeof window !== "undefined") {
       try {
-        localStorage.clear();
+        sessionStorage.removeItem(USER_SESSION_KEY);
         sessionStorage.clear();
+        localStorage.removeItem(USER_SESSION_KEY);
         // Expire the session cookie immediately on the client side too
         document.cookie =
           "apex_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
@@ -101,29 +138,42 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Sync session on mount or route changes to protected areas
   useEffect(() => {
     let ignore = false;
-    if (typeof window !== "undefined") {
-      const p = window.location.pathname.toLowerCase();
-      // Skip session fetch on public/entry pages — no session needed there
-      if (p === "/" || p === "/entrypage" || p === "/login" || p === "/authpage") {
-        return;
-      }
+    const lowerPath = (pathname || "").toLowerCase();
+    const isPublic = PUBLIC_ROUTES.has(lowerPath);
+
+    if (isPublic) {
+      return;
     }
-    Promise.resolve().then(() => {
-      if (!ignore) {
-        fetchUser().finally(() => {
-          if (!ignore) setLoading(false);
-        });
-      }
+
+    // If user is already loaded in memory, don't trigger a blocking reload on navigation
+    if (userRef.current) {
+      return;
+    }
+
+    fetchUser().finally(() => {
+      if (!ignore) setLoading(false);
     });
+
     return () => {
       ignore = true;
     };
-  }, [fetchUser]);
+  }, [pathname, fetchUser]);
+
+  const setUserImmediate = useCallback((u: CurrentUser) => {
+    setUser(u);
+    setLoading(false);
+    try {
+      sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(u));
+    } catch {}
+  }, []);
 
   return (
-    <UserContext.Provider value={{ user, loading, refetch: fetchUser, logout }}>
+    <UserContext.Provider
+      value={{ user, loading, setUserImmediate, refetch: fetchUser, logout }}
+    >
       {children}
     </UserContext.Provider>
   );
@@ -133,4 +183,3 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 export function useCurrentUser(): UserContextType {
   return useContext(UserContext);
 }
-

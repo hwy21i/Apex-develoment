@@ -28,12 +28,12 @@ interface PurchaseOrder {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  Draft: "bg-gray-500/20 text-gray-400 border border-gray-500/30",
-  Sent: "bg-blue-500/20 text-blue-400 border border-blue-500/30",
-  Confirmed: "bg-purple-500/20 text-purple-400 border border-purple-500/30",
-  "Partially Received": "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
-  Received: "bg-green-500/20 text-green-400 border border-green-500/30",
-  Cancelled: "bg-red-500/20 text-red-400 border border-red-500/30",
+  Draft: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  Sent: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  Confirmed: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  "Partially Received": "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  Received: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  Cancelled: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
 };
 
 const STATUS_ICONS: Record<string, React.ReactNode> = {
@@ -228,20 +228,20 @@ export default function PurchaseOrdersPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[#C0C8CA] font-mono text-xs font-bold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#666666] dark:text-[#A3A3A3] font-mono text-xs font-semibold uppercase tracking-wider mb-1">
               <ShoppingCart className="w-4 h-4" /> Material Procurement &amp; Logistics
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-[#D4D8DD] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#000000] dark:text-[#FFFFFF] tracking-tight">
               Purchase Orders
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-[#AAB7B7] mt-1">
+            <p className="text-xs sm:text-sm text-[#666666] dark:text-[#A3A3A3] mt-1">
               Track and manage all procurement purchase orders, delivery schedules, and contracts
             </p>
           </div>
           <button
             type="button"
             onClick={openCreateModal}
-            className="inline-flex items-center gap-2 bg-[#C0C8CA] hover:bg-white text-[#1A2D42] px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all self-start sm:self-auto shrink-0"
+            className="inline-flex items-center gap-2 bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all self-start sm:self-auto shrink-0"
           >
             <Plus size={16} />
             Create PO
@@ -251,19 +251,19 @@ export default function PurchaseOrdersPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Total Orders", value: stats.total, icon: ShoppingCart, color: "text-[#C0C8CA]" },
-            { label: "In Progress", value: stats.pending, icon: Clock, color: "text-amber-500 dark:text-amber-400" },
-            { label: "Fully Received", value: stats.received, icon: Truck, color: "text-emerald-500 dark:text-emerald-400" },
-            { label: "Total PO Value", value: fmt(stats.totalValue), icon: FileText, color: "text-blue-500 dark:text-blue-400" },
+            { label: "Total Orders", value: stats.total, icon: ShoppingCart, color: "text-[#666666] dark:text-[#A3A3A3]" },
+            { label: "In Progress", value: stats.pending, icon: Clock, color: "text-[#000000] dark:text-[#FFFFFF] dark:text-[#000000] dark:text-[#FFFFFF]" },
+            { label: "Fully Received", value: stats.received, icon: Truck, color: "text-[#000000] dark:text-[#FFFFFF] dark:text-[#000000] dark:text-[#FFFFFF]" },
+            { label: "Total PO Value", value: fmt(stats.totalValue), icon: FileText, color: "text-[#000000] dark:text-[#FFFFFF] dark:text-[#000000] dark:text-[#FFFFFF]" },
           ].map((s) => (
-            <div key={s.label} className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-4 sm:p-5 shadow-xs">
+            <div key={s.label} className="bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-4 sm:p-5 shadow-xs">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-[#2E4156]/50 shrink-0">
+                <div className="p-2.5 rounded-xl bg-[#F5F5F5] dark:bg-[#1F1F1F] dark:bg-[#171717] shrink-0">
                   <s.icon size={20} className={s.color} />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider">{s.label}</p>
-                  <p className="text-lg sm:text-xl font-black text-slate-900 dark:text-[#D4D8DD] mt-0.5">{s.value}</p>
+                  <p className="text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider">{s.label}</p>
+                  <p className="text-lg sm:text-xl font-black text-[#000000] dark:text-[#FFFFFF] mt-0.5">{s.value}</p>
                 </div>
               </div>
             </div>
@@ -273,19 +273,19 @@ export default function PurchaseOrdersPage() {
         {/* Filters */}
         <div className="flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-[200px]">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-[#AAB7B7]" />
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#888888] dark:text-[#888888] dark:text-[#A3A3A3]" />
             <input
               type="text"
               placeholder="Search purchase orders..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 focus:outline-none focus:border-[#C0C8CA] shadow-xs"
+              className="w-full bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl pl-9 pr-4 py-2.5 text-xs text-[#000000] dark:text-[#FFFFFF] placeholder-[#888888] dark:placeholder-[#666666] dark:placeholder-[#A3A3A3] focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF] shadow-xs"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:outline-none focus:border-[#C0C8CA] shadow-xs"
+            className="bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2.5 text-xs text-[#000000] dark:text-[#FFFFFF] focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF] shadow-xs"
           >
             {["All", "Draft", "Sent", "Confirmed", "Partially Received", "Received", "Cancelled"].map((s) => (
               <option key={s} value={s}>{s}</option>
@@ -294,33 +294,33 @@ export default function PurchaseOrdersPage() {
         </div>
 
         {/* Table */}
-        <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl overflow-hidden shadow-xs">
+        <div className="bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
-              <thead className="bg-slate-50 dark:bg-[#2E4156]/40 border-b border-slate-200 dark:border-[#AAB7B7]/25">
+              <thead className="bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#171717] border-b border-[#D4D4D4] dark:border-[#303030]">
                 <tr>
                   {["PO Number", "Supplier", "Project", "Order Date", "Expected Delivery", "Total Amount", "Payment Terms", "Status", ""].map((h) => (
-                    <th key={h} className="text-left text-[11px] font-bold text-slate-500 dark:text-[#AAB7B7] uppercase tracking-wider px-4 py-3.5">{h}</th>
+                    <th key={h} className="text-left text-[11px] font-bold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3.5">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-[#2E4156]/50">
+              <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030]">
                 {filtered.map((o) => (
-                  <tr key={o._id} className="hover:bg-slate-50 dark:hover:bg-[#2E4156]/20 transition-colors">
+                  <tr key={o._id} className="hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F] dark:hover:bg-[#1F1F1F]/20 transition-colors">
                     <td className="px-4 py-3">
-                      <span className="font-mono text-[#C0C8CA] font-bold text-xs">{o.poNumber}</span>
+                      <span className="font-mono text-[#666666] dark:text-[#A3A3A3] font-bold text-xs">{o.poNumber}</span>
                     </td>
                     <td className="px-4 py-3">
                       <div>
-                        <p className="text-slate-900 dark:text-[#D4D8DD] font-semibold">{o.supplier.name}</p>
-                        <p className="text-slate-400 dark:text-[#AAB7B7] text-[11px]">{o.supplier.contact}</p>
+                        <p className="text-[#000000] dark:text-[#FFFFFF] font-semibold">{o.supplier.name}</p>
+                        <p className="text-[#888888] dark:text-[#888888] dark:text-[#A3A3A3] text-[11px]">{o.supplier.contact}</p>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-slate-700 dark:text-[#D4D8DD]">{o.project.name}</td>
-                    <td className="px-4 py-3 text-slate-500 dark:text-[#AAB7B7]">{new Date(o.orderDate).toLocaleDateString()}</td>
-                    <td className="px-4 py-3 text-slate-500 dark:text-[#AAB7B7]">{new Date(o.expectedDelivery).toLocaleDateString()}</td>
-                    <td className="px-4 py-3 text-slate-900 dark:text-[#D4D8DD] font-bold">{fmt(o.totalAmount)}</td>
-                    <td className="px-4 py-3 text-slate-500 dark:text-[#AAB7B7] text-xs">{o.paymentTerms}</td>
+                    <td className="px-4 py-3 text-[#000000] dark:text-[#FFFFFF]">{o.project.name}</td>
+                    <td className="px-4 py-3 text-[#666666] dark:text-[#A3A3A3]">{new Date(o.orderDate).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-[#666666] dark:text-[#A3A3A3]">{new Date(o.expectedDelivery).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-[#000000] dark:text-[#FFFFFF] font-bold">{fmt(o.totalAmount)}</td>
+                    <td className="px-4 py-3 text-[#666666] dark:text-[#A3A3A3] text-xs">{o.paymentTerms}</td>
                     <td className="px-4 py-3">
                       <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium w-fit ${STATUS_COLORS[o.status]}`}>
                         {STATUS_ICONS[o.status]}
@@ -330,7 +330,7 @@ export default function PurchaseOrdersPage() {
                     <td className="px-4 py-3">
                       <button
                         onClick={() => setSelected(selected?._id === o._id ? null : o)}
-                        className="text-[#C0C8CA] hover:text-white hover:bg-[#2E4156] p-1.5 rounded-lg transition-colors"
+                        className="text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-[#FAFAFA] dark:hover:bg-[#1F1F1F] p-1.5 rounded-lg transition-colors"
                         title="View Details"
                       >
                         <Eye size={16} />
@@ -345,26 +345,26 @@ export default function PurchaseOrdersPage() {
 
         {/* Detail Panel */}
         {selected && (
-          <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-6 space-y-4 shadow-sm">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#2E4156]">
-              <h2 className="text-base font-bold text-slate-900 dark:text-[#D4D8DD] font-mono">{selected.poNumber} — Details</h2>
-              <button onClick={() => setSelected(null)} className="text-slate-400 dark:text-[#AAB7B7] hover:text-white text-xs font-semibold px-2 py-1 rounded-lg hover:bg-[#2E4156]">Close ✕</button>
+          <div className="bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-6 space-y-4 shadow-sm">
+            <div className="flex items-center justify-between pb-3 border-b border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030]">
+              <h2 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF] font-mono">{selected.poNumber} — Details</h2>
+              <button onClick={() => setSelected(null)} className="text-[#888888] dark:text-[#888888] dark:text-[#A3A3A3] hover:text-[#000000] dark:text-[#FFFFFF] text-xs font-semibold px-2 py-1 rounded-lg hover:bg-[#FAFAFA] dark:hover:bg-[#1F1F1F]">Close ✕</button>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-              <div><p className="text-slate-500 dark:text-[#AAB7B7]">Supplier</p><p className="text-slate-900 dark:text-[#D4D8DD] font-semibold mt-0.5">{selected.supplier.name}</p></div>
-              <div><p className="text-slate-500 dark:text-[#AAB7B7]">Contact</p><p className="text-slate-700 dark:text-[#D4D8DD] mt-0.5">{selected.supplier.contact}</p></div>
-              <div><p className="text-slate-500 dark:text-[#AAB7B7]">Payment Terms</p><p className="text-slate-700 dark:text-[#D4D8DD] mt-0.5">{selected.paymentTerms}</p></div>
-              <div><p className="text-slate-500 dark:text-[#AAB7B7]">Total</p><p className="text-emerald-500 dark:text-emerald-400 font-bold mt-0.5">{fmt(selected.totalAmount)}</p></div>
+              <div><p className="text-[#666666] dark:text-[#A3A3A3]">Supplier</p><p className="text-[#000000] dark:text-[#FFFFFF] font-semibold mt-0.5">{selected.supplier.name}</p></div>
+              <div><p className="text-[#666666] dark:text-[#A3A3A3]">Contact</p><p className="text-[#000000] dark:text-[#FFFFFF] mt-0.5">{selected.supplier.contact}</p></div>
+              <div><p className="text-[#666666] dark:text-[#A3A3A3]">Payment Terms</p><p className="text-[#000000] dark:text-[#FFFFFF] mt-0.5">{selected.paymentTerms}</p></div>
+              <div><p className="text-[#666666] dark:text-[#A3A3A3]">Total</p><p className="text-[#000000] dark:text-[#FFFFFF] dark:text-[#000000] dark:text-[#FFFFFF] font-bold mt-0.5">{fmt(selected.totalAmount)}</p></div>
             </div>
             {selected.notes && (
-              <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-amber-600 dark:text-amber-400 text-xs">
+              <div className="bg-black/5 dark:bg-white/10 border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-3 text-[#000000] dark:text-[#FFFFFF] dark:text-[#000000] dark:text-[#FFFFFF] text-xs">
                 <strong>Notes:</strong> {selected.notes}
               </div>
             )}
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-[#AAB7B7] mb-2">Line Items</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3] mb-2">Line Items</h3>
               <table className="w-full text-xs">
-                <thead className="text-slate-500 dark:text-[#AAB7B7] text-[11px] border-b border-slate-100 dark:border-[#2E4156]">
+                <thead className="text-[#666666] dark:text-[#A3A3A3] text-[11px] border-b border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030]">
                   <tr>
                     <th className="text-left py-2">Description</th>
                     <th className="text-right py-2">Qty</th>
@@ -373,21 +373,21 @@ export default function PurchaseOrdersPage() {
                     <th className="text-right py-2">Total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-[#2E4156]/50">
+                <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030]">
                   {selected.items.map((item, i) => (
                     <tr key={i}>
-                      <td className="py-2.5 text-slate-900 dark:text-[#D4D8DD]">{item.description}</td>
-                      <td className="py-2.5 text-right text-slate-600 dark:text-[#AAB7B7]">{item.quantity}</td>
-                      <td className="py-2.5 text-right text-slate-600 dark:text-[#AAB7B7]">{item.unit}</td>
-                      <td className="py-2.5 text-right text-slate-600 dark:text-[#AAB7B7]">{fmt(item.unitPrice)}</td>
-                      <td className="py-2.5 text-right text-slate-900 dark:text-[#D4D8DD] font-semibold">{fmt(item.totalPrice)}</td>
+                      <td className="py-2.5 text-[#000000] dark:text-[#FFFFFF]">{item.description}</td>
+                      <td className="py-2.5 text-right text-[#666666] dark:text-[#A3A3A3] dark:text-[#A3A3A3]">{item.quantity}</td>
+                      <td className="py-2.5 text-right text-[#666666] dark:text-[#A3A3A3] dark:text-[#A3A3A3]">{item.unit}</td>
+                      <td className="py-2.5 text-right text-[#666666] dark:text-[#A3A3A3] dark:text-[#A3A3A3]">{fmt(item.unitPrice)}</td>
+                      <td className="py-2.5 text-right text-[#000000] dark:text-[#FFFFFF] font-semibold">{fmt(item.totalPrice)}</td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="border-t border-slate-200 dark:border-[#2E4156]">
-                    <td colSpan={4} className="py-2.5 text-right text-slate-500 dark:text-[#AAB7B7] font-semibold">Grand Total</td>
-                    <td className="py-2.5 text-right text-emerald-500 dark:text-emerald-400 font-bold">{fmt(selected.totalAmount)}</td>
+                  <tr className="border-t border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030]">
+                    <td colSpan={4} className="py-2.5 text-right text-[#666666] dark:text-[#A3A3A3] font-semibold">Grand Total</td>
+                    <td className="py-2.5 text-right text-[#000000] dark:text-[#FFFFFF] dark:text-[#000000] dark:text-[#FFFFFF] font-bold">{fmt(selected.totalAmount)}</td>
                   </tr>
                 </tfoot>
               </table>
@@ -398,21 +398,21 @@ export default function PurchaseOrdersPage() {
         {/* Create PO Modal */}
         {isCreateOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150">
-            <div className="bg-white dark:bg-[#1A2D42] border border-slate-200 dark:border-[#AAB7B7]/25 rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-[#2E4156]">
+            <div className="bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between pb-3 border-b border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030]">
                 <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-xl bg-[#2E4156] text-[#C0C8CA] border border-[#AAB7B7]/25">
+                  <div className="p-2 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border border-[#D4D4D4] dark:border-[#303030]">
                     <ShoppingCart className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-[#D4D8DD]">Generate Purchase Order</h3>
-                    <p className="text-xs text-slate-500 dark:text-[#AAB7B7]">Issue commercial contract order for material procurement</p>
+                    <h3 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">Generate Purchase Order</h3>
+                    <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Issue commercial contract order for material procurement</p>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-[#AAB7B7] dark:hover:text-white hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
+                  className="p-1.5 rounded-lg text-[#888888] dark:text-[#888888] hover:text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] dark:hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] dark:hover:bg-[#1F1F1F] transition-colors"
                 >
                   <X size={16} />
                 </button>
@@ -421,125 +421,125 @@ export default function PurchaseOrdersPage() {
               <form onSubmit={handleCreate} className="space-y-4 text-xs">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">PO #</label>
+                    <label className="text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] font-semibold block mb-1">PO #</label>
                     <input
                       required
                       value={form.poNumber}
                       onChange={(e) => setForm({ ...form, poNumber: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] font-mono focus:border-[#C0C8CA] outline-none"
+                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2.5 text-xs text-[#000000] dark:text-[#FFFFFF] font-mono focus:border-[#000000] dark:focus:border-[#FFFFFF] outline-none"
                     />
                   </div>
                   <div>
-                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Target Project</label>
+                    <label className="text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] font-semibold block mb-1">Target Project</label>
                     <input
                       required
                       value={form.projectName}
                       onChange={(e) => setForm({ ...form, projectName: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:border-[#C0C8CA] outline-none"
+                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2.5 text-xs text-[#000000] dark:text-[#FFFFFF] focus:border-[#000000] dark:focus:border-[#FFFFFF] outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Supplier Company</label>
+                    <label className="text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] font-semibold block mb-1">Supplier Company</label>
                     <input
                       required
                       placeholder="e.g. Tekle Steel Works Plc"
                       value={form.supplierName}
                       onChange={(e) => setForm({ ...form, supplierName: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] placeholder-slate-400 dark:placeholder-[#AAB7B7]/50 focus:border-[#C0C8CA] outline-none"
+                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2.5 text-xs text-[#000000] dark:text-[#FFFFFF] placeholder-[#888888] dark:placeholder-[#666666] dark:placeholder-[#A3A3A3] focus:border-[#000000] dark:focus:border-[#FFFFFF] outline-none"
                     />
                   </div>
                   <div>
-                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Contact Phone</label>
+                    <label className="text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] font-semibold block mb-1">Contact Phone</label>
                     <input
                       value={form.supplierContact}
                       onChange={(e) => setForm({ ...form, supplierContact: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:border-[#C0C8CA] outline-none"
+                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2.5 text-xs text-[#000000] dark:text-[#FFFFFF] focus:border-[#000000] dark:focus:border-[#FFFFFF] outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Item Description / Spec</label>
+                  <label className="text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] font-semibold block mb-1">Item Description / Spec</label>
                   <input
                     required
                     value={form.itemDescription}
                     onChange={(e) => setForm({ ...form, itemDescription: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:border-[#C0C8CA] outline-none"
+                    className="w-full bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2.5 text-xs text-[#000000] dark:text-[#FFFFFF] focus:border-[#000000] dark:focus:border-[#FFFFFF] outline-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Quantity</label>
+                    <label className="text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] font-semibold block mb-1">Quantity</label>
                     <input
                       required
                       type="number"
                       value={form.quantity}
                       onChange={(e) => setForm({ ...form, quantity: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:border-[#C0C8CA] outline-none"
+                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2.5 text-xs text-[#000000] dark:text-[#FFFFFF] focus:border-[#000000] dark:focus:border-[#FFFFFF] outline-none"
                     />
                   </div>
                   <div>
-                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Unit</label>
+                    <label className="text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] font-semibold block mb-1">Unit</label>
                     <input
                       value={form.unit}
                       onChange={(e) => setForm({ ...form, unit: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:border-[#C0C8CA] outline-none"
+                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2.5 text-xs text-[#000000] dark:text-[#FFFFFF] focus:border-[#000000] dark:focus:border-[#FFFFFF] outline-none"
                     />
                   </div>
                   <div>
-                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Unit Price (ETB)</label>
+                    <label className="text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] font-semibold block mb-1">Unit Price (ETB)</label>
                     <input
                       required
                       type="number"
                       value={form.unitPrice}
                       onChange={(e) => setForm({ ...form, unitPrice: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:border-[#C0C8CA] outline-none font-semibold"
+                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2.5 text-xs text-[#000000] dark:text-[#FFFFFF] focus:border-[#000000] dark:focus:border-[#FFFFFF] outline-none font-semibold"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Expected Delivery</label>
+                    <label className="text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] font-semibold block mb-1">Expected Delivery</label>
                     <input
                       type="date"
                       value={form.deliveryDate}
                       onChange={(e) => setForm({ ...form, deliveryDate: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:border-[#C0C8CA] outline-none"
+                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2.5 text-xs text-[#000000] dark:text-[#FFFFFF] focus:border-[#000000] dark:focus:border-[#FFFFFF] outline-none"
                     />
                   </div>
                   <div>
-                    <label className="text-slate-700 dark:text-[#AAB7B7] font-semibold block mb-1">Payment Terms</label>
+                    <label className="text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] font-semibold block mb-1">Payment Terms</label>
                     <input
                       value={form.paymentTerms}
                       onChange={(e) => setForm({ ...form, paymentTerms: e.target.value })}
-                      className="w-full bg-slate-50 dark:bg-[#1A2D42]/90 border border-slate-200 dark:border-[#AAB7B7]/25 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-[#D4D8DD] focus:border-[#C0C8CA] outline-none"
+                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2.5 text-xs text-[#000000] dark:text-[#FFFFFF] focus:border-[#000000] dark:focus:border-[#FFFFFF] outline-none"
                     />
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 dark:bg-[#2E4156]/30 rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25 flex justify-between items-center">
-                  <span className="text-slate-500 dark:text-[#AAB7B7]">Total Purchase Order Value:</span>
-                  <span className="text-sm font-bold text-[#C0C8CA]">
+                <div className="p-3.5 bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#171717] rounded-xl border border-[#D4D4D4] dark:border-[#303030] flex justify-between items-center">
+                  <span className="text-[#666666] dark:text-[#A3A3A3]">Total Purchase Order Value:</span>
+                  <span className="text-sm font-bold text-[#666666] dark:text-[#A3A3A3]">
                     {fmt((parseFloat(form.quantity) || 0) * (parseFloat(form.unitPrice) || 0))}
                   </span>
                 </div>
 
-                <div className="flex justify-end gap-2 pt-3 border-t border-slate-100 dark:border-[#2E4156]">
+                <div className="flex justify-end gap-2 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030]">
                   <button
                     type="button"
                     onClick={() => setIsCreateOpen(false)}
-                    className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#AAB7B7]/25 text-slate-700 dark:text-[#D4D8DD] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#2E4156] transition-colors"
+                    className="px-4 py-2.5 rounded-xl border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] text-xs font-semibold hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] dark:hover:bg-[#1F1F1F] transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2.5 rounded-xl bg-[#C0C8CA] hover:bg-white text-[#1A2D42] text-xs font-bold shadow-md transition-all"
+                    className="px-5 py-2.5 rounded-xl bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] text-xs font-bold shadow-md transition-all"
                   >
                     Issue Purchase Order
                   </button>

@@ -112,7 +112,7 @@ export default function ClientsPage() {
   );
 
   const inputCls =
-    "w-full bg-[#141720] border border-[#262C3D] rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-blue-500";
+    "w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 text-xs text-[#000000] dark:text-[#FFFFFF] placeholder-[#666666] dark:placeholder-[#A3A3A3] outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]";
 
   return (
     <AppShell>
@@ -120,20 +120,20 @@ export default function ClientsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-blue-400 font-mono text-xs font-semibold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#666666] dark:text-[#A3A3A3] font-mono text-xs font-semibold uppercase tracking-wider mb-1">
               <Users2 className="w-4 h-4" /> Client Relationship Management
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl font-bold text-[#000000] dark:text-[#FFFFFF] tracking-tight">
               Enterprise Clients
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-[#666666] dark:text-[#A3A3A3] mt-1">
               Manage project sponsors, developers, institutional clients, and contract terms.
             </p>
           </div>
 
           <button
             onClick={openForm}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] text-xs font-semibold shadow-md transition-colors shrink-0"
           >
             <Plus className="w-4 h-4" /> Add Client
           </button>
@@ -141,36 +141,36 @@ export default function ClientsPage() {
 
         {/* Search */}
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-[#666666] dark:text-[#A3A3A3]" />
           <input
             type="text"
             placeholder="Search clients by name, company, email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#141720] border border-[#262C3D] text-slate-200 text-xs rounded-lg pl-9 pr-3 py-2 outline-none focus:border-blue-500"
+            className="w-full bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] text-[#D4D4D4] dark:text-[#444444] text-xs rounded-lg pl-9 pr-3 py-2 outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]"
           />
         </div>
 
         {/* Clients Cards Grid */}
         {loading ? (
-          <div className="flex items-center justify-center gap-2 py-12 text-xs text-slate-500">
+          <div className="flex items-center justify-center gap-2 py-12 text-xs text-[#666666] dark:text-[#A3A3A3]">
             <Loader2 className="w-4 h-4 animate-spin" /> Loading clients...
           </div>
         ) : error ? (
-          <div className="rounded-xl border border-dashed border-[#2A3042] bg-[#141720] p-12 text-center">
-            <p className="text-xs text-rose-300">{error}</p>
+          <div className="rounded-xl border border-dashed border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] p-12 text-center">
+            <p className="text-xs text-[#000000] dark:text-[#FFFFFF] bg-black/5 dark:bg-white/10 p-2 rounded">{error}</p>
             <button
               onClick={() => reload()}
-              className="mt-3 text-xs font-semibold text-blue-400 hover:text-blue-300"
+              className="mt-3 text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] hover:text-[#000000] dark:text-[#FFFFFF]"
             >
               Retry
             </button>
           </div>
         ) : filteredClients.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-[#2A3042] bg-[#141720] p-12 text-center">
-            <Users2 className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-            <h2 className="text-sm font-semibold text-slate-300">No client records found</h2>
-            <p className="mt-1 text-xs text-slate-500">
+          <div className="rounded-xl border border-dashed border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] p-12 text-center">
+            <Users2 className="w-10 h-10 text-[#666666] dark:text-[#A3A3A3] mx-auto mb-3" />
+            <h2 className="text-sm font-semibold text-[#333333] dark:text-[#D4D4D4]">No client records found</h2>
+            <p className="mt-1 text-xs text-[#666666] dark:text-[#A3A3A3]">
               Add corporate clients and developers to associate them with projects.
             </p>
           </div>
@@ -179,37 +179,37 @@ export default function ClientsPage() {
             {filteredClients.map((client) => (
               <div
                 key={client._id}
-                className="rounded-xl border border-[#232733] bg-[#141720] p-5 shadow-sm space-y-3"
+                className="rounded-xl border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] p-5 shadow-sm space-y-3"
               >
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-base font-semibold text-white">
                       {client.name}
                     </h3>
-                    <p className="text-xs text-blue-400 font-medium mt-0.5">
+                    <p className="text-xs text-[#000000] dark:text-[#FFFFFF] font-medium mt-0.5">
                       {client.companyName}
                     </p>
                   </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] border border-[#111111] dark:border-[#FFFFFF] font-semibold">
                     {client.status}
                   </span>
                 </div>
 
-                <div className="pt-2 space-y-1.5 text-xs text-slate-400 border-t border-[#1F2330]">
+                <div className="pt-2 space-y-1.5 text-xs text-[#666666] dark:text-[#A3A3A3] border-t border-[#D4D4D4] dark:border-[#303030]">
                   <div className="flex items-center gap-2">
-                    <Mail className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                    <Mail className="w-3.5 h-3.5 text-[#666666] dark:text-[#A3A3A3] shrink-0" />
                     <span>{client.email}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Phone className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                    <Phone className="w-3.5 h-3.5 text-[#666666] dark:text-[#A3A3A3] shrink-0" />
                     <span>{client.phone}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                    <MapPin className="w-3.5 h-3.5 text-[#666666] dark:text-[#A3A3A3] shrink-0" />
                     <span>{client.address}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Briefcase className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                    <Briefcase className="w-3.5 h-3.5 text-[#666666] dark:text-[#A3A3A3] shrink-0" />
                     <span>Payment Terms: {client.paymentTerms}</span>
                   </div>
                 </div>
@@ -222,17 +222,17 @@ export default function ClientsPage() {
       {/* Create modal */}
       {formOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-[#111420] border border-[#262C3D] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-[#232733] pb-4">
-              <h2 className="text-base font-bold text-white">Add Client</h2>
-              <button onClick={() => setFormOpen(false)} className="text-slate-400 hover:text-white">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] pb-4">
+              <h2 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">Add Client</h2>
+              <button onClick={() => setFormOpen(false)} className="text-[#888888] dark:text-[#888888] hover:text-[#000000] dark:hover:text-[#FFFFFF]">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">Associated Project</label>
+                <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Associated Project</label>
                 <select
                   className={inputCls}
                   value={form.projectId}
@@ -246,7 +246,7 @@ export default function ClientsPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Client Name *</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Client Name *</label>
                   <input
                     className={inputCls}
                     value={form.name}
@@ -255,7 +255,7 @@ export default function ClientsPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Company</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Company</label>
                   <input
                     className={inputCls}
                     value={form.companyName}
@@ -265,7 +265,7 @@ export default function ClientsPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Email</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Email</label>
                   <input
                     type="email"
                     className={inputCls}
@@ -274,7 +274,7 @@ export default function ClientsPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Phone</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Phone</label>
                   <input
                     className={inputCls}
                     value={form.phone}
@@ -284,7 +284,7 @@ export default function ClientsPage() {
                 </div>
               </div>
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">Address</label>
+                <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Address</label>
                 <input
                   className={inputCls}
                   value={form.address}
@@ -293,7 +293,7 @@ export default function ClientsPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Payment Terms</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Payment Terms</label>
                   <input
                     className={inputCls}
                     value={form.paymentTerms}
@@ -302,7 +302,7 @@ export default function ClientsPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Status</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Status</label>
                   <select
                     className={inputCls}
                     value={form.status}
@@ -314,19 +314,19 @@ export default function ClientsPage() {
               </div>
             </div>
 
-            {formError && <p className="text-xs text-rose-300">{formError}</p>}
+            {formError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF] bg-black/5 dark:bg-white/10 p-2 rounded">{formError}</p>}
 
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setFormOpen(false)}
-                className="bg-[#1A1E29] hover:bg-[#232733] text-white px-4 py-2 rounded-lg text-xs font-semibold"
+                className="bg-[#FAFAFA] hover:bg-[#E5E5E5] dark:bg-[#171717] dark:hover:bg-[#1F1F1F] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] px-4 py-2 rounded-lg text-xs font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={submit}
                 disabled={busy}
-                className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-semibold disabled:opacity-50 flex items-center gap-2"
+                className="bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-xs font-semibold disabled:opacity-50 flex items-center gap-2"
               >
                 {busy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Save Client

@@ -25,9 +25,9 @@ const STATUSES = ["ACTIVE", "ON_LEAVE", "TERMINATED"];
 const EMPLOYEE_TYPES = ["Full-time", "Part-time", "Contract", "Daily Laborer", "Internship"];
 
 const STATUS_BADGES: Record<string, string> = {
-  ACTIVE: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-  ON_LEAVE: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
-  TERMINATED: "bg-rose-500/10 text-rose-400 border border-rose-500/20",
+  ACTIVE: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  ON_LEAVE: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
+  TERMINATED: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
 };
 
 function mapRecord(r: OperationalRecord): EmployeeRecord {
@@ -108,37 +108,37 @@ export default function PeopleEmployeesPage() {
   };
 
   const inputCls =
-    "w-full bg-[#141720] border border-[#262C3D] rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-blue-500";
+    "w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 text-xs text-[#000000] dark:text-[#FFFFFF] placeholder-[#666666] dark:placeholder-[#A3A3A3] outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF]";
 
   return (
     <AppShell>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-blue-400 font-mono text-xs font-semibold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-[#666666] dark:text-[#A3A3A3] font-mono text-xs font-semibold uppercase tracking-wider mb-1">
               <UserSquare2 className="w-4 h-4" /> Human Resources & Workforce
             </div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl font-bold text-[#000000] dark:text-[#FFFFFF] tracking-tight">
               Workforce & Personnel Directory
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-[#666666] dark:text-[#A3A3A3] mt-1">
               Engineers, project managers, foremen, trade crews, and administrative staff.
             </p>
           </div>
 
           <button
             onClick={openForm}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-md transition-colors shrink-0"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] text-xs font-semibold shadow-md transition-colors shrink-0"
           >
             <Plus className="w-4 h-4" /> Onboard Employee
           </button>
         </div>
 
         {/* Employees Table */}
-        <div className="bg-[#141720] border border-[#232733] rounded-xl overflow-hidden shadow-sm">
+        <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-[#181B24] text-slate-400 uppercase tracking-wider font-mono text-[11px] border-b border-[#232733]">
+            <table className="w-full text-left text-xs text-[#333333] dark:text-[#D4D4D4]">
+              <thead className="bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider font-mono text-[11px] border-b border-[#D4D4D4] dark:border-[#303030]">
                 <tr>
                   <th className="px-5 py-3">Employee ID</th>
                   <th className="px-5 py-3">Full Name</th>
@@ -149,10 +149,10 @@ export default function PeopleEmployeesPage() {
                   <th className="px-5 py-3">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#202432]">
+              <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030]">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-8 text-center text-slate-500">
+                    <td colSpan={7} className="px-5 py-8 text-center text-[#666666] dark:text-[#A3A3A3]">
                       <span className="inline-flex items-center gap-2">
                         <Loader2 className="w-4 h-4 animate-spin" /> Loading personnel directory...
                       </span>
@@ -161,10 +161,10 @@ export default function PeopleEmployeesPage() {
                 ) : error ? (
                   <tr>
                     <td colSpan={7} className="px-5 py-8 text-center">
-                      <p className="text-slate-400">{error}</p>
+                      <p className="text-[#888888] dark:text-[#888888]">{error}</p>
                       <button
                         onClick={() => reload()}
-                        className="mt-2 text-xs font-semibold text-blue-400 hover:text-blue-300"
+                        className="mt-2 text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] hover:text-[#000000] dark:text-[#FFFFFF]"
                       >
                         Retry
                       </button>
@@ -172,29 +172,29 @@ export default function PeopleEmployeesPage() {
                   </tr>
                 ) : employees.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-8 text-center text-slate-500">
+                    <td colSpan={7} className="px-5 py-8 text-center text-[#666666] dark:text-[#A3A3A3]">
                       No employee records found. Click &quot;Onboard Employee&quot; above.
                     </td>
                   </tr>
                 ) : (
                   employees.map((emp) => (
-                    <tr key={emp._id} className="hover:bg-[#1A1E29] transition-colors">
-                      <td className="px-5 py-3.5 font-mono font-semibold text-blue-400">
+                    <tr key={emp._id} className="hover:bg-[#FAFAFA] dark:hover:bg-[#171717] transition-colors">
+                      <td className="px-5 py-3.5 font-mono font-semibold text-[#000000] dark:text-[#FFFFFF]">
                         {emp.employeeId}
                       </td>
                       <td className="px-5 py-3.5 font-semibold text-white">
                         {emp.name}
                       </td>
-                      <td className="px-5 py-3.5 text-slate-400">
+                      <td className="px-5 py-3.5 text-[#888888] dark:text-[#888888]">
                         {emp.department}
                       </td>
-                      <td className="px-5 py-3.5 text-slate-300">
+                      <td className="px-5 py-3.5 text-[#333333] dark:text-[#D4D4D4]">
                         {emp.position}
                       </td>
-                      <td className="px-5 py-3.5 text-slate-400">
+                      <td className="px-5 py-3.5 text-[#888888] dark:text-[#888888]">
                         {emp.employeeType}
                       </td>
-                      <td className="px-5 py-3.5 font-mono text-slate-400">
+                      <td className="px-5 py-3.5 font-mono text-[#888888] dark:text-[#888888]">
                         {emp.phone}
                       </td>
                       <td className="px-5 py-3.5">
@@ -218,17 +218,17 @@ export default function PeopleEmployeesPage() {
       {/* Create modal */}
       {formOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-[#111420] border border-[#262C3D] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-[#232733] pb-4">
-              <h2 className="text-base font-bold text-white">Onboard Employee</h2>
-              <button onClick={() => setFormOpen(false)} className="text-slate-400 hover:text-white">
+          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] pb-4">
+              <h2 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">Onboard Employee</h2>
+              <button onClick={() => setFormOpen(false)} className="text-[#888888] dark:text-[#888888] hover:text-[#000000] dark:hover:text-[#FFFFFF]">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">Assigned Project</label>
+                <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Assigned Project</label>
                 <select
                   className={inputCls}
                   value={form.projectId}
@@ -242,7 +242,7 @@ export default function PeopleEmployeesPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Full Name *</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Full Name *</label>
                   <input
                     className={inputCls}
                     value={form.fullName}
@@ -250,7 +250,7 @@ export default function PeopleEmployeesPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Employee ID</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Employee ID</label>
                   <input
                     className={inputCls}
                     value={form.employeeId}
@@ -261,7 +261,7 @@ export default function PeopleEmployeesPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Department</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Department</label>
                   <input
                     className={inputCls}
                     value={form.department}
@@ -270,7 +270,7 @@ export default function PeopleEmployeesPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Position</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Position</label>
                   <input
                     className={inputCls}
                     value={form.position}
@@ -281,7 +281,7 @@ export default function PeopleEmployeesPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Employment Type</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Employment Type</label>
                   <select
                     className={inputCls}
                     value={form.employeeType}
@@ -291,7 +291,7 @@ export default function PeopleEmployeesPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Hire Date</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Hire Date</label>
                   <input
                     type="date"
                     className={inputCls}
@@ -302,7 +302,7 @@ export default function PeopleEmployeesPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Email</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Email</label>
                   <input
                     type="email"
                     className={inputCls}
@@ -311,7 +311,7 @@ export default function PeopleEmployeesPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Phone</label>
+                  <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Phone</label>
                   <input
                     className={inputCls}
                     value={form.phone}
@@ -321,7 +321,7 @@ export default function PeopleEmployeesPage() {
                 </div>
               </div>
               <div>
-                <label className="text-[11px] text-slate-400 block mb-1">Status</label>
+                <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Status</label>
                 <select
                   className={inputCls}
                   value={form.status}
@@ -332,19 +332,19 @@ export default function PeopleEmployeesPage() {
               </div>
             </div>
 
-            {formError && <p className="text-xs text-rose-300">{formError}</p>}
+            {formError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF] bg-black/5 dark:bg-white/10 p-2 rounded">{formError}</p>}
 
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setFormOpen(false)}
-                className="bg-[#1A1E29] hover:bg-[#232733] text-white px-4 py-2 rounded-lg text-xs font-semibold"
+                className="bg-[#FAFAFA] hover:bg-[#E5E5E5] dark:bg-[#171717] dark:hover:bg-[#1F1F1F] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] px-4 py-2 rounded-lg text-xs font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={submit}
                 disabled={busy}
-                className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-semibold disabled:opacity-50 flex items-center gap-2"
+                className="bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-xs font-semibold disabled:opacity-50 flex items-center gap-2"
               >
                 {busy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Save Employee

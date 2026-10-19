@@ -25,6 +25,11 @@ export const PROJECT_NAV_ITEMS: NavItem[] = [
     matchSegment: "",
   },
   {
+    label: "Phases",
+    href: (id) => `/projects/${id}/phases`,
+    matchSegment: "phases",
+  },
+  {
     label: "Progress",
     href: (id) => `/projects/${id}/progress`,
     matchSegment: "progress",
@@ -116,7 +121,7 @@ export default function ProjectNavigation({
   return (
     <nav
       aria-label="Project Navigation"
-      className={`w-full bg-[#13151A] border-b border-[#232733] select-none ${className}`}
+      className={`w-full bg-[#FAFAFA] dark:bg-[#111111] border-b border-[#D4D4D4] dark:border-[#303030] select-none ${className}`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-16 overflow-x-auto whitespace-nowrap scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none]">
@@ -131,8 +136,8 @@ export default function ProjectNavigation({
                   href={targetHref}
                   className={`relative flex items-center px-3.5 py-2 rounded-md text-[13px] font-medium tracking-wide transition-all duration-150 group ${
                     active
-                      ? "text-blue-400 bg-blue-500/10 font-semibold shadow-sm"
-                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                      ? "text-[#000000] dark:text-[#FFFFFF] bg-black/5 dark:bg-white/10 font-semibold shadow-2xs"
+                      : "text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-black/5 dark:hover:bg-white/5"
                   }`}
                   aria-current={active ? "page" : undefined}
                 >
@@ -141,7 +146,7 @@ export default function ProjectNavigation({
                   {/* Active bottom accent bar indicator */}
                   {active && (
                     <span
-                      className="absolute inset-x-3 -bottom-[10px] h-[2px] bg-blue-500 rounded-full"
+                      className="absolute inset-x-3 -bottom-[10px] h-[2px] bg-[#000000] dark:bg-[#FFFFFF] rounded-full"
                       aria-hidden="true"
                     />
                   )}

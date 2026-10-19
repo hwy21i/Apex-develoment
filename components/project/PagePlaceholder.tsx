@@ -68,7 +68,7 @@ export default function ProjectNavigation({
   const pathname = usePathname();
 
   return (
-    <nav className="w-full overflow-x-auto border-b border-white/10 bg-[#11120d]">
+    <nav className="w-full overflow-x-auto border-b border-[#D4D4D4] dark:border-[#303030] bg-[#FAFAFA] dark:bg-[#111111]">
       <div className="flex min-w-max">
 
         {navigationItems.map((item) => {
@@ -86,8 +86,8 @@ export default function ProjectNavigation({
                 transition-colors
                 ${
                   isActive
-                    ? "text-[#4da3ff]"
-                    : "text-[#9b978f] hover:text-white"
+                    ? "text-[#000000] dark:text-[#FFFFFF] font-bold"
+                    : "text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF]"
                 }
               `}
             >
@@ -101,7 +101,7 @@ export default function ProjectNavigation({
                     left-4
                     right-4
                     h-[2px]
-                    bg-[#4da3ff]
+                    bg-[#000000] dark:bg-[#FFFFFF]
                   "
                 />
               )}

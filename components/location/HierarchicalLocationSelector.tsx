@@ -190,8 +190,8 @@ export default function HierarchicalLocationSelector({
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* 1. Country Selector */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor={countrySelectId} className="text-xs font-semibold text-[#6B7280] dark:text-[#A1A1A1] uppercase tracking-wider">
-          Country {required && <span className="text-[#EF4444]">*</span>}
+        <label htmlFor={countrySelectId} className="text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider">
+          Country {required && <span className="text-[#000000] dark:text-[#FFFFFF] font-bold">*</span>}
         </label>
         <select
           id={countrySelectId}
@@ -199,7 +199,7 @@ export default function HierarchicalLocationSelector({
           onChange={(e) => handleCountryChange(e.target.value)}
           disabled={disabled || loadingCountries}
           required={required}
-          className="bg-[#FFFFFF] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A] text-[#111827] dark:text-[#FFFFFF] text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF] disabled:opacity-50"
+          className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF] disabled:opacity-50"
         >
           <option value="">
             {loadingCountries ? "Loading countries..." : "Select Country"}
@@ -214,8 +214,8 @@ export default function HierarchicalLocationSelector({
 
       {/* 2. Region Selector */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor={regionSelectId} className="text-xs font-semibold text-[#6B7280] dark:text-[#A1A1A1] uppercase tracking-wider">
-          Region / State {required && <span className="text-[#EF4444]">*</span>}
+        <label htmlFor={regionSelectId} className="text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider">
+          Region / State {required && <span className="text-[#000000] dark:text-[#FFFFFF] font-bold">*</span>}
         </label>
         <select
           id={regionSelectId}
@@ -223,7 +223,7 @@ export default function HierarchicalLocationSelector({
           onChange={(e) => handleRegionChange(e.target.value)}
           disabled={disabled || !value.countryId || loadingRegions}
           required={required}
-          className="bg-[#FFFFFF] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A] text-[#111827] dark:text-[#FFFFFF] text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF] disabled:opacity-50"
+          className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF] disabled:opacity-50"
         >
           <option value="">
             {!value.countryId
@@ -242,8 +242,8 @@ export default function HierarchicalLocationSelector({
 
       {/* 3. City Selector */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor={citySelectId} className="text-xs font-semibold text-[#6B7280] dark:text-[#A1A1A1] uppercase tracking-wider">
-          City {required && <span className="text-[#EF4444]">*</span>}
+        <label htmlFor={citySelectId} className="text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider">
+          City {required && <span className="text-[#000000] dark:text-[#FFFFFF] font-bold">*</span>}
         </label>
         <select
           id={citySelectId}
@@ -251,7 +251,7 @@ export default function HierarchicalLocationSelector({
           onChange={(e) => handleCityChange(e.target.value)}
           disabled={disabled || !value.regionId || loadingCities}
           required={required}
-          className="bg-[#FFFFFF] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A] text-[#111827] dark:text-[#FFFFFF] text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF] disabled:opacity-50"
+          className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF] disabled:opacity-50"
         >
           <option value="">
             {!value.regionId
@@ -270,7 +270,7 @@ export default function HierarchicalLocationSelector({
 
       {/* 4. District / Zone */}
       <div className="flex flex-col gap-1.5 md:col-span-1">
-        <label htmlFor={districtInputId} className="text-xs font-semibold text-[#6B7280] dark:text-[#A1A1A1] uppercase tracking-wider">
+        <label htmlFor={districtInputId} className="text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider">
           District / Sub-City / Zone
         </label>
         <input
@@ -280,14 +280,14 @@ export default function HierarchicalLocationSelector({
           onChange={(e) => onChange({ ...value, district: e.target.value })}
           placeholder="e.g. Bole Sub-city / Woreda 03"
           disabled={disabled}
-          className="bg-[#FFFFFF] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A] text-[#111827] dark:text-[#FFFFFF] text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF] disabled:opacity-50"
+          className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF] disabled:opacity-50"
         />
       </div>
 
       {/* 5. Address */}
       <div className="flex flex-col gap-1.5 md:col-span-2">
-        <label htmlFor={addressInputId} className="text-xs font-semibold text-[#6B7280] dark:text-[#A1A1A1] uppercase tracking-wider">
-          Site Address {required && <span className="text-[#EF4444]">*</span>}
+        <label htmlFor={addressInputId} className="text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider">
+          Site Address {required && <span className="text-[#000000] dark:text-[#FFFFFF] font-bold">*</span>}
         </label>
         <input
           id={addressInputId}
@@ -297,7 +297,7 @@ export default function HierarchicalLocationSelector({
           placeholder="e.g. Africa Avenue, Olympia Roundabout, Site Plot #4"
           disabled={disabled}
           required={required}
-          className="bg-[#FFFFFF] dark:bg-[#141414] border border-[#E5E7EB] dark:border-[#2A2A2A] text-[#111827] dark:text-[#FFFFFF] text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#111827] dark:focus:border-[#FFFFFF] disabled:opacity-50"
+          className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] text-xs rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-[#000000] dark:focus:border-[#FFFFFF] disabled:opacity-50"
         />
       </div>
     </div>

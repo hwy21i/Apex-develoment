@@ -38,6 +38,7 @@ export async function GET(request: Request) {
     const tasks = await Task.find(query)
       .populate("projectId", "name projectCode")
       .populate("assignedTo", "fullName username role")
+      .populate("phaseId", "name sequenceNumber")
       .sort({ dueDate: 1 })
       .limit(100);
 
@@ -125,7 +126,7 @@ export async function PATCH(request: Request) {
 
   try {
     const json = await request.json();
-    const { taskId, status, progress, priority, dependencies } = json;
+    const { taskId, status, progress, priority, dependencies, title, description, phaseId, assignedTo, startDate, dueDate, notes } = json;
     if (!taskId) {
       return fail("BAD_REQUEST", "taskId is required", 400);
     }
@@ -147,9 +148,16 @@ export async function PATCH(request: Request) {
     }
 
     const updates: Record<string, unknown> = {};
-    if (status) updates.status = status;
+    if (title !== undefined) updates.title = title;
+    if (description !== undefined) updates.description = description;
+    if (phaseId !== undefined) updates.phaseId = phaseId || null;
+    if (assignedTo !== undefined) updates.assignedTo = assignedTo;
+    if (startDate !== undefined) updates.startDate = startDate ? new Date(startDate) : null;
+    if (dueDate !== undefined) updates.dueDate = dueDate ? new Date(dueDate) : null;
+    if (notes !== undefined) updates.notes = notes;
+    if (status !== undefined) updates.status = status;
     if (typeof progress === "number") updates.progress = progress;
-    if (priority) updates.priority = priority;
+    if (priority !== undefined) updates.priority = priority;
     if (dependencies && Array.isArray(dependencies)) updates.dependencies = dependencies;
     if (status === "COMPLETED") updates.completedDate = new Date();
 
