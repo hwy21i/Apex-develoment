@@ -10,6 +10,36 @@ export function sanitizeMongoUrl(text: string): string {
   return text.replace(/(mongodb(?:\+srv)?:\/\/)[^:]+:[^@]+@/gi, "$1<credentials-hidden>@");
 }
 
+/**
+ * Resolves the MongoDB connection URI from standard environment variables:
+ * Checks MONGODB_URI, DATABASE_URL, MONGO_URI, and MONGODB_URL.
+ */
+export function getResolvedMongoUri(): string | null {
+  const uri =
+    process.env.MONGODB_URI?.trim() ||
+    process.env.DATABASE_URL?.trim() ||
+    process.env.MONGO_URI?.trim() ||
+    process.env.MONGODB_URL?.trim() ||
+    null;
+  return uri;
+}
+
+/**
+ * Extracts the database name safely from a MongoDB URI without exposing credentials.
+ */
+export function getDatabaseName(uri?: string): string {
+  const targetUri = uri || getResolvedMongoUri() || "";
+  try {
+    const clean = targetUri.replace(/^[a-zA-Z+]+:\/\/[^/]+(?::\d+)?\//, "").split("?")[0];
+    if (clean && !clean.includes("@") && !clean.includes(":")) {
+      return clean.trim();
+    }
+  } catch {
+    // fallback
+  }
+  return mongoose.connection?.name || "construction_management";
+}
+
 // Only configure custom DNS servers on local Windows environments where ISP DNS loopback issues occur.
 // Never override DNS on Vercel / AWS Lambda (Linux) where outbound port 53 is restricted and
 // system DNS resolvers (/etc/resolv.conf) are required for SRV resolution.
@@ -30,8 +60,8 @@ const globalCache = globalThis as typeof globalThis & { mongooseCache?: Mongoose
 const cache: MongooseCache = globalCache.mongooseCache ?? (globalCache.mongooseCache = { conn: null, promise: null });
 
 export async function connectToDatabase(): Promise<typeof mongoose> {
-  const rawUri = process.env.MONGODB_URI;
-  if (!rawUri || !rawUri.trim()) {
+  const rawUri = getResolvedMongoUri();
+  if (!rawUri) {
     throw new Error("MONGODB_URI environment variable is not defined");
   }
 

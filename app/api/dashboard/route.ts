@@ -9,6 +9,8 @@ import { Equipment } from "@/models/Equipment";
 import { Payment } from "@/models/Payment";
 import { Expense } from "@/models/Expense";
 import { Milestone } from "@/models/Milestone";
+import { buildProjectAccessQuery, normalizeProjectDocument } from "@/lib/services/access";
+import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -44,14 +46,32 @@ export async function GET(request: Request) {
 
   try {
     await connectToDatabase();
-    const access =
-      guard.user.role === "Admin"
-        ? {}
-        : { $or: [{ projectManager: guard.user.id }, { teamMembers: guard.user.id }] };
+    const access = buildProjectAccessQuery(guard.user);
 
     // 1. Fetch Projects
-    const projects = await Project.find(access).populate("projectManager", "fullName").lean();
-    const projectIds = projects.map((p) => p._id);
+    let rawProjects = await Project.find(access).populate("projectManager", "fullName").lean();
+
+    // Check fallback for capital 'Projects' collection if zero records found
+    if (rawProjects.length === 0 && mongoose.connection.db) {
+      try {
+        const altCollection = mongoose.connection.db.collection("Projects");
+        const altCount = await altCollection.countDocuments();
+        if (altCount > 0) {
+          const altDocs = await altCollection.find({}).limit(100).toArray();
+          rawProjects = altDocs as unknown as typeof rawProjects;
+        }
+      } catch {
+        // Fallback silently
+      }
+    }
+
+    const projects = rawProjects.map((p) =>
+      normalizeProjectDocument(p as Record<string, unknown>)
+    );
+    const projectIds = projects
+      .map((p) => String(p._id))
+      .filter((id) => mongoose.isObjectIdOrHexString(id))
+      .map((id) => new mongoose.Types.ObjectId(id));
 
     // 2. Fetch parallel auxiliary collections
     const [
@@ -137,10 +157,10 @@ export async function GET(request: Request) {
     }
 
     // 5. Active, completed, delayed project counts
-    const activeProjectsCount = projects.filter((p) => isProjectActive(p.status)).length;
-    const completedProjectsCount = projects.filter((p) => isProjectCompleted(p.status)).length;
+    const activeProjectsCount = projects.filter((p) => isProjectActive(p.status as string | undefined)).length;
+    const completedProjectsCount = projects.filter((p) => isProjectCompleted(p.status as string | undefined)).length;
     const delayedProjectsCount = projects.filter((p) =>
-      isProjectDelayed(p.status, p.healthStatus)
+      isProjectDelayed(p.status as string | undefined, p.healthStatus as string | undefined)
     ).length;
 
     // 6. Tasks breakdown
@@ -214,8 +234,8 @@ export async function GET(request: Request) {
         location: p.location || "Addis Ababa, Ethiopia",
         manager:
           (p.projectManager as unknown as { fullName?: string } | null)?.fullName || "Unassigned",
-        startDate: p.startDate ? new Date(p.startDate).toISOString() : "",
-        endDate: p.expectedEndDate ? new Date(p.expectedEndDate).toISOString() : "",
+        startDate: p.startDate ? new Date(p.startDate as string | number | Date).toISOString() : "",
+        endDate: p.expectedEndDate ? new Date(p.expectedEndDate as string | number | Date).toISOString() : "",
         budget: budgetVal,
         expenses: spentVal,
         progress: progVal,

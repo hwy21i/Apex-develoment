@@ -47,7 +47,32 @@ export function handleError(error: unknown) {
 
   console.error(`[API Error] [${errorName}]:`, sanitizedMessage);
 
-  // Check for database connection / network errors
+  // 1. Missing Database Configuration Error
+  if (
+    sanitizedMessage.includes("MONGODB_URI") ||
+    sanitizedMessage.includes("environment variable is not defined")
+  ) {
+    return fail(
+      "CONFIGURATION_ERROR",
+      "Database service configuration is missing. Please configure MONGODB_URI in Vercel project settings.",
+      503
+    );
+  }
+
+  // 2. Database Authentication Failure
+  if (
+    sanitizedMessage.includes("bad auth") ||
+    sanitizedMessage.includes("Authentication failed") ||
+    sanitizedMessage.includes("auth failed")
+  ) {
+    return fail(
+      "DATABASE_AUTH_ERROR",
+      "Database authentication failed. Please verify that MONGODB_URI credentials are valid in Vercel project environment variables.",
+      503
+    );
+  }
+
+  // 3. Database Connection / Network / Timeout errors
   const isDatabaseError =
     errorName.includes("Mongo") ||
     errorName.includes("Mongoose") ||

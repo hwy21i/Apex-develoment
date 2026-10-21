@@ -136,10 +136,11 @@ export default function ProjectsListClient({
       ) : (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {filteredProjects.map((project) => {
+            const rawBudget = Number(project.totalBudget ?? (project as unknown as { budget?: number }).budget ?? 0);
             const formattedBudget =
-              project.totalBudget >= 1000000
-                ? `ETB ${(project.totalBudget / 1000000).toFixed(2)}M`
-                : `ETB ${project.totalBudget.toLocaleString()}`;
+              rawBudget >= 1000000
+                ? `ETB ${(rawBudget / 1000000).toFixed(2)}M`
+                : `ETB ${rawBudget.toLocaleString()}`;
 
             return (
               <Link

@@ -42,17 +42,22 @@ export async function GET(request: Request) {
     }> = [];
 
     // 1. Module / Page Navigation Matches (based on role)
+    const isAdminUser =
+      user.role === "Admin" ||
+      user.role === "Super Admin" ||
+      user.role === "Company Admin";
+
     const modules = [
-      { title: "Projects Portfolio", subtitle: "All construction sites & execution", url: "/projects", roles: ["Admin", "Project Manager", "Site Engineer", "Client"] },
-      { title: "Site Tasks & Activities", subtitle: "WBS execution & progress tracking", url: "/tasks", roles: ["Admin", "Project Manager", "Site Engineer", "Worker"] },
-      { title: "Materials Inventory", subtitle: "Stock levels, replenishment & SKUs", url: "/materials", roles: ["Admin", "Project Manager", "Site Engineer", "Warehouse Manager", "Procurement Officer"] },
-      { title: "Site Workers & Personnel", subtitle: "Laborers, trades, daily wages & PPE", url: "/people/workers", roles: ["Admin", "Project Manager", "HR Manager"] },
-      { title: "Equipment & Machinery", subtitle: "Heavy fleet tracking & operating status", url: "/equipment", roles: ["Admin", "Project Manager", "Site Engineer", "Warehouse Manager"] },
-      { title: "Expense Vouchers", subtitle: "Disbursements, petty cash & payments", url: "/finance/expenses", roles: ["Admin", "Project Manager", "Accountant"] },
-      { title: "CSI Budgets & Cost Control", subtitle: "Division allocations & variance", url: "/finance/budgets", roles: ["Admin", "Project Manager", "Accountant"] },
-      { title: "Suppliers & Vendors", subtitle: "Subcontractors & trade material vendors", url: "/procurement/suppliers", roles: ["Admin", "Project Manager", "Procurement Officer"] },
-      { title: "Contracts & Documents", subtitle: "Engineering drawings & signed contracts", url: "/documents/contracts", roles: ["Admin", "Project Manager", "Site Engineer", "Client"] },
-      { title: "Safety Announcements", subtitle: "Site advisories & safety alerts", url: "/announcements", roles: ["Admin", "Project Manager", "Site Engineer", "Worker", "HR Manager"] },
+      { title: "Projects Portfolio", subtitle: "All construction sites & execution", url: "/projects", roles: ["Admin", "Super Admin", "Company Admin", "Project Manager", "Site Engineer", "Client"] },
+      { title: "Site Tasks & Activities", subtitle: "WBS execution & progress tracking", url: "/tasks", roles: ["Admin", "Super Admin", "Company Admin", "Project Manager", "Site Engineer", "Worker"] },
+      { title: "Materials Inventory", subtitle: "Stock levels, replenishment & SKUs", url: "/materials", roles: ["Admin", "Super Admin", "Company Admin", "Project Manager", "Site Engineer", "Warehouse Manager", "Procurement Officer"] },
+      { title: "Site Workers & Personnel", subtitle: "Laborers, trades, daily wages & PPE", url: "/people/workers", roles: ["Admin", "Super Admin", "Company Admin", "Project Manager", "HR Manager"] },
+      { title: "Equipment & Machinery", subtitle: "Heavy fleet tracking & operating status", url: "/equipment", roles: ["Admin", "Super Admin", "Company Admin", "Project Manager", "Site Engineer", "Warehouse Manager"] },
+      { title: "Expense Vouchers", subtitle: "Disbursements, petty cash & payments", url: "/finance/expenses", roles: ["Admin", "Super Admin", "Company Admin", "Project Manager", "Accountant"] },
+      { title: "CSI Budgets & Cost Control", subtitle: "Division allocations & variance", url: "/finance/budgets", roles: ["Admin", "Super Admin", "Company Admin", "Project Manager", "Accountant"] },
+      { title: "Suppliers & Vendors", subtitle: "Subcontractors & trade material vendors", url: "/procurement/suppliers", roles: ["Admin", "Super Admin", "Company Admin", "Project Manager", "Procurement Officer"] },
+      { title: "Contracts & Documents", subtitle: "Engineering drawings & signed contracts", url: "/documents/contracts", roles: ["Admin", "Super Admin", "Company Admin", "Project Manager", "Site Engineer", "Client"] },
+      { title: "Safety Announcements", subtitle: "Site advisories & safety alerts", url: "/announcements", roles: ["Admin", "Super Admin", "Company Admin", "Project Manager", "Site Engineer", "Worker", "HR Manager"] },
     ];
 
     for (const mod of modules) {
@@ -80,11 +85,12 @@ export async function GET(request: Request) {
           { location: regex },
         ],
       };
-      if (user.role !== "Admin") {
+      if (!isAdminUser) {
         projectQuery.$or = [
           ...((projectQuery.$or as unknown[]) || []),
           { projectManager: user.id },
           { teamMembers: user.id },
+          { createdBy: user.id },
         ];
       }
       const projects = await Project.find(projectQuery)

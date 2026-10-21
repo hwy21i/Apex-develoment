@@ -137,7 +137,7 @@ export default function NotificationsCenterPage() {
               <button
                 onClick={markAllAsRead}
                 disabled={busy}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white dark:bg-[#111111] hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] dark:hover:bg-[#FAFAFA] dark:hover:bg-[#1F1F1F] text-[#000000] dark:text-[#FFFFFF] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] text-xs font-semibold transition-all hover:scale-[1.015] active:scale-[0.98] shadow-xs disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white dark:bg-[#111111] hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] text-xs font-semibold transition-all hover:scale-[1.015] active:scale-[0.98] shadow-xs disabled:opacity-50"
               >
                 <CheckCheck size={14} className="text-[#666666] dark:text-[#A3A3A3]" />
                 <span>Mark all as read</span>
@@ -153,7 +153,7 @@ export default function NotificationsCenterPage() {
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
               filter === "All"
                 ? "bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] shadow-sm font-extrabold"
-                : "bg-white dark:bg-[#111111] text-[#666666] dark:text-[#A3A3A3] dark:text-[#A3A3A3] hover:text-[#000000] dark:text-[#FFFFFF] dark:hover:text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]"
+                : "bg-white dark:bg-[#111111] text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]"
             }`}
           >
             All ({notifications.length})
@@ -163,7 +163,7 @@ export default function NotificationsCenterPage() {
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
               filter === "Unread"
                 ? "bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] shadow-sm font-extrabold"
-                : "bg-white dark:bg-[#111111] text-[#666666] dark:text-[#A3A3A3] dark:text-[#A3A3A3] hover:text-[#000000] dark:text-[#FFFFFF] dark:hover:text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]"
+                : "bg-white dark:bg-[#111111] text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]"
             }`}
           >
             Unread ({unreadCount})
@@ -192,22 +192,22 @@ export default function NotificationsCenterPage() {
               const inner = (
                 <>
                   <div className="flex items-start gap-3">
-                    <div className="p-2.5 bg-[#F5F5F5] dark:bg-[#1F1F1F] dark:bg-[#111111] rounded-xl border border-[#D4D4D4] dark:border-[#303030] shrink-0">
+                    <div className="p-2.5 bg-[#F5F5F5] dark:bg-[#171717] rounded-xl border border-[#D4D4D4] dark:border-[#303030] shrink-0">
                       {meta.icon}
                     </div>
                     <div className="space-y-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className={`text-xs sm:text-sm font-bold ${!n.isRead ? "text-[#000000] dark:text-[#FFFFFF] dark:text-[#FFFFFF]" : "text-[#666666] dark:text-[#A3A3A3] dark:text-[#A3A3A3]"}`}>
+                        <h3 className={`text-xs sm:text-sm font-bold ${!n.isRead ? "text-[#000000] dark:text-[#FFFFFF]" : "text-[#666666] dark:text-[#A3A3A3]"}`}>
                           {n.title}
                         </h3>
                         {!n.isRead && (
                           <span className="w-2 h-2 rounded-full bg-[#000000] dark:bg-[#FFFFFF] inline-block shrink-0" />
                         )}
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F5F5F5] dark:bg-[#1F1F1F] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] dark:text-[#FFFFFF] font-semibold border border-[#D4D4D4] dark:border-[#303030]">
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F5F5F5] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] font-semibold border border-[#D4D4D4] dark:border-[#303030]">
                           {meta.label}
                         </span>
                       </div>
-                      <p className="text-xs text-[#666666] dark:text-[#A3A3A3] dark:text-[#FFFFFF]/90 max-w-2xl leading-relaxed">{n.message}</p>
+                      <p className="text-xs text-[#666666] dark:text-[#A3A3A3] max-w-2xl leading-relaxed">{n.message}</p>
                       <p className="text-[11px] text-[#666666] dark:text-[#A3A3A3] font-mono">{timeAgo(n.createdAt)}</p>
                     </div>
                   </div>
@@ -215,7 +215,7 @@ export default function NotificationsCenterPage() {
                   {!n.isRead && (
                     <button
                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); markAsRead(n._id); }}
-                      className="p-1.5 text-[#666666] dark:text-[#A3A3A3] hover:text-[#666666] dark:text-[#A3A3A3] hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] dark:hover:bg-[#FAFAFA] dark:hover:bg-[#1F1F1F] rounded-lg transition-colors self-start shrink-0"
+                      className="p-1.5 text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F] rounded-lg transition-colors self-start shrink-0"
                       title="Mark as read"
                     >
                       <Check size={16} />
@@ -227,7 +227,7 @@ export default function NotificationsCenterPage() {
               const cardClasses = `glass-card border rounded-2xl p-4 transition-all hover:scale-[1.005] flex items-start justify-between gap-4 ${
                 !n.isRead
                   ? "border-[#000000] dark:border-[#FFFFFF] shadow-xs bg-white dark:bg-[#171717]"
-                  : "border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030] opacity-85 bg-white dark:bg-[#111111]"
+                  : "border-[#D4D4D4] dark:border-[#303030] opacity-85 bg-white dark:bg-[#111111]"
               }`;
 
               return n.link ? (
@@ -242,7 +242,7 @@ export default function NotificationsCenterPage() {
             })}
 
             {filtered.length === 0 && (
-              <div className="glass-card border border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030] rounded-2xl p-12 text-center text-[#888888] dark:text-[#888888]">
+              <div className="glass-card border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-12 text-center text-[#888888] dark:text-[#888888]">
                 <Bell size={32} className="mx-auto mb-2 opacity-40 text-[#666666] dark:text-[#A3A3A3]" />
                 <p className="text-sm">
                   {filter === "Unread" ? "No unread notifications." : "No notifications yet."}

@@ -85,7 +85,12 @@ export async function requireRole(
   const { user } = authResult;
   const allowedRoles = Array.isArray(role) ? role : [role];
 
-  if (!allowedRoles.includes(user.role) && user.role !== "Admin") {
+  if (
+    !allowedRoles.includes(user.role) &&
+    user.role !== "Admin" &&
+    user.role !== "Super Admin" &&
+    user.role !== "Company Admin"
+  ) {
     return {
       error: fail(
         "FORBIDDEN",

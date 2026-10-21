@@ -7,7 +7,7 @@ import { PurchaseOrder } from "@/models/PurchaseOrder";
 import { Project } from "@/models/Project";
 import { requirePermission } from "@/lib/auth/guard";
 import { logAudit } from "@/lib/services/audit";
-import { canAccessProject } from "@/lib/services/access";
+import { canAccessProject, buildProjectAccessQuery } from "@/lib/services/access";
 import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
@@ -32,9 +32,14 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ success: false, error: "You do not have access to this project" }, { status: 403 });
       }
       filter.projectId = projectId;
-    } else if (authResult.user.role !== "Admin") {
+    } else if (
+      authResult.user.role !== "Admin" &&
+      authResult.user.role !== "Super Admin" &&
+      authResult.user.role !== "Company Admin"
+    ) {
+      const accessQuery = buildProjectAccessQuery(authResult.user);
       filter.projectId = {
-        $in: await Project.find({ $or: [{ projectManager: authResult.user.id }, { teamMembers: authResult.user.id }] }).distinct("_id"),
+        $in: await Project.find(accessQuery).distinct("_id"),
       };
     }
     if (warehouseId) filter.warehouseId = warehouseId;

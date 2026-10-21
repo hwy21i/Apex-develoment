@@ -282,16 +282,16 @@ export default function ConstructionDashboard({
   const activeProjectsList = projectsList.slice(0, 5);
 
   // Real tasks calculation for Donut Chart
-  const taskTotals = data?.tasks?.total || 24;
-  const taskCompleted = data?.tasks?.completed ?? 16;
-  const taskInProgress = data?.tasks?.inProgress ?? 5;
-  const taskOverdue = data?.tasks?.overdue ?? 1;
+  const taskTotals = data?.tasks?.total ?? 0;
+  const taskCompleted = data?.tasks?.completed ?? 0;
+  const taskInProgress = data?.tasks?.inProgress ?? 0;
+  const taskOverdue = data?.tasks?.overdue ?? 0;
   const taskPending = Math.max(0, taskTotals - (taskCompleted + taskInProgress + taskOverdue));
 
-  const pctCompleted = Math.round((taskCompleted / taskTotals) * 100);
-  const pctInProgress = Math.round((taskInProgress / taskTotals) * 100);
-  const pctPending = Math.round((taskPending / taskTotals) * 100);
-  const pctOverdue = Math.round((taskOverdue / taskTotals) * 100);
+  const pctCompleted = taskTotals > 0 ? Math.round((taskCompleted / taskTotals) * 100) : 0;
+  const pctInProgress = taskTotals > 0 ? Math.round((taskInProgress / taskTotals) * 100) : 0;
+  const pctPending = taskTotals > 0 ? Math.round((taskPending / taskTotals) * 100) : 0;
+  const pctOverdue = taskTotals > 0 ? Math.round((taskOverdue / taskTotals) * 100) : 0;
 
   // Donut circumference for r=52 (C ≈ 326.73)
   const C = 2 * Math.PI * 52;
@@ -304,61 +304,8 @@ export default function ConstructionDashboard({
   const offsetOverdue = offsetPending + lenPending;
   const lenOverdue = (pctOverdue / 100) * C;
 
-  // Regional Project Locations for ProjectLocationsMap
-  const mappedLocations: ProjectLocationItem[] = [
-    {
-      id: "loc-addis",
-      name: "Addis Heights Tower",
-      projectCode: "PRJ-ADD-01",
-      city: "Addis Ababa",
-      region: "Central Hub",
-      lat: 9.032,
-      lng: 38.7469,
-      count: projectsList.filter((p) => (p.location || "").toLowerCase().includes("addis")).length || 2,
-      progress: 68,
-      status: "Active",
-      sites: "Addis Heights & Bole Commercial",
-    },
-    {
-      id: "loc-modjo",
-      name: "Modjo Logistics Hub",
-      projectCode: "PRJ-MDJ-02",
-      city: "Modjo Hub",
-      region: "Oromia Logistics Corridor",
-      lat: 8.5911,
-      lng: 39.1234,
-      count: projectsList.filter((p) => (p.location || "").toLowerCase().includes("modjo")).length || 1,
-      progress: 42,
-      status: "Active",
-      sites: "Modjo Dry Port Multi-Modal",
-    },
-    {
-      id: "loc-hawassa",
-      name: "Hawassa Industrial Extension",
-      projectCode: "PRJ-HAW-03",
-      city: "Hawassa",
-      region: "Sidama Special Economic Zone",
-      lat: 7.0504,
-      lng: 38.4955,
-      count: projectsList.filter((p) => (p.location || "").toLowerCase().includes("hawassa")).length || 1,
-      progress: 84,
-      status: "Phase 3 Handover",
-      sites: "Hawassa Eco-Industrial Park",
-    },
-    {
-      id: "loc-diredawa",
-      name: "Dire Dawa Corridor Depot",
-      projectCode: "PRJ-DIR-04",
-      city: "Dire Dawa",
-      region: "Eastern Trade Free Zone",
-      lat: 9.5931,
-      lng: 41.8661,
-      count: projectsList.filter((p) => (p.location || "").toLowerCase().includes("dire")).length || 1,
-      progress: 29,
-      status: "Groundwork",
-      sites: "Free Trade Logistics Depot",
-    },
-  ];
+  // Project Locations will be resolved automatically from real projects in the database
+  const mappedLocations: ProjectLocationItem[] = [];
 
   // Recent activity entries
   const recentActivities = projectsList.slice(0, 6).map((project, idx) => {

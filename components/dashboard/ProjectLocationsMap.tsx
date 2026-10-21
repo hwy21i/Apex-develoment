@@ -210,8 +210,10 @@ export default function ProjectLocationsMap({
   // Process and resolve projects into mapped and unmapped groups
   const { displayLocations, unmappedProjects } = useMemo(() => {
     if (!projects || projects.length === 0) {
-      const list = locations && locations.length > 0 ? locations : DEFAULT_ETHIOPIAN_LOCATIONS;
-      return { displayLocations: list, unmappedProjects: [] };
+      if (locations && locations.length > 0) {
+        return { displayLocations: locations, unmappedProjects: [] };
+      }
+      return { displayLocations: [], unmappedProjects: [] };
     }
 
     const mapped: ProjectLocationItem[] = [];
@@ -223,7 +225,7 @@ export default function ProjectLocationsMap({
       const projectCode = prj.projectCode || "PRJ-GEN";
       const locationText = prj.location || "";
       const status = prj.status || "Active";
-      const progress = prj.progress ?? prj.progressPercentage ?? 50;
+      const progress = prj.progress ?? prj.progressPercentage ?? 0;
 
       const resolved = resolveProjectCoordinates({
         location: locationText,
@@ -261,7 +263,7 @@ export default function ProjectLocationsMap({
 
     if (mapped.length === 0) {
       return {
-        displayLocations: locations && locations.length > 0 ? locations : DEFAULT_ETHIOPIAN_LOCATIONS,
+        displayLocations: locations && locations.length > 0 ? locations : [],
         unmappedProjects: unmapped,
       };
     }
@@ -705,38 +707,44 @@ export default function ProjectLocationsMap({
         </div>
 
         {/* Location List / Breakdown Cards */}
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-          {displayLocations.slice(0, 4).map((loc) => {
-            const isSelected = activeLocation?.id === loc.id;
-            return (
-              <button
-                key={loc.id}
-                type="button"
-                onClick={() => handleSelectLocation(loc)}
-                className={`p-3 rounded-xl text-left border transition-all ${
-                  isSelected
-                    ? "bg-[#F5F5F5] dark:bg-[#171717] border-[#000000] dark:border-[#FFFFFF] shadow-2xs"
-                    : "bg-[#FFFFFF] dark:bg-[#171717] border-[#D4D4D4] dark:border-[#303030] hover:border-[#888888] dark:hover:border-[#777777]"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
-                    {loc.city}
-                  </span>
-                  <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#F5F5F5] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF]">
-                    {loc.count} {loc.count === 1 ? "site" : "sites"}
-                  </span>
-                </div>
-                <p className="text-[10px] text-[#666666] dark:text-[#A3A3A3] font-mono truncate">
-                  {loc.region}
-                </p>
-                <div className="mt-2">
-                  <ProgressBar value={loc.progress} className="h-1" />
-                </div>
-              </button>
-            );
-          })}
-        </div>
+        {displayLocations.length > 0 ? (
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+            {displayLocations.slice(0, 4).map((loc) => {
+              const isSelected = activeLocation?.id === loc.id;
+              return (
+                <button
+                  key={loc.id}
+                  type="button"
+                  onClick={() => handleSelectLocation(loc)}
+                  className={`p-3 rounded-xl text-left border transition-all ${
+                    isSelected
+                      ? "bg-[#F5F5F5] dark:bg-[#171717] border-[#000000] dark:border-[#FFFFFF] shadow-2xs"
+                      : "bg-[#FFFFFF] dark:bg-[#171717] border-[#D4D4D4] dark:border-[#303030] hover:border-[#888888] dark:hover:border-[#777777]"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
+                      {loc.city}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#F5F5F5] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF]">
+                      {loc.count} {loc.count === 1 ? "site" : "sites"}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-[#666666] dark:text-[#A3A3A3] font-mono truncate">
+                    {loc.region}
+                  </p>
+                  <div className="mt-2">
+                    <ProgressBar value={loc.progress} className="h-1" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="mt-4 p-4 rounded-xl border border-dashed border-[#D4D4D4] dark:border-[#303030] text-center text-xs text-[#666666] dark:text-[#A3A3A3]">
+            No construction sites mapped yet. Newly created projects with verified locations will appear here.
+          </div>
+        )}
 
         {/* Unmapped / Awaiting Coordinates Notification Drawer */}
         {unmappedProjects.length > 0 && (

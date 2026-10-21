@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
   Plus, Search, Eye, PackageCheck, Warehouse, X
@@ -22,54 +22,6 @@ interface GoodsReceipt {
   deliveryNoteNumber: string;
 }
 
-const MOCK_RECEIPTS: GoodsReceipt[] = [
-  {
-    _id: "grn1",
-    grnNumber: "GRN-2024-0089",
-    poNumber: "PO-2024-0002",
-    supplierName: "Ethiopian Aggregate Industries",
-    projectName: "Ring Road Expansion",
-    warehouseName: "Site Warehouse A - Ring Road",
-    receivedDate: "2024-02-04",
-    receivedBy: "Kassahun Bekele (Storekeeper)",
-    status: "Verified",
-    itemsCount: 1,
-    totalReceivedQty: 150,
-    totalValue: 225000,
-    deliveryNoteNumber: "DN-9941",
-  },
-  {
-    _id: "grn2",
-    grnNumber: "GRN-2024-0090",
-    poNumber: "PO-2024-0003",
-    supplierName: "Tekle Steel Works Plc",
-    projectName: "Bole Business Park",
-    warehouseName: "Central Logistics Hub",
-    receivedDate: "2024-02-02",
-    receivedBy: "Mulugeta Assefa (Quality Officer)",
-    status: "Discrepancy",
-    itemsCount: 2,
-    totalReceivedQty: 28,
-    totalValue: 1820000,
-    deliveryNoteNumber: "DN-4412",
-  },
-  {
-    _id: "grn3",
-    grnNumber: "GRN-2024-0091",
-    poNumber: "PO-2024-0001",
-    supplierName: "Addis Construction Supply Co.",
-    projectName: "Addis Heights Tower",
-    warehouseName: "Addis Heights Main Store",
-    receivedDate: "2024-02-06",
-    receivedBy: "Solomon Worku (Site Engineer)",
-    status: "Pending Inspection",
-    itemsCount: 2,
-    totalReceivedQty: 500,
-    totalValue: 750000,
-    deliveryNoteNumber: "DN-8802",
-  },
-];
-
 const STATUS_BADGES: Record<string, string> = {
   Verified: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
   Discrepancy: "bg-[#FAFAFA] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]",
@@ -77,11 +29,57 @@ const STATUS_BADGES: Record<string, string> = {
 };
 
 export default function GoodsReceiptsPage() {
-  const [receipts, setReceipts] = useState<GoodsReceipt[]>(MOCK_RECEIPTS);
+  const [receipts, setReceipts] = useState<GoodsReceipt[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState<GoodsReceipt | null>(null);
+
+  const loadReceipts = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/goods-receipts", { cache: "no-store" });
+      const json = await res.json();
+      if (res.ok && json.success && Array.isArray(json.data) && json.data.length > 0) {
+        setReceipts(
+          json.data.map((r: Record<string, unknown>) => {
+            const po = r.purchaseOrderId as Record<string, unknown> | null;
+            const sup = r.supplierId as Record<string, unknown> | null;
+            const proj = r.projectId as Record<string, unknown> | null;
+            const wh = r.warehouseId as Record<string, unknown> | null;
+            const recBy = r.receivedBy as Record<string, unknown> | null;
+            const items = (r.items as Record<string, unknown>[]) || [];
+            return {
+              _id: String(r._id),
+              grnNumber: String(r.grnNumber),
+              poNumber: String(po?.poNumber || "PO-REF"),
+              supplierName: String(sup?.name || "Verified Supplier"),
+              projectName: String(proj?.name || "Active Site"),
+              warehouseName: String(wh?.name || "Site Warehouse"),
+              receivedDate: r.receiptDate ? String(r.receiptDate).split("T")[0] : new Date().toISOString().split("T")[0],
+              receivedBy: String(recBy?.fullName || "Storekeeper"),
+              status: r.status === "POSTED" ? "Verified" : r.status === "REJECTED" ? "Discrepancy" : "Pending Inspection",
+              itemsCount: items.length || 1,
+              totalReceivedQty: items.reduce((s, i) => s + Number(i.receivedQuantity || 0), 0),
+              totalValue: items.reduce((s, i) => s + Number(i.totalPrice || 0), 0),
+              deliveryNoteNumber: String(r.deliveryNoteNumber || "DN-REF"),
+            };
+          })
+        );
+      } else {
+        setReceipts([]);
+      }
+    } catch {
+      setReceipts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadReceipts();
+  }, []);
 
   const [form, setForm] = useState({
     grnNumber: "GRN-2024-0094",
@@ -196,13 +194,13 @@ export default function GoodsReceiptsPage() {
           </div>
           <div className="bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-4 sm:p-5 shadow-xs">
             <p className="text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider">Verified Into Inventory</p>
-            <p className="text-xl sm:text-2xl font-black text-[#000000] dark:text-[#FFFFFF] dark:text-[#000000] dark:text-[#FFFFFF] mt-1">
+            <p className="text-xl sm:text-2xl font-black text-[#000000] dark:text-[#FFFFFF] mt-1">
               {receipts.filter((r) => r.status === "Verified").length}
             </p>
           </div>
           <div className="bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-4 sm:p-5 shadow-xs">
             <p className="text-xs font-semibold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider">Flagged Discrepancies</p>
-            <p className="text-xl sm:text-2xl font-black text-[#000000] dark:text-[#FFFFFF] dark:text-[#000000] dark:text-[#FFFFFF] mt-1">
+            <p className="text-xl sm:text-2xl font-black text-[#000000] dark:text-[#FFFFFF] mt-1">
               {receipts.filter((r) => r.status === "Discrepancy").length}
             </p>
           </div>
@@ -242,7 +240,7 @@ export default function GoodsReceiptsPage() {
         <div className="bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
-              <thead className="bg-[#FAFAFA] dark:bg-[#171717] dark:bg-[#171717] border-b border-[#D4D4D4] dark:border-[#303030]">
+              <thead className="bg-[#FAFAFA] dark:bg-[#171717] border-b border-[#D4D4D4] dark:border-[#303030]">
                 <tr>
                   <th className="text-left text-[11px] font-bold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3.5">GRN #</th>
                   <th className="text-left text-[11px] font-bold text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider px-4 py-3.5">PO &amp; Supplier</th>
@@ -255,44 +253,66 @@ export default function GoodsReceiptsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030]">
-                {filtered.map((r) => (
-                  <tr key={r._id} className="hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F] dark:hover:bg-[#1F1F1F]/20 transition-colors">
-                    <td className="px-4 py-3">
-                      <span className="font-mono text-[#666666] dark:text-[#A3A3A3] font-bold">{r.grnNumber}</span>
-                      <p className="text-[#888888] dark:text-[#888888] dark:text-[#A3A3A3] text-[11px] mt-0.5">DN: {r.deliveryNoteNumber}</p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-[#000000] dark:text-[#FFFFFF] font-semibold">{r.supplierName}</span>
-                      <p className="font-mono text-[#888888] dark:text-[#888888] dark:text-[#A3A3A3] text-[11px] mt-0.5">{r.poNumber}</p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="text-[#000000] dark:text-[#FFFFFF] text-xs">{r.projectName}</p>
-                      <p className="text-[#888888] dark:text-[#888888] dark:text-[#A3A3A3] text-[11px] flex items-center gap-1 mt-0.5">
-                        <Warehouse size={11} /> {r.warehouseName}
+                {loading ? (
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <tr key={i} className="animate-pulse">
+                      <td colSpan={8} className="px-4 py-4">
+                        <div className="h-4 bg-[#E5E5E5] dark:bg-[#262626] rounded w-full"></div>
+                      </td>
+                    </tr>
+                  ))
+                ) : filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="py-12 text-center text-[#666666] dark:text-[#A3A3A3]">
+                      <PackageCheck className="w-8 h-8 mx-auto mb-2 opacity-40 text-[#666666] dark:text-[#A3A3A3]" />
+                      <p className="font-semibold text-sm text-[#000000] dark:text-[#FFFFFF]">No goods receipts found</p>
+                      <p className="text-xs text-[#888888] dark:text-[#737373] mt-1">
+                        {search || statusFilter !== "All"
+                          ? "Try adjusting your search query or status filter."
+                          : "Inbound delivery notes and material receipts will appear here."}
                       </p>
                     </td>
-                    <td className="px-4 py-3 text-[#666666] dark:text-[#A3A3A3]">
-                      {new Date(r.receivedDate).toLocaleDateString("en-ET")}
-                    </td>
-                    <td className="px-4 py-3 text-[#666666] dark:text-[#A3A3A3] dark:text-[#FFFFFF]">{r.receivedBy}</td>
-                    <td className="px-4 py-3 font-bold text-[#000000] dark:text-[#FFFFFF]">{fmt(r.totalValue)}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${STATUS_BADGES[r.status]}`}>
-                        {r.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedReceipt(r)}
-                        className="text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-[#FAFAFA] dark:hover:bg-[#1F1F1F] p-1.5 rounded-lg transition-colors"
-                        title="View GRN Document"
-                      >
-                        <Eye size={16} />
-                      </button>
-                    </td>
                   </tr>
-                ))}
+                ) : (
+                  filtered.map((r) => (
+                    <tr key={r._id} className="hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F]/20 transition-colors">
+                      <td className="px-4 py-3">
+                        <span className="font-mono text-[#666666] dark:text-[#A3A3A3] font-bold">{r.grnNumber}</span>
+                        <p className="text-[#888888] dark:text-[#A3A3A3] text-[11px] mt-0.5">DN: {r.deliveryNoteNumber}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="text-[#000000] dark:text-[#FFFFFF] font-semibold">{r.supplierName}</span>
+                        <p className="font-mono text-[#888888] dark:text-[#A3A3A3] text-[11px] mt-0.5">{r.poNumber}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="text-[#000000] dark:text-[#FFFFFF] text-xs">{r.projectName}</p>
+                        <p className="text-[#888888] dark:text-[#A3A3A3] text-[11px] flex items-center gap-1 mt-0.5">
+                          <Warehouse size={11} /> {r.warehouseName}
+                        </p>
+                      </td>
+                      <td className="px-4 py-3 text-[#666666] dark:text-[#A3A3A3]">
+                        {new Date(r.receivedDate).toLocaleDateString("en-ET")}
+                      </td>
+                      <td className="px-4 py-3 text-[#666666] dark:text-[#FFFFFF]">{r.receivedBy}</td>
+                      <td className="px-4 py-3 font-bold text-[#000000] dark:text-[#FFFFFF]">{fmt(r.totalValue)}</td>
+                      <td className="px-4 py-3">
+                        <span className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${STATUS_BADGES[r.status]}`}>
+                          {r.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedReceipt(r)}
+                          className="text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-[#FAFAFA] dark:hover:bg-[#1F1F1F] p-1.5 rounded-lg transition-colors"
+                          title="View GRN Document"
+                        >
+                          <Eye size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

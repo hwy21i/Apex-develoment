@@ -25,8 +25,14 @@ export async function POST(request: Request) {
     const input = await body(request, registerSchema);
 
     // 1. Verify required environment variables
-    if (!process.env.MONGODB_URI || !process.env.MONGODB_URI.trim()) {
-      console.error("[Register API] Missing MONGODB_URI environment variable.");
+    const rawMongoUri =
+      process.env.MONGODB_URI?.trim() ||
+      process.env.DATABASE_URL?.trim() ||
+      process.env.MONGO_URI?.trim() ||
+      process.env.MONGODB_URL?.trim();
+
+    if (!rawMongoUri) {
+      console.error("[Register API] Missing MongoDB connection string in environment variables.");
       return fail(
         "CONFIGURATION_ERROR",
         "Database service configuration is missing. Please configure MONGODB_URI in Vercel project settings.",

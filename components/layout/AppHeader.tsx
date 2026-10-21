@@ -418,7 +418,7 @@ export default function AppHeader({
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#000000] dark:bg-[#FFFFFF] text-[10px] font-bold text-[#FFFFFF] shadow-2xs ring-2 ring-[#FFFFFF] dark:ring-[#000000]">
+              <span className="absolute top-2 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#000000] dark:bg-[#FFFFFF] text-[10px] font-bold text-[#FFFFFF] dark:text-[#000000] shadow-2xs ring-2 ring-[#FFFFFF] dark:ring-[#000000]">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </span>
             )}

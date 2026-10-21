@@ -2,7 +2,7 @@ import { connectToDatabase } from "@/lib/db/mongodb";
 import { body, fail, handleError, ok } from "@/lib/api";
 import { requirePermission } from "@/lib/auth/guard";
 import { taskSchema } from "@/lib/validation/schemas";
-import { canAccessProject } from "@/lib/services/access";
+import { canAccessProject, buildProjectAccessQuery } from "@/lib/services/access";
 import { Task } from "@/models/Task";
 import { Project } from "@/models/Project";
 import { logAudit } from "@/lib/services/audit";
@@ -21,10 +21,14 @@ export async function GET(request: Request) {
     const status = searchParams.get("status");
 
     const query: Record<string, unknown> = mine ? { assignedTo: guard.user.id } : {};
-    if (guard.user.role !== "Admin") {
-      const projectIds = await Project.find({
-        $or: [{ projectManager: guard.user.id }, { teamMembers: guard.user.id }],
-      }).distinct("_id");
+    const isExecutive =
+      guard.user.role === "Super Admin" ||
+      guard.user.role === "Company Admin" ||
+      guard.user.role === "Admin";
+
+    if (!isExecutive) {
+      const accessQuery = buildProjectAccessQuery(guard.user);
+      const projectIds = await Project.find(accessQuery).distinct("_id");
       query.projectId = { $in: projectIds };
     }
     if (projectId) {

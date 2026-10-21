@@ -4,6 +4,8 @@ import { requirePermission } from "@/lib/auth/guard";
 import { projectSchema } from "@/lib/validation/schemas";
 import { Project } from "@/models/Project";
 import { logAudit } from "@/lib/services/audit";
+import { buildProjectAccessQuery, normalizeProjectDocument } from "@/lib/services/access";
+import mongoose from "mongoose";
 
 export const runtime = "nodejs";
 
@@ -18,30 +20,62 @@ export async function GET(request: Request) {
     const limit = Math.min(100, Math.max(1, Number(searchParams.get("limit") ?? 20)));
     const search = searchParams.get("q");
 
-    const query: Record<string, unknown> =
-      guard.user.role === "Admin"
-        ? {}
-        : { $or: [{ projectManager: guard.user.id }, { teamMembers: guard.user.id }] };
+    const baseAccessQuery = buildProjectAccessQuery(guard.user);
 
-    if (search) {
+    let query: Record<string, unknown> = baseAccessQuery;
+
+    if (search && search.trim()) {
+      const term = search.trim();
       const searchFilter = [
-        { name: { $regex: search, $options: "i" } },
-        { projectCode: { $regex: search, $options: "i" } },
-        { location: { $regex: search, $options: "i" } },
+        { name: { $regex: term, $options: "i" } },
+        { projectCode: { $regex: term, $options: "i" } },
+        { location: { $regex: term, $options: "i" } },
+        { client: { $regex: term, $options: "i" } },
+        { clientName: { $regex: term, $options: "i" } },
       ];
-      if (guard.user.role === "Admin") query.$or = searchFilter;
-      else query.$and = [{ $or: [{ projectManager: guard.user.id }, { teamMembers: guard.user.id }] }, { $or: searchFilter }];
+
+      if (Object.keys(baseAccessQuery).length === 0) {
+        query = { $or: searchFilter };
+      } else {
+        query = { $and: [baseAccessQuery, { $or: searchFilter }] };
+      }
     }
 
-    const [items, total] = await Promise.all([
+    let [rawItems, total] = await Promise.all([
       Project.find(query)
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit)
-        .populate("projectManager", "fullName email username")
-        .populate("teamMembers", "fullName email username role"),
+        .populate("projectManager", "fullName email username role")
+        .populate("teamMembers", "fullName email username role")
+        .lean(),
       Project.countDocuments(query),
     ]);
+
+    // Backward-compatibility: Check if collection was named 'Projects' with capital P
+    if (total === 0 && !search && mongoose.connection.db) {
+      try {
+        const altCollection = mongoose.connection.db.collection("Projects");
+        const altCount = await altCollection.countDocuments();
+        if (altCount > 0) {
+          const altDocs = await altCollection
+            .find({})
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .toArray();
+
+          rawItems = altDocs as unknown as typeof rawItems;
+          total = altCount;
+        }
+      } catch {
+        // Fallback gracefully if admin check is not permitted
+      }
+    }
+
+    const items = rawItems.map((item) =>
+      normalizeProjectDocument(item as Record<string, unknown>)
+    );
 
     return ok({
       items,

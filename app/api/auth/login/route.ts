@@ -26,8 +26,14 @@ export async function POST(request: Request) {
     const { identifier, password } = await body(request, loginSchema);
 
     // 1. Verify required environment variables
-    if (!process.env.MONGODB_URI || !process.env.MONGODB_URI.trim()) {
-      console.error("[Auth API] Missing MONGODB_URI environment variable.");
+    const rawMongoUri =
+      process.env.MONGODB_URI?.trim() ||
+      process.env.DATABASE_URL?.trim() ||
+      process.env.MONGO_URI?.trim() ||
+      process.env.MONGODB_URL?.trim();
+
+    if (!rawMongoUri) {
+      console.error("[Auth API] Missing MongoDB connection string in environment variables.");
       return fail(
         "CONFIGURATION_ERROR",
         "Database service configuration is missing. Please configure MONGODB_URI in Vercel project settings.",
@@ -53,9 +59,22 @@ export async function POST(request: Request) {
     } catch (dbErr: unknown) {
       const errMsg = dbErr instanceof Error ? dbErr.message : String(dbErr);
       console.error("[Auth API] Database connection failure:", sanitizeMongoUrl(errMsg));
+
+      if (
+        errMsg.includes("bad auth") ||
+        errMsg.includes("Authentication failed") ||
+        errMsg.includes("auth failed")
+      ) {
+        return fail(
+          "DATABASE_AUTH_ERROR",
+          "Database authentication failed. Please verify that MONGODB_URI credentials (username and password) are configured correctly in Vercel project environment variables.",
+          503
+        );
+      }
+
       return fail(
         "DATABASE_UNAVAILABLE",
-        "Database service is currently unavailable. Please verify MongoDB cluster status and network access.",
+        "Database service is currently unavailable. Please verify MongoDB cluster status and network access (allow 0.0.0.0/0).",
         503
       );
     }
