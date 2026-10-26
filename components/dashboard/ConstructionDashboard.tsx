@@ -360,7 +360,7 @@ export default function ConstructionDashboard({
   return (
     <div className="space-y-6 max-w-full min-w-0">
       {/* ─── 1. Welcome Section & Contextual Greeting ─── */}
-      <section className="relative overflow-hidden rounded-2xl p-6 sm:p-7 bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <section className="v18-card animate-v18-spring relative overflow-hidden rounded-2xl p-6 sm:p-7 bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-[#666666] dark:text-[#A3A3A3] mb-1">
             <span>{currentDateString}</span>
@@ -399,7 +399,7 @@ export default function ConstructionDashboard({
       {/* ─── 2. Top 4 Monochrome KPI Cards ─── */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Active Projects */}
-        <div className="p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
+        <div className="v18-card animate-v18-spring v18-stagger-1 p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3]">
               Active Projects
@@ -423,7 +423,7 @@ export default function ConstructionDashboard({
         </div>
 
         {/* Card 2: Total Contract Value */}
-        <div className="p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
+        <div className="v18-card animate-v18-spring v18-stagger-2 p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3]">
               Total Contract Value
@@ -447,7 +447,7 @@ export default function ConstructionDashboard({
         </div>
 
         {/* Card 3: Total Expenses */}
-        <div className="p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
+        <div className="v18-card animate-v18-spring v18-stagger-3 p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3]">
               Total Expenses
@@ -471,7 +471,7 @@ export default function ConstructionDashboard({
         </div>
 
         {/* Card 4: Project Progress */}
-        <div className="p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
+        <div className="v18-card animate-v18-spring v18-stagger-4 p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3]">
               Project Progress
@@ -498,7 +498,7 @@ export default function ConstructionDashboard({
       {/* ─── 3. Main Analytics: Progress Overview (Line) + Tasks Overview (Donut) ─── */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Project Progress Overview: Monochrome Line Chart Card */}
-        <div className="lg:col-span-2 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
+        <div className="v18-card animate-v18-spring v18-stagger-3 lg:col-span-2 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#D4D4D4] dark:border-[#303030]">
               <div>
@@ -633,7 +633,7 @@ export default function ConstructionDashboard({
         </div>
 
         {/* Tasks Overview: Circular Donut Visualization (Section 4.G) */}
-        <div className="border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
+        <div className="v18-card animate-v18-spring v18-stagger-4 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[#D4D4D4] dark:border-[#303030]">
               <div>
@@ -796,7 +796,7 @@ export default function ConstructionDashboard({
       {/* ─── 4. Secondary Grid: Active Projects + Project Locations (Section 4.F) ─── */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left 5 Cols: Active Construction Projects List */}
-        <div className="lg:col-span-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
+        <div className="v18-card animate-v18-spring v18-stagger-5 lg:col-span-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
           <div>
             <div className="flex items-center justify-between pb-4 border-b border-[#D4D4D4] dark:border-[#303030]">
               <div>
@@ -879,7 +879,7 @@ export default function ConstructionDashboard({
       </section>
 
       {/* ─── 5. Recent Activity / Table with Filtering & CSV Export ─── */}
-      <section className="border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl overflow-hidden shadow-xs">
+      <section className="v18-card animate-v18-spring v18-stagger-6 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl overflow-hidden shadow-xs">
         <div className="p-5 sm:p-6 border-b border-[#D4D4D4] dark:border-[#303030] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">

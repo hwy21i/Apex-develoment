@@ -35,6 +35,12 @@ export async function GET() {
       services: {
         database: {
           status: dbStatus,
+          configured: Boolean(
+            process.env.MONGODB_URI?.trim() ||
+            process.env.DATABASE_URL?.trim() ||
+            process.env.MONGO_URI?.trim() ||
+            process.env.MONGODB_URL?.trim()
+          ),
           latencyMs: dbLatencyMs,
         },
         memory: {

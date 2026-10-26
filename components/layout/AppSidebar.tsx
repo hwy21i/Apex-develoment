@@ -193,12 +193,15 @@ export default function AppSidebar({
                 href={item.href}
                 onClick={onMobileClose}
                 title={isCollapsed ? item.label : undefined}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all group relative ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all duration-200 group relative ${
                   isActive
                     ? "bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] font-bold shadow-xs border border-[#D4D4D4] dark:border-[#303030]"
                     : "text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-[#F5F5F5] dark:hover:bg-[#111111]"
                 } ${isCollapsed ? "justify-center px-2" : ""}`}
               >
+                {isActive && (
+                  <span className="absolute left-1 top-2.5 bottom-2.5 w-1 rounded-full bg-[#000000] dark:bg-[#FFFFFF]" />
+                )}
                 <Icon
                   className={`w-4 h-4 shrink-0 transition-transform duration-200 group-hover:scale-110 ${
                     isActive

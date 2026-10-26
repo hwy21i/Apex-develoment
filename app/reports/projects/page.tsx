@@ -1,16 +1,19 @@
 "use client";
 
+import React, { useState } from "react";
 import AppShell from "@/components/layout/AppShell";
-import { exportCsv, csvSlug } from "@/lib/exportCsv";
-import { FileText, Download } from "lucide-react";
+import { downloadReportPdf } from "@/lib/exportPdf";
+import { FileText, Download, Loader2 } from "lucide-react";
 
 export default function ProjectReportsPage() {
+  const [downloading, setDownloading] = useState<string | null>(null);
+
   const reports = [
     {
       title: "Monthly Portfolio Progress & Executive Summary",
       period: "January 2024",
       generatedDate: "2024-02-01",
-      format: "PDF (14 pages)",
+      format: "PDF Official",
       type: "Executive",
       size: "4.8 MB",
     },
@@ -18,7 +21,7 @@ export default function ProjectReportsPage() {
       title: "Earned Value Management (EVM) CPI/SPI Report",
       period: "Q4 2023 - Q1 2024",
       generatedDate: "2024-02-05",
-      format: "Excel / PDF",
+      format: "PDF Official",
       type: "Cost & Schedule",
       size: "2.1 MB",
     },
@@ -26,40 +29,42 @@ export default function ProjectReportsPage() {
       title: "Addis Heights Tower - Structural Deck Inspection Digest",
       period: "Bi-Weekly",
       generatedDate: "2024-02-06",
-      format: "PDF (8 pages)",
+      format: "PDF Official",
       type: "Site Quality",
-      size: "8.5 MB",
+      size: "3.5 MB",
     },
     {
       title: "Subcontractor Performance & Claims Evaluation",
       period: "Year-To-Date",
       generatedDate: "2024-01-31",
-      format: "PDF (12 pages)",
+      format: "PDF Official",
       type: "Commercial",
-      size: "3.2 MB",
+      size: "2.8 MB",
     },
   ];
 
-  const columns = ["Title", "Type", "Period", "Generated", "Format", "Size"];
-
-  const handleDownload = (r: (typeof reports)[number]) => {
-    exportCsv(`report-projects-${csvSlug(r.title)}.csv`, [
-      columns,
-      [r.title, r.type, r.period, r.generatedDate, r.format, r.size],
-    ]);
+  const handleDownload = async (r: (typeof reports)[number]) => {
+    setDownloading(r.title);
+    try {
+      await downloadReportPdf("projects", { title: r.title });
+    } finally {
+      setDownloading(null);
+    }
   };
 
-  const handleGenerateCustom = () => {
-    exportCsv("report-projects-all.csv", [
-      columns,
-      ...reports.map((r) => [r.title, r.type, r.period, r.generatedDate, r.format, r.size]),
-    ]);
+  const handleGenerateCustom = async () => {
+    setDownloading("custom");
+    try {
+      await downloadReportPdf("projects", { title: "Complete Projects Portfolio Status & Progress" });
+    } finally {
+      setDownloading(null);
+    }
   };
 
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-[#000000] dark:text-[#FFFFFF]">Project Progress & Milestone Reports</h1>
             <p className="text-[#666666] dark:text-[#A3A3A3] text-sm mt-1">
@@ -69,10 +74,11 @@ export default function ProjectReportsPage() {
           <button
             type="button"
             onClick={handleGenerateCustom}
-            className="flex items-center gap-2 bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            disabled={downloading === "custom"}
+            className="erp-btn-md bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] cursor-pointer"
           >
-            <FileText size={16} />
-            Generate Custom Report
+            {downloading === "custom" ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText size={16} />}
+            <span>Export Portfolio Report (PDF)</span>
           </button>
         </div>
 
@@ -81,14 +87,14 @@ export default function ProjectReportsPage() {
           {reports.map((r, i) => (
             <div
               key={i}
-              className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-xl p-5 flex flex-col justify-between hover:border-[#000000] dark:hover:border-[#FFFFFF] transition-colors"
+              className="v18-card p-5 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs px-2 py-0.5 rounded bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/10 text-[#666666] dark:text-[#A3A3A3] font-medium">
+                  <span className="text-xs px-2 py-0.5 rounded bg-[#F5F5F5] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] font-medium">
                     {r.type}
                   </span>
-                  <span className="text-xs text-[#666666] dark:text-[#A3A3A3]">{r.format}</span>
+                  <span className="text-xs font-mono text-[#666666] dark:text-[#A3A3A3]">{r.format}</span>
                 </div>
                 <h3 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF] mt-2">{r.title}</h3>
                 <p className="text-xs text-[#666666] dark:text-[#A3A3A3] mt-1">Reporting Period: {r.period}</p>
@@ -99,9 +105,11 @@ export default function ProjectReportsPage() {
                 <button
                   type="button"
                   onClick={() => handleDownload(r)}
-                  className="flex items-center gap-1 text-xs text-[#000000] dark:text-[#FFFFFF] hover:underline font-semibold"
+                  disabled={downloading === r.title}
+                  className="erp-btn-sm bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] hover:opacity-90"
                 >
-                  <Download size={14} /> Download Report
+                  {downloading === r.title ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download size={14} />}
+                  <span>{downloading === r.title ? "Generating..." : "Download Official PDF"}</span>
                 </button>
               </div>
             </div>
@@ -111,4 +119,3 @@ export default function ProjectReportsPage() {
     </AppShell>
   );
 }
-

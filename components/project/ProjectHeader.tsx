@@ -133,7 +133,7 @@ export default function ProjectHeader({ project }: { project: ProjectSummary }) 
 
             <button
               onClick={() => setOpen(true)}
-              className="rounded-xl bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] hover:opacity-90 px-4 py-2 text-xs font-bold transition-all shadow-xs cursor-pointer"
+              className="erp-btn-md bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] hover:opacity-90 shadow-xs cursor-pointer"
             >
               Update Progress / Phase
             </button>
@@ -149,10 +149,10 @@ export default function ProjectHeader({ project }: { project: ProjectSummary }) 
 
       {/* ─── UPDATE PROGRESS MODAL ─── */}
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-v18-backdrop">
           <form
             onSubmit={save}
-            className="w-full max-w-lg rounded-2xl border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] p-6 shadow-2xl space-y-5 animate-in fade-in duration-150"
+            className="v18-card animate-v18-modal w-full erp-modal-md rounded-2xl border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] p-6 shadow-2xl space-y-5"
           >
             <div className="flex items-center justify-between pb-3 border-b border-[#D4D4D4] dark:border-[#303030]">
               <h2 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">Update Project Status & Phase</h2>
@@ -236,8 +236,8 @@ export default function ProjectHeader({ project }: { project: ProjectSummary }) 
 
       {/* ─── ARCHIVE CONFIRMATION MODAL ─── */}
       {showArchiveModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-2xl border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] p-6 shadow-2xl space-y-4 animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-v18-backdrop">
+          <div className="v18-card animate-v18-modal w-full erp-modal-sm rounded-2xl border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] p-6 shadow-2xl space-y-4">
             <div className="flex items-center gap-2 text-[#000000] dark:text-[#FFFFFF]">
               <AlertTriangle className="w-5 h-5" />
               <h3 className="text-base font-bold">Archive Project: {project.name}</h3>

@@ -93,7 +93,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             customPermissions: u.customPermissions,
             permissions: json.data.permissions || [],
           };
-          setUser(mapped);
+          const current = userRef.current;
+          if (
+            !current ||
+            current.id !== mapped.id ||
+            current.fullName !== mapped.fullName ||
+            current.role !== mapped.role ||
+            current.email !== mapped.email
+          ) {
+            setUser(mapped);
+          }
           try {
             sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(mapped));
           } catch {}
@@ -148,11 +157,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // If user is already loaded in memory, don't trigger a blocking reload on navigation
-    if (userRef.current) {
-      return;
-    }
-
+    // Revalidate session in background on navigation without blocking
     fetchUser().finally(() => {
       if (!ignore) setLoading(false);
     });

@@ -25,7 +25,7 @@ const materialSchema = new Schema(
     unitOfMeasure: {
       type: String,
       required: true,
-      enum: ["bags", "tons", "kg", "m3", "m2", "meters", "pieces", "liters", "rolls"],
+      trim: true,
       default: "pieces",
     },
     minimumStockLevel: { type: Number, required: true, min: 0, default: 10 },
@@ -33,6 +33,7 @@ const materialSchema = new Schema(
     unitCost: { type: Number, required: true, min: 0 }, // in ETB
     preferredSupplierId: { type: Schema.Types.ObjectId, ref: "Supplier" },
     defaultWarehouseId: { type: Schema.Types.ObjectId, ref: "Warehouse" },
+    gradeOrSpec: { type: String, trim: true },
     description: { type: String, trim: true },
     status: { type: String, enum: ["ACTIVE", "DISCONTINUED"], default: "ACTIVE", index: true },
   },
@@ -43,4 +44,3 @@ materialSchema.index({ name: 1, category: 1 });
 
 export type MaterialDocument = InferSchemaType<typeof materialSchema>;
 export const Material = models.Material || model("Material", materialSchema);
-

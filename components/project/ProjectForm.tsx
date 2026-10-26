@@ -321,14 +321,14 @@ export default function ProjectForm({ initialProject }: ProjectFormProps) {
         <button
           type="button"
           onClick={() => router.back()}
-          className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-[#D4D4D4] dark:border-[#303030] text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FAFAFA] dark:hover:bg-[#1F1F1F] transition-colors cursor-pointer"
+          className="erp-btn-md w-full sm:w-auto border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] hover:bg-[#FAFAFA] dark:hover:bg-[#1F1F1F]"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={saving}
-          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] font-bold text-xs shadow-md disabled:opacity-50 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+          className="erp-btn-md w-full sm:w-auto bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] shadow-md disabled:opacity-50"
         >
           {saving ? (
             <span>Saving Project...</span>

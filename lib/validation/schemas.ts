@@ -223,6 +223,31 @@ export const purchaseOrderValidationSchema = z.object({
   currency: z.string().default("ETB"),
 });
 
+// ================= MATERIAL VALIDATION =================
+export const materialValidationSchema = z.object({
+  name: z.string().min(2, "Material name must be at least 2 characters").max(200),
+  sku: z.string().min(2).max(50).optional(),
+  category: z.enum([
+    "Cement & Aggregates",
+    "Steel & Rebar",
+    "Masonry & Bricks",
+    "Plumbing & Pipes",
+    "Electrical & Lighting",
+    "Timber & Formwork",
+    "Finishing & Paints",
+    "Safety Gear",
+    "Hardware & Fasteners",
+    "Other",
+  ]),
+  unitOfMeasure: z.string().min(1, "Unit of measure is required"),
+  minimumStockLevel: z.coerce.number().nonnegative().default(10),
+  currentStock: z.coerce.number().nonnegative().default(0),
+  unitCost: z.coerce.number().nonnegative("Unit cost cannot be negative"),
+  gradeOrSpec: z.string().max(200).optional(),
+  description: z.string().max(1000).optional(),
+  status: z.enum(["ACTIVE", "DISCONTINUED"]).default("ACTIVE"),
+});
+
 // ================= EXPENSE VALIDATION =================
 export const expenseValidationSchema = z.object({
   projectId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid Project ID"),

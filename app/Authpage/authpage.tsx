@@ -656,7 +656,7 @@ export default function AuthPage({
           <ThemeToggle size="sm" />
         </div>
 
-        <div className="w-full max-w-[460px] bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-7 sm:p-9 shadow-xl space-y-6">
+        <div className="v18-card-elevated animate-v18-spring w-full max-w-[460px] bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-7 sm:p-9 shadow-xl space-y-6">
           {/* Mode Switch Pills */}
           <div className="inline-flex p-1 bg-[#F5F5F5] dark:bg-[#000000] border border-[#D4D4D4] dark:border-[#303030] rounded-xl">
             {(["signin", "signup"] as const).map((m) => (

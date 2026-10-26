@@ -223,7 +223,7 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
           <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-[#FFFFFF]/90 via-[#FFFFFF]/75 to-transparent dark:from-[#0A0A0A]/90 dark:via-[#0A0A0A]/80 dark:to-transparent lg:w-7/12 transition-colors duration-300" />
           {/* Architectural Precision Blueprint Grid */}
           <div
-            className="absolute inset-0 w-full h-full opacity-35 dark:opacity-20"
+            className="absolute inset-0 w-full h-full opacity-35 dark:opacity-20 animate-blueprint-drift"
             style={{
               backgroundImage: `
                 linear-gradient(to right, rgba(128,128,128,0.08) 1px, transparent 1px),
@@ -345,7 +345,7 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
               visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
-            <div className="bg-[#FFFFFF]/95 dark:bg-[#111111]/95 backdrop-blur-md border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-5 sm:p-6 shadow-2xl relative group">
+            <div className="v18-card-elevated animate-v18-spring bg-[#FFFFFF]/95 dark:bg-[#111111]/95 backdrop-blur-md border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-5 sm:p-6 shadow-2xl relative group">
               {/* Card Header */}
               <div className="flex items-center justify-between pb-4 border-b border-[#D4D4D4] dark:border-[#303030]">
                 <div className="flex items-center gap-2">
@@ -429,12 +429,12 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
       {/* ─── LIVE STATS BAND ─── */}
       <section className="relative z-10 bg-[#FFFFFF] dark:bg-[#000000] border-y border-[#D4D4D4] dark:border-[#303030] py-8 px-6 sm:px-12 shadow-xs">
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {STATS.map((stat) => {
+          {STATS.map((stat, sIdx) => {
             const Icon = stat.icon;
             return (
               <div
                 key={stat.label}
-                className="flex items-center gap-4 p-4 rounded-xl bg-[#FAFAFA] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] hover:border-[#000000] dark:hover:border-[#FFFFFF] transition-all group"
+                className={`v18-card animate-v18-spring v18-stagger-${sIdx + 1} flex items-center gap-4 p-4 rounded-xl bg-[#FAFAFA] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] transition-all group`}
               >
                 <div className="p-3 rounded-xl bg-[#FFFFFF] dark:bg-[#000000] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] group-hover:scale-105 transition-all shrink-0">
                   <Icon className="w-5 h-5" />
@@ -474,12 +474,12 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
 
           {/* 6 Capabilities Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {SIX_CAPABILITIES.map((feat) => {
+            {SIX_CAPABILITIES.map((feat, fIdx) => {
               const Icon = feat.icon;
               return (
                 <div
                   key={feat.title}
-                  className="bg-[#FFFFFF]/90 dark:bg-[#111111]/90 backdrop-blur-xs border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-6 sm:p-7 hover:border-[#000000] dark:hover:border-[#FFFFFF] transition-all group shadow-xs"
+                  className={`v18-card animate-v18-spring v18-stagger-${(fIdx % 3) + 1} bg-[#FFFFFF]/90 dark:bg-[#111111]/90 backdrop-blur-xs border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-6 sm:p-7 transition-all group shadow-xs`}
                 >
                   <div className="flex items-center justify-between mb-5">
                     <div className="w-11 h-11 rounded-xl bg-[#F5F5F5] dark:bg-[#000000] border border-[#D4D4D4] dark:border-[#303030] flex items-center justify-center text-[#000000] dark:text-[#FFFFFF] group-hover:scale-110 transition-transform">

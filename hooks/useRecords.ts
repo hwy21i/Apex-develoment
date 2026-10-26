@@ -19,6 +19,11 @@ export interface ProjectOption {
   _id: string;
   name: string;
   projectCode?: string;
+  budget?: number;
+  totalBudget?: number;
+  amountSpent?: number;
+  committedCost?: number;
+  remainingBudget?: number;
 }
 
 export interface CreatePayload {
@@ -60,10 +65,32 @@ export function useRecords(kind: string, projectId?: string) {
         if (projJson.success) {
           setProjects(
             (projJson.data.items || []).map(
-              (p: { _id: string; name: string; projectCode?: string }) => ({
+              (p: {
+                _id: string;
+                name: string;
+                projectCode?: string;
+                budget?: number;
+                totalBudget?: number;
+                amountSpent?: number;
+                committedCost?: number;
+                remainingBudget?: number;
+              }) => ({
                 _id: p._id,
                 name: p.name,
                 projectCode: p.projectCode,
+                budget: Number(p.budget ?? p.totalBudget ?? 0),
+                totalBudget: Number(p.totalBudget ?? p.budget ?? 0),
+                amountSpent: Number(p.amountSpent ?? 0),
+                committedCost: Number(p.committedCost ?? 0),
+                remainingBudget: Number(
+                  p.remainingBudget ??
+                    Math.max(
+                      0,
+                      Number(p.budget ?? p.totalBudget ?? 0) -
+                        Number(p.amountSpent ?? 0) -
+                        Number(p.committedCost ?? 0)
+                    )
+                ),
               })
             )
           );

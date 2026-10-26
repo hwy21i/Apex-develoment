@@ -108,10 +108,24 @@ export default function FinanceBudgetsPage() {
     return matchSearch && matchStatus;
   });
 
-  const totalAllocated = budgets.reduce((acc, b) => acc + b.allocatedAmount, 0);
-  const totalSpent = budgets.reduce((acc, b) => acc + b.spentAmount, 0);
-  const totalCommitted = budgets.reduce((acc, b) => acc + b.committedAmount, 0);
-  const totalRemaining = budgets.reduce((acc, b) => acc + b.remainingAmount, 0);
+  const hasLineItems = budgets.length > 0;
+  const projectTotalAllocated = projects.reduce((acc, p) => acc + (p.budget ?? p.totalBudget ?? 0), 0);
+  const projectTotalSpent = projects.reduce((acc, p) => acc + (p.amountSpent ?? 0), 0);
+  const projectTotalCommitted = projects.reduce((acc, p) => acc + (p.committedCost ?? 0), 0);
+  const projectTotalRemaining = projects.reduce((acc, p) => acc + (p.remainingBudget ?? 0), 0);
+
+  const totalAllocated = hasLineItems
+    ? budgets.reduce((acc, b) => acc + b.allocatedAmount, 0)
+    : projectTotalAllocated;
+  const totalSpent = hasLineItems
+    ? budgets.reduce((acc, b) => acc + b.spentAmount, 0)
+    : projectTotalSpent;
+  const totalCommitted = hasLineItems
+    ? budgets.reduce((acc, b) => acc + b.committedAmount, 0)
+    : projectTotalCommitted;
+  const totalRemaining = hasLineItems
+    ? budgets.reduce((acc, b) => acc + b.remainingAmount, 0)
+    : projectTotalRemaining;
 
   const fmt = (n: number) => formatCurrency(n);
 
@@ -172,7 +186,7 @@ export default function FinanceBudgetsPage() {
           </div>
           <button
             onClick={openForm}
-            className="inline-flex items-center justify-center gap-2 bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] font-bold px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-black/10 transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
+            className="erp-btn-md bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] shrink-0"
           >
             <Plus size={16} />
             <span>New Budget Line</span>
@@ -237,12 +251,66 @@ export default function FinanceBudgetsPage() {
               </button>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="p-12 text-center text-[#888888] dark:text-[#888888]">
-              <PieChart size={32} className="mx-auto mb-2 opacity-40 text-[#666666] dark:text-[#A3A3A3]" />
-              <p className="text-sm">
-                {budgets.length === 0 ? "No budget lines recorded yet." : "No budgets match your filters."}
-              </p>
-            </div>
+            budgets.length === 0 && projects.length > 0 ? (
+              <div className="p-6 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#D4D4D4] dark:border-[#303030]">
+                  <div>
+                    <h3 className="text-sm font-bold text-[#000000] dark:text-[#FFFFFF]">
+                      Portfolio Project Budgets Overview
+                    </h3>
+                    <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">
+                      Aggregated from active construction project contracts. Click &quot;New Budget Line&quot; to break down by CSI divisions.
+                    </p>
+                  </div>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] uppercase tracking-wider font-mono text-[10px] border-b border-[#D4D4D4] dark:border-[#303030]">
+                      <tr>
+                        <th className="px-4 py-2.5">Project Name</th>
+                        <th className="px-4 py-2.5 text-right">Total Contract Budget</th>
+                        <th className="px-4 py-2.5 text-right">Actual Spent</th>
+                        <th className="px-4 py-2.5 text-right">Committed POs</th>
+                        <th className="px-4 py-2.5 text-right">Remaining Balance</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030]">
+                      {projects.map((p) => (
+                        <tr key={p._id} className="hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F]">
+                          <td className="px-4 py-3 font-bold text-[#000000] dark:text-[#FFFFFF]">
+                            {p.name}
+                            {p.projectCode && (
+                              <span className="block text-[10px] font-mono text-[#666666] dark:text-[#A3A3A3]">
+                                {p.projectCode}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 font-mono text-right font-semibold text-[#000000] dark:text-[#FFFFFF]">
+                            {fmt(p.budget ?? p.totalBudget ?? 0)}
+                          </td>
+                          <td className="px-4 py-3 font-mono text-right text-[#666666] dark:text-[#A3A3A3]">
+                            {fmt(p.amountSpent ?? 0)}
+                          </td>
+                          <td className="px-4 py-3 font-mono text-right text-[#666666] dark:text-[#A3A3A3]">
+                            {fmt(p.committedCost ?? 0)}
+                          </td>
+                          <td className="px-4 py-3 font-mono text-right font-bold text-[#000000] dark:text-[#FFFFFF]">
+                            {fmt(p.remainingBudget ?? 0)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
+              <div className="p-12 text-center text-[#888888] dark:text-[#888888]">
+                <PieChart size={32} className="mx-auto mb-2 opacity-40 text-[#666666] dark:text-[#A3A3A3]" />
+                <p className="text-sm">
+                  {budgets.length === 0 ? "No budget lines recorded yet." : "No budgets match your filters."}
+                </p>
+              </div>
+            )
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
@@ -307,8 +375,8 @@ export default function FinanceBudgetsPage() {
 
       {/* Create modal */}
       {formOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-v18-backdrop">
+          <div className="v18-card animate-v18-modal bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full erp-modal-md p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030] pb-3">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border border-[#D4D4D4] dark:border-[#303030]">

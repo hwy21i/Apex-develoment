@@ -12,6 +12,7 @@ import {
   Trash2,
   X,
   Loader2,
+  RefreshCw,
 } from "lucide-react";
 import { useCurrentUser } from "@/components/auth/UserProvider";
 
@@ -45,6 +46,7 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<TaskRecord[]>([]);
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -60,15 +62,18 @@ export default function TasksPage() {
   const [formDescription, setFormDescription] = useState("");
 
   const fetchTasks = useCallback(async () => {
+    setLoading(true);
+    setLoadError(null);
     try {
       const [tasksRes, projectsRes] = await Promise.all([
         fetch("/api/tasks", { cache: "no-store" }),
         fetch("/api/projects?limit=50", { cache: "no-store" }),
       ]);
       const tasksJson = await tasksRes.json();
-      if (tasksRes.ok && tasksJson.success && tasksJson.data?.items) {
-        setTasks(tasksJson.data.items);
+      if (!tasksRes.ok || !tasksJson.success) {
+        throw new Error(tasksJson.error?.message || "Failed to load tasks from server.");
       }
+      setTasks(tasksJson.data?.items || []);
       if (projectsRes.ok) {
         const projJson = await projectsRes.json();
         if (projJson.success && projJson.data?.items) {
@@ -78,8 +83,10 @@ export default function TasksPage() {
           }
         }
       }
-    } catch {
-      setFeedback({ type: "error", message: "Failed to load tasks data." });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to load tasks data.";
+      setLoadError(msg);
+      setFeedback({ type: "error", message: msg });
     } finally {
       setLoading(false);
     }
@@ -222,13 +229,24 @@ export default function TasksPage() {
             </p>
           </div>
 
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] text-xs sm:text-sm font-bold shadow-md shadow-black/10 transition-all hover:scale-[1.015] active:scale-[0.98] shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Create Task</span>
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => fetchTasks()}
+              disabled={loading}
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F] text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] transition-colors"
+              title="Refresh tasks"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
+              <span className="hidden sm:inline">Refresh</span>
+            </button>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="erp-btn-md bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000]"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Create Task</span>
+            </button>
+          </div>
         </div>
 
         {/* User Feedback Notification */}
@@ -315,13 +333,32 @@ export default function TasksPage() {
                   <th className="px-5 py-3 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030] dark:divide-[#303030]">
+              <tbody className="divide-y divide-[#D4D4D4] dark:divide-[#303030]">
                 {loading ? (
                   <tr>
                     <td colSpan={8} className="px-5 py-12 text-center text-[#666666] dark:text-[#A3A3A3]">
                       <div className="flex items-center justify-center gap-2">
                         <Loader2 className="w-4 h-4 animate-spin text-[#666666] dark:text-[#A3A3A3]" />
                         <span>Loading tasks catalog...</span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : loadError ? (
+                  <tr>
+                    <td colSpan={8} className="px-5 py-12 text-center">
+                      <div className="max-w-md mx-auto space-y-3">
+                        <AlertCircle className="w-8 h-8 text-[#666666] dark:text-[#A3A3A3] mx-auto" />
+                        <p className="text-sm font-bold text-[#000000] dark:text-[#FFFFFF]">
+                          Unable to Retrieve Tasks
+                        </p>
+                        <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">{loadError}</p>
+                        <button
+                          onClick={() => fetchTasks()}
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#000000] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] text-xs font-bold"
+                        >
+                          <RefreshCw className="w-3.5 h-3.5" />
+                          <span>Retry Loading</span>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -430,8 +467,8 @@ export default function TasksPage() {
 
         {/* Modal: Create Task Dialog */}
         {showCreateModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-            <div className="bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full max-w-lg shadow-2xl p-6 space-y-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-v18-backdrop">
+            <div className="v18-card animate-v18-modal bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full erp-modal-md shadow-2xl p-6 space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030]">
                 <div className="flex items-center gap-2">
                   <div className="p-2 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border border-[#D4D4D4] dark:border-[#303030]">
