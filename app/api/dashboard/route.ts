@@ -48,8 +48,11 @@ export async function GET(request: Request) {
     await connectToDatabase();
     const access = buildProjectAccessQuery(guard.user);
 
-    // 1. Fetch Projects
-    let rawProjects = await Project.find(access).populate("projectManager", "fullName").lean();
+    // 1. Fetch Projects with lean projections
+    let rawProjects = await Project.find(access)
+      .select("name projectCode status health progressPercentage totalBudget revisedBudget amountSpent remainingBudget committedCost startDate expectedEndDate projectManager location client")
+      .populate("projectManager", "fullName")
+      .lean();
 
     // Check fallback for capital 'Projects' collection if zero records found
     if (rawProjects.length === 0 && mongoose.connection.db) {
@@ -73,7 +76,7 @@ export async function GET(request: Request) {
       .filter((id) => mongoose.isObjectIdOrHexString(id))
       .map((id) => new mongoose.Types.ObjectId(id));
 
-    // 2. Fetch parallel auxiliary collections
+    // 2. Fetch parallel auxiliary collections with optimized projections
     const [
       taskRows,
       recentActivities,
@@ -84,28 +87,39 @@ export async function GET(request: Request) {
       milestoneList,
     ] = await Promise.all([
       Task.find({ projectId: { $in: projectIds } })
+        .select("title status priority progress dueDate startDate assignedTo projectId")
         .populate("assignedTo", "fullName")
         .populate("projectId", "name projectCode")
         .sort({ dueDate: 1 })
         .limit(20)
         .lean(),
       AuditLog.find({ projectId: { $in: projectIds } })
+        .select("action entity entityId userName userRole createdAt projectId details")
         .sort({ createdAt: -1 })
         .limit(8)
         .lean(),
-      Material.find({}).sort({ currentStock: 1 }).limit(10).lean(),
-      Equipment.find({}).lean(),
+      Material.find({})
+        .select("name code currentStock minimumStock unit costPerUnit category")
+        .sort({ currentStock: 1 })
+        .limit(10)
+        .lean(),
+      Equipment.find({})
+        .select("name model status serialNumber hourlyRate assignedTo")
+        .lean(),
       Payment.find({ projectId: { $in: projectIds } })
+        .select("amount paymentDate paymentMethod reference status projectId payee")
         .populate("projectId", "name projectCode")
         .sort({ paymentDate: -1 })
         .limit(6)
         .lean(),
       Expense.find({ projectId: { $in: projectIds } })
+        .select("description amount category date status payee vendor projectId")
         .populate("projectId", "name projectCode")
         .sort({ date: -1 })
         .limit(6)
         .lean(),
       Milestone.find({ projectId: { $in: projectIds } })
+        .select("title dueDate status progress projectId description")
         .populate("projectId", "name projectCode")
         .sort({ dueDate: 1 })
         .limit(10)

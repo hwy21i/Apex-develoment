@@ -8,6 +8,7 @@ import {
   Building2,
   CheckSquare,
   Boxes,
+  Truck,
   DollarSign,
   FileText,
   HardHat,
@@ -29,12 +30,13 @@ export interface NavItem {
   badge?: string;
 }
 
-// 9 Core Navigation Items Matching Specification
+// 10 Core Navigation Items Matching Specification
 export const ERP_NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Projects", href: "/projects", icon: Building2 },
   { label: "Tasks", href: "/tasks", icon: CheckSquare },
   { label: "Materials", href: "/materials", icon: Boxes },
+  { label: "Deliveries", href: "/deliveries", icon: Truck },
   { label: "Budgets", href: "/finance/budgets", icon: DollarSign },
   { label: "Reports", href: "/reports", icon: FileText },
   { label: "Team", href: "/people/workers", icon: HardHat },
@@ -49,6 +51,8 @@ interface AppSidebarProps {
   onToggleCollapse: () => void;
   userName?: string;
   userRole?: RoleType;
+  userEmail?: string;
+  profileImage?: string;
   onRoleChange?: (role: RoleType) => void;
   onLogout?: () => void;
 }
@@ -60,6 +64,8 @@ export default function AppSidebar({
   onToggleCollapse,
   userName = "",
   userRole,
+  userEmail,
+  profileImage,
   onRoleChange,
   onLogout,
 }: AppSidebarProps) {
@@ -80,7 +86,7 @@ export default function AppSidebar({
       <aside
         id="app-sidebar"
         aria-label="Main Navigation"
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col bg-[#FAFAFA] dark:bg-[#0A0A0A] border-r border-[#D4D4D4] dark:border-[#1F1F1F] text-[#000000] dark:text-[#FFFFFF] select-none
+        className={`fixed top-0 bottom-0 left-0 z-50 h-dvh flex flex-col shrink-0 overflow-hidden bg-[#FAFAFA] dark:bg-[#0A0A0A] border-r border-[#D4D4D4] dark:border-[#1F1F1F] text-[#000000] dark:text-[#FFFFFF] select-none
           transition-all duration-300 ease-in-out
           ${isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
           ${isCollapsed ? "md:w-20" : "md:w-64"}
@@ -140,14 +146,32 @@ export default function AppSidebar({
         {/* User Role Card */}
         <div className="px-3 py-2.5 border-b border-[#D4D4D4] dark:border-[#1F1F1F] bg-[#FFFFFF] dark:bg-[#111111] shrink-0">
           {!isCollapsed ? (
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] truncate max-w-[130px]">
-                  {userName || <span className="text-[#A3A3A3] dark:text-[#666666] italic">Loading…</span>}
-                </span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] font-bold">
-                  {userRole}
-                </span>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-[#111111] dark:bg-[#171717] text-[#FFFFFF] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] flex items-center justify-center text-xs font-bold overflow-hidden shrink-0 shadow-2xs">
+                  {profileImage ? (
+                    <img src={profileImage} alt={userName} className="w-full h-full object-cover" />
+                  ) : userName ? (
+                    userName.charAt(0).toUpperCase()
+                  ) : (
+                    "A"
+                  )}
+                </div>
+                <div className="flex flex-col min-w-0 flex-1 leading-tight">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] truncate">
+                      {userName || <span className="text-[#A3A3A3] dark:text-[#666666] italic">Loading…</span>}
+                    </span>
+                    <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] font-bold shrink-0">
+                      {userRole}
+                    </span>
+                  </div>
+                  {userEmail && (
+                    <span className="text-[10px] text-[#666666] dark:text-[#A3A3A3] truncate mt-0.5">
+                      {userEmail}
+                    </span>
+                  )}
+                </div>
               </div>
               {onRoleChange && (
                 <select
@@ -166,15 +190,21 @@ export default function AppSidebar({
             </div>
           ) : (
             <div className="flex justify-center" title={`${userName}${userRole ? ` (${userRole})` : ""}`}>
-              <div className="w-8 h-8 rounded-full bg-[#000000] dark:bg-[#171717] text-[#FFFFFF] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] flex items-center justify-center text-xs font-bold">
-                {userName ? userName.charAt(0).toUpperCase() : "A"}
+              <div className="w-8 h-8 rounded-full bg-[#000000] dark:bg-[#171717] text-[#FFFFFF] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] flex items-center justify-center text-xs font-bold overflow-hidden shadow-2xs">
+                {profileImage ? (
+                  <img src={profileImage} alt={userName} className="w-full h-full object-cover" />
+                ) : userName ? (
+                  userName.charAt(0).toUpperCase()
+                ) : (
+                  "A"
+                )}
               </div>
             </div>
           )}
         </div>
 
         {/* Navigation Items List */}
-        <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-1 scrollbar-thin">
+        <nav className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-2 py-3 space-y-1 scrollbar-thin">
           {!isCollapsed && (
             <p className="px-2.5 py-1 text-[10px] font-semibold text-[#A3A3A3] dark:text-[#666666] uppercase font-mono tracking-wider">
               Navigation
@@ -235,7 +265,7 @@ export default function AppSidebar({
             <Link
               href="/reports"
               onClick={onMobileClose}
-              className="inline-flex w-full items-center justify-center py-1.5 px-2 text-[11px] font-semibold text-[#FFFFFF] bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] rounded-lg transition-colors border border-transparent shadow-xs"
+              className="inline-flex w-full items-center justify-center py-1.5 px-2 text-[11px] font-semibold text-[#FFFFFF] bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:text-[#000000] dark:hover:bg-[#D4D4D4] rounded-lg transition-colors border border-transparent shadow-xs"
             >
               Executive Reports
             </Link>

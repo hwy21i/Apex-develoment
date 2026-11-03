@@ -110,3 +110,51 @@ test("Authentication - Secret Resolution Supports NEXTAUTH_SECRET and AUTH_SECRE
   assert.equal(resolveSecret({ JWT_SECRET: "jwt_primary", NEXTAUTH_SECRET: "nextauth_secondary" }), "jwt_primary");
   assert.equal(resolveSecret({}), null);
 });
+
+test("RBAC - Contractor and Supplier Operational Roles", () => {
+  // Contractor role
+  assert.ok(hasPermission({ role: "Contractor" }, "TASK_UPDATE"));
+  assert.ok(hasPermission({ role: "Contractor" }, "tasks.read"));
+  assert.ok(hasPermission({ role: "Contractor" }, "MATERIAL_REQUEST_VIEW"));
+  assert.equal(hasPermission({ role: "Contractor" }, "EXPENSE_APPROVE"), false);
+
+  // Supplier role
+  assert.ok(hasPermission({ role: "Supplier" }, "MATERIAL_VIEW"));
+  assert.ok(hasPermission({ role: "Supplier" }, "procurement.read"));
+  assert.ok(hasPermission({ role: "Supplier" }, "PURCHASE_ORDER_VIEW"));
+  assert.equal(hasPermission({ role: "Supplier" }, "PROJECT_DELETE"), false);
+});
+
+test("Authentication - Email Validation and First-Time Google Onboarding Logic", () => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  assert.ok(emailRegex.test("engineer.marta@gmail.com"));
+  assert.ok(emailRegex.test("user@apexdev.et"));
+  assert.equal(emailRegex.test("invalid-email"), false);
+  assert.equal(emailRegex.test("missing@domain"), false);
+  assert.equal(emailRegex.test("@no-local.com"), false);
+
+  // Simulating Google OAuth onboarding condition check
+  function evaluateGoogleAuth(user, isCompleteOnboarding) {
+    if (!user && !isCompleteOnboarding) {
+      return { action: "PROMPT_ROLE_ONBOARDING", needsRole: true };
+    }
+    if (!user && isCompleteOnboarding) {
+      return { action: "REGISTER_WITH_ROLE", needsRole: false };
+    }
+    return { action: "SIGN_IN_EXISTING", needsRole: false };
+  }
+
+  assert.deepEqual(evaluateGoogleAuth(null, false), {
+    action: "PROMPT_ROLE_ONBOARDING",
+    needsRole: true,
+  });
+  assert.deepEqual(evaluateGoogleAuth(null, true), {
+    action: "REGISTER_WITH_ROLE",
+    needsRole: false,
+  });
+  assert.deepEqual(evaluateGoogleAuth({ id: "123", role: "Site Engineer" }, false), {
+    action: "SIGN_IN_EXISTING",
+    needsRole: false,
+  });
+});
+

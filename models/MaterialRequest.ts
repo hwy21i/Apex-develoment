@@ -1,4 +1,5 @@
 import { InferSchemaType, model, models, Schema } from "mongoose";
+import { PURCHASE_TYPES, QUALITY_GRADES } from "./PurchaseOrder";
 
 export const MATERIAL_REQUEST_STATUSES = [
   "DRAFT",
@@ -15,10 +16,24 @@ const requestItemSchema = new Schema(
   {
     materialId: { type: Schema.Types.ObjectId, ref: "Material" },
     materialName: { type: String, required: true, trim: true },
+    materialType: { type: String, default: "Structural Steel" },
     unitOfMeasure: { type: String, required: true, trim: true },
     specifications: { type: String, trim: true }, // Grade, strength, dimensions, brand
+    technicalSpec: { type: String, trim: true },
     requestedQuantity: { type: Number, required: true, min: 0.01 },
+    orderedQuantity: { type: Number, default: 0 },
     approvedQuantity: { type: Number, min: 0 },
+    receivedQuantity: { type: Number, default: 0 },
+    acceptedQuantity: { type: Number, default: 0 },
+    rejectedQuantity: { type: Number, default: 0 },
+    qualityGrade: {
+      type: String,
+      enum: QUALITY_GRADES,
+      default: "PENDING_INSPECTION",
+    },
+    qualityScorePct: { type: Number, default: 100, min: 0, max: 100 },
+    labTestCertificateRef: { type: String, default: "" },
+    inspectionNotes: { type: String, default: "" },
     estimatedUnitCost: { type: Number, min: 0, default: 0 }, // in ETB
     totalEstimatedCost: { type: Number, min: 0, default: 0 }, // in ETB
   },
@@ -29,10 +44,18 @@ const materialRequestSchema = new Schema(
   {
     requestNumber: { type: String, required: true, unique: true, uppercase: true, index: true },
     projectId: { type: Schema.Types.ObjectId, ref: "Project", required: true, index: true },
+    purchaseType: {
+      type: String,
+      enum: PURCHASE_TYPES,
+      default: "BULK_CONTRACT_PO",
+      index: true,
+    },
     requiredByDate: { type: Date, required: true },
     priority: { type: String, enum: ["LOW", "MEDIUM", "HIGH", "URGENT"], default: "MEDIUM" },
     items: [requestItemSchema],
     totalEstimatedCost: { type: Number, default: 0, min: 0 },
+    overallQualityScore: { type: Number, default: 100 },
+    quantityFulfillmentPct: { type: Number, default: 0 },
     budgetStatus: {
       type: String,
       enum: ["WITHIN_BUDGET", "BUDGET_WARNING", "BUDGET_EXCEEDED"],
@@ -54,6 +77,7 @@ const materialRequestSchema = new Schema(
   { timestamps: true }
 );
 
+materialRequestSchema.index({ projectId: 1, createdAt: -1 });
 materialRequestSchema.index({ projectId: 1, status: 1 });
 materialRequestSchema.index({ requestedBy: 1, createdAt: -1 });
 

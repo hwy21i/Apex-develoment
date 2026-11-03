@@ -531,13 +531,13 @@ export default function ProjectLocationsMap({
 
   return (
     <div
-      className={`border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs transition-colors duration-200 ${className}`}
+      className={`border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-3xl p-5 sm:p-6 flex flex-col justify-between shadow-md transition-colors duration-200 ${className}`}
     >
       <div>
         {/* Header with Title, Controls, and Navigation */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#D4D4D4] dark:border-[#303030] gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-[#F5F5F5] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF]">
+            <div className="p-2.5 rounded-2xl bg-[#F5F5F5] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF]">
               <MapPin className="w-4 h-4" />
             </div>
             <div>
@@ -545,7 +545,7 @@ export default function ProjectLocationsMap({
                 <h2 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">
                   Project Locations Map
                 </h2>
-                <span className="px-2 py-0.5 text-[10px] font-mono font-bold rounded-md bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
+                <span className="px-2.5 py-0.5 text-[10px] font-mono font-bold rounded-full bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
                   ETHIOPIA
                 </span>
               </div>
@@ -560,7 +560,7 @@ export default function ProjectLocationsMap({
             <button
               type="button"
               onClick={handleResetView}
-              className="p-1.5 rounded-lg text-[#666666] dark:text-[#A1A1A1] hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-[#F5F5F5] dark:hover:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] transition-colors"
+              className="p-2 rounded-full text-[#666666] dark:text-[#A1A1A1] hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-[#F5F5F5] dark:hover:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] transition-colors"
               title="Reset view to full Ethiopia"
             >
               <RotateCcw className="w-4 h-4" />
@@ -569,7 +569,7 @@ export default function ProjectLocationsMap({
             <button
               type="button"
               onClick={() => setActiveLayerType((prev) => (prev === "canvas" ? "osm" : "canvas"))}
-              className="px-2 py-1 text-[11px] font-medium rounded-lg text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF] bg-[#F5F5F5] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] transition-colors flex items-center gap-1"
+              className="px-3 py-1.5 text-[11px] font-medium rounded-full text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF] bg-[#F5F5F5] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] transition-colors flex items-center gap-1"
               title="Toggle between Clean Monochrome Canvas and OpenStreetMap"
             >
               <Layers className="w-3.5 h-3.5" />
@@ -578,7 +578,7 @@ export default function ProjectLocationsMap({
 
             <Link
               href="/administration/locations"
-              className="p-1.5 rounded-lg text-[#666666] dark:text-[#A1A1A1] hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-[#F5F5F5] dark:hover:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] transition-colors"
+              className="p-2 rounded-full text-[#666666] dark:text-[#A1A1A1] hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-[#F5F5F5] dark:hover:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] transition-colors"
               title="Manage all verified locations"
             >
               <ArrowUpRight className="w-4 h-4" />
@@ -588,14 +588,14 @@ export default function ProjectLocationsMap({
 
         {/* Hovered Regional Boundary Pill */}
         {hoveredRegion && (
-          <div className="mt-2 text-xs flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] animate-in fade-in">
+          <div className="mt-2 text-xs flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] animate-in fade-in">
             <Compass className="w-3.5 h-3.5" />
             <span className="font-semibold">{hoveredRegion} Regional State</span>
           </div>
         )}
 
         {/* Map Viewport Area */}
-        <div className="mt-4 relative rounded-xl overflow-hidden border border-[#D4D4D4] dark:border-[#303030] h-64 sm:h-72 bg-[#F5F5F5] dark:bg-[#171717]">
+        <div className="mt-4 relative rounded-2xl overflow-hidden border border-[#D4D4D4] dark:border-[#303030] h-64 sm:h-72 bg-[#F5F5F5] dark:bg-[#171717]">
           {mapError ? (
             /* Resilient SVG Fallback with accurate Ethiopia polygon and nodes */
             <div className="w-full h-full relative flex items-center justify-center p-4">
@@ -640,7 +640,7 @@ export default function ProjectLocationsMap({
 
           {/* Active Location Floating Inspector Badge */}
           {activeLocation && (
-            <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:max-w-xs z-10 p-3 rounded-xl bg-[#FFFFFF]/95 dark:bg-[#111111]/95 backdrop-blur-md border border-[#D4D4D4] dark:border-[#303030] shadow-lg animate-in fade-in duration-200">
+            <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:max-w-xs z-10 p-3.5 rounded-2xl bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] shadow-xl animate-in fade-in duration-200">
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <div className="flex items-center gap-1.5">
@@ -716,7 +716,7 @@ export default function ProjectLocationsMap({
                   key={loc.id}
                   type="button"
                   onClick={() => handleSelectLocation(loc)}
-                  className={`p-3 rounded-xl text-left border transition-all ${
+                  className={`p-3 rounded-2xl text-left border transition-all ${
                     isSelected
                       ? "bg-[#F5F5F5] dark:bg-[#171717] border-[#000000] dark:border-[#FFFFFF] shadow-2xs"
                       : "bg-[#FFFFFF] dark:bg-[#171717] border-[#D4D4D4] dark:border-[#303030] hover:border-[#888888] dark:hover:border-[#777777]"
@@ -726,7 +726,7 @@ export default function ProjectLocationsMap({
                     <span className="text-xs font-bold text-[#000000] dark:text-[#FFFFFF]">
                       {loc.city}
                     </span>
-                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#F5F5F5] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF]">
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#F5F5F5] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF]">
                       {loc.count} {loc.count === 1 ? "site" : "sites"}
                     </span>
                   </div>
@@ -741,14 +741,14 @@ export default function ProjectLocationsMap({
             })}
           </div>
         ) : (
-          <div className="mt-4 p-4 rounded-xl border border-dashed border-[#D4D4D4] dark:border-[#303030] text-center text-xs text-[#666666] dark:text-[#A3A3A3]">
+          <div className="mt-4 p-4 rounded-2xl border border-dashed border-[#D4D4D4] dark:border-[#303030] text-center text-xs text-[#666666] dark:text-[#A3A3A3]">
             No construction sites mapped yet. Newly created projects with verified locations will appear here.
           </div>
         )}
 
         {/* Unmapped / Awaiting Coordinates Notification Drawer */}
         {unmappedProjects.length > 0 && (
-          <div className="mt-4 border border-[#D4D4D4] dark:border-[#303030] bg-[#FAFAFA] dark:bg-[#111111] rounded-xl p-3">
+          <div className="mt-4 border border-[#D4D4D4] dark:border-[#303030] bg-[#FAFAFA] dark:bg-[#111111] rounded-2xl p-3.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-medium text-[#000000] dark:text-[#FFFFFF]">
                 <AlertCircle className="w-4 h-4" />
@@ -770,7 +770,7 @@ export default function ProjectLocationsMap({
                 {unmappedProjects.map((unm) => (
                   <div
                     key={unm.id}
-                    className="flex items-center justify-between text-xs py-1 px-2 rounded-lg bg-[#FFFFFF]/60 dark:bg-[#171717]/60"
+                    className="flex items-center justify-between text-xs py-1.5 px-3 rounded-2xl bg-[#FFFFFF] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]"
                   >
                     <div>
                       <span className="font-semibold text-[#000000] dark:text-[#FFFFFF]">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { getCached, setCached } from "@/lib/client-cache";
 
 export interface OperationalRecord {
   _id: string;
@@ -34,15 +35,22 @@ export interface CreatePayload {
   data: Record<string, any>;
 }
 
+// Module-level in-memory cache so subsequent pages have projects available on initial render (0ms delay)
+const moduleProjectsCache = new Map<string, ProjectOption[]>();
+
 /**
  * Client hook for the generic Operational record store (`/api/records/[kind]`).
  * Loads the records for a kind plus the projects the caller can access (used to
  * resolve project names and populate create-form project pickers).
  */
 export function useRecords(kind: string, projectId?: string) {
-  const [records, setRecords] = useState<OperationalRecord[]>([]);
-  const [projects, setProjects] = useState<ProjectOption[]>([]);
-  const [loading, setLoading] = useState(true);
+  const cacheKeyRecords = `records_${kind}_${projectId || "all"}`;
+  const initialCachedRecords = getCached<OperationalRecord[]>(cacheKeyRecords);
+  const initialCachedProjects = moduleProjectsCache.get("all") || getCached<ProjectOption[]>("all_projects") || [];
+
+  const [records, setRecords] = useState<OperationalRecord[]>(initialCachedRecords || []);
+  const [projects, setProjects] = useState<ProjectOption[]>(initialCachedProjects);
+  const [loading, setLoading] = useState<boolean>(!initialCachedRecords);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -58,42 +66,53 @@ export function useRecords(kind: string, projectId?: string) {
       if (!recRes.ok || !recJson.success) {
         throw new Error(recJson.error?.message || "Failed to load records");
       }
-      setRecords(recJson.data.items || []);
+      const loadedRecords = recJson.data?.items || [];
+      setRecords(loadedRecords);
+      setCached(cacheKeyRecords, loadedRecords, 30_000);
 
       if (projRes.ok) {
         const projJson = await projRes.json();
-        if (projJson.success) {
-          setProjects(
-            (projJson.data.items || []).map(
-              (p: {
-                _id: string;
-                name: string;
-                projectCode?: string;
-                budget?: number;
-                totalBudget?: number;
-                amountSpent?: number;
-                committedCost?: number;
-                remainingBudget?: number;
-              }) => ({
-                _id: p._id,
-                name: p.name,
-                projectCode: p.projectCode,
-                budget: Number(p.budget ?? p.totalBudget ?? 0),
-                totalBudget: Number(p.totalBudget ?? p.budget ?? 0),
-                amountSpent: Number(p.amountSpent ?? 0),
-                committedCost: Number(p.committedCost ?? 0),
-                remainingBudget: Number(
-                  p.remainingBudget ??
-                    Math.max(
-                      0,
-                      Number(p.budget ?? p.totalBudget ?? 0) -
-                        Number(p.amountSpent ?? 0) -
-                        Number(p.committedCost ?? 0)
-                    )
-                ),
-              })
-            )
+        if (projJson.success || projJson.data) {
+          const projectList =
+            projJson?.data?.items ||
+            projJson?.data?.projects ||
+            (Array.isArray(projJson?.data) ? projJson.data : []);
+
+          const mapped: ProjectOption[] = projectList.map(
+            (p: {
+              _id?: string;
+              id?: string;
+              name?: string;
+              title?: string;
+              projectCode?: string;
+              budget?: number;
+              totalBudget?: number;
+              amountSpent?: number;
+              committedCost?: number;
+              remainingBudget?: number;
+            }) => ({
+              _id: p._id || p.id || "",
+              name: p.name || p.title || "Unnamed Project",
+              projectCode: p.projectCode,
+              budget: Number(p.budget ?? p.totalBudget ?? 0),
+              totalBudget: Number(p.totalBudget ?? p.budget ?? 0),
+              amountSpent: Number(p.amountSpent ?? 0),
+              committedCost: Number(p.committedCost ?? 0),
+              remainingBudget: Number(
+                p.remainingBudget ??
+                  Math.max(
+                    0,
+                    Number(p.budget ?? p.totalBudget ?? 0) -
+                      Number(p.amountSpent ?? 0) -
+                      Number(p.committedCost ?? 0)
+                  )
+              ),
+            })
           );
+
+          moduleProjectsCache.set("all", mapped);
+          setCached("all_projects", mapped, 60_000);
+          setProjects(mapped);
         }
       }
     } catch (e) {
@@ -101,7 +120,7 @@ export function useRecords(kind: string, projectId?: string) {
     } finally {
       setLoading(false);
     }
-  }, [kind, projectId]);
+  }, [cacheKeyRecords, kind, projectId]);
 
   useEffect(() => {
     let ignore = false;

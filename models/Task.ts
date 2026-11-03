@@ -1,3 +1,27 @@
 import { Schema, model, models } from "mongoose";
-const schema = new Schema({ title: { type: String, required: true, index: true }, description: String, projectId: { type: Schema.Types.ObjectId, ref: "Project", required: true, index: true }, phaseId: { type: Schema.Types.ObjectId, ref: "ProjectPhase" }, assignedTo: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true }, createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true }, department: String, priority: { type: String, enum: ["LOW", "MEDIUM", "HIGH", "CRITICAL"], default: "MEDIUM" }, status: { type: String, enum: ["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "DELAYED", "BLOCKED"], default: "NOT_STARTED", index: true }, progress: { type: Number, default: 0, min: 0, max: 100 }, startDate: Date, dueDate: { type: Date, index: true }, completedDate: Date, dependencies: [{ type: Schema.Types.ObjectId, ref: "Task" }], attachments: [String], notes: String }, { timestamps: true });
+
+const schema = new Schema(
+  {
+    title: { type: String, required: true, index: true },
+    description: String,
+    projectId: { type: Schema.Types.ObjectId, ref: "Project", required: true, index: true },
+    phaseId: { type: Schema.Types.ObjectId, ref: "ProjectPhase" },
+    assignedTo: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
+    createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    department: String,
+    priority: { type: String, enum: ["LOW", "MEDIUM", "HIGH", "CRITICAL"], default: "MEDIUM" },
+    status: { type: String, enum: ["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "DELAYED", "BLOCKED"], default: "NOT_STARTED", index: true },
+    progress: { type: Number, default: 0, min: 0, max: 100 },
+    startDate: Date,
+    dueDate: { type: Date, index: true },
+    completedDate: Date,
+    dependencies: [{ type: Schema.Types.ObjectId, ref: "Task" }],
+    attachments: [String],
+    notes: String,
+  },
+  { timestamps: true }
+);
+
+schema.index({ projectId: 1, createdAt: -1 });
+
 export const Task = models.Task || model("Task", schema);

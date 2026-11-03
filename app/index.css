@@ -151,6 +151,7 @@ html.dark, [data-theme="dark"], body.dark, .dark {
 }
 
 html, body {
+  height: 100%;
   max-width: 100%;
   overflow-x: hidden;
 }
@@ -199,7 +200,7 @@ input[placeholder*="Search"], input[placeholder*="search"] {
 .erp-card {
   background-color: var(--card);
   border: 1px solid var(--border);
-  border-radius: 1rem; /* 16px */
+  border-radius: 1.5rem; /* 24px */
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
@@ -211,14 +212,14 @@ input[placeholder*="Search"], input[placeholder*="search"] {
 .erp-card-elevated {
   background-color: var(--card);
   border: 1px solid var(--border);
-  border-radius: 1rem; /* 16px */
+  border-radius: 1.5rem; /* 24px */
   box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
 }
 
 .glass-card {
   background-color: var(--card);
   border: 1px solid var(--border);
-  border-radius: 1rem; /* 16px */
+  border-radius: 1.5rem; /* 24px */
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -341,13 +342,21 @@ input[placeholder*="Search"], input[placeholder*="search"] {
     opacity: 0;
     transform: translateY(14px) scale(0.975);
   }
-  75% {
-    transform: translateY(-1.5px) scale(1.003);
+  65% {
+    transform: translateY(-2px) scale(1.003);
   }
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+}
+
+@keyframes progressFill {
+  from { width: 0%; }
+}
+
+.animate-progress-fill {
+  animation: progressFill 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes v18ModalIn {
@@ -389,7 +398,7 @@ input[placeholder*="Search"], input[placeholder*="search"] {
   position: relative;
   background-color: var(--card);
   border: 1px solid var(--border);
-  border-radius: 1rem; /* rounded-2xl / 16px */
+  border-radius: 1.5rem; /* rounded-3xl / 24px */
   transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1),
               border-color 0.2s ease,
@@ -411,7 +420,7 @@ html.dark .v18-card:hover {
   position: relative;
   background-color: var(--card);
   border: 1px solid var(--border);
-  border-radius: 1rem;
+  border-radius: 1.5rem; /* rounded-3xl / 24px */
   box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06);
   transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1),
@@ -437,11 +446,11 @@ html.dark .v18-card-elevated:hover {
 }
 
 .animate-v18-spring {
-  animation: v18SpringIn 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: v18SpringIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .animate-v18-modal {
-  animation: v18ModalIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: v18ModalIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .animate-v18-backdrop {
@@ -457,12 +466,14 @@ html.dark .v18-card-elevated:hover {
 }
 
 /* Staggered entrance sequencing */
-.stagger-1, .v18-stagger-1 { animation-delay: 40ms; }
-.stagger-2, .v18-stagger-2 { animation-delay: 90ms; }
-.stagger-3, .v18-stagger-3 { animation-delay: 140ms; }
-.stagger-4, .v18-stagger-4 { animation-delay: 190ms; }
-.stagger-5, .v18-stagger-5 { animation-delay: 240ms; }
-.stagger-6, .v18-stagger-6 { animation-delay: 290ms; }
+.stagger-1, .v18-stagger-1 { animation-delay: 35ms; }
+.stagger-2, .v18-stagger-2 { animation-delay: 75ms; }
+.stagger-3, .v18-stagger-3 { animation-delay: 115ms; }
+.stagger-4, .v18-stagger-4 { animation-delay: 155ms; }
+.stagger-5, .v18-stagger-5 { animation-delay: 195ms; }
+.stagger-6, .v18-stagger-6 { animation-delay: 235ms; }
+.stagger-7, .v18-stagger-7 { animation-delay: 275ms; }
+.stagger-8, .v18-stagger-8 { animation-delay: 315ms; }
 
 /* ─── STANDARDIZED SIZING & PROPORTIONS TOKENS (PRIORITY 3) ─── */
 /* Buttons */
@@ -552,18 +563,30 @@ html.dark .v18-card-elevated:hover {
   max-width: 60rem; /* 960px */
 }
 
+.erp-modal-container {
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
 .erp-modal-header {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .erp-modal-body {
   padding: 1.25rem 1.5rem;
-  max-height: 72vh;
+  flex: 1 1 0%;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .erp-modal-footer {
@@ -574,6 +597,7 @@ html.dark .v18-card-elevated:hover {
   justify-content: flex-end;
   gap: 0.625rem;
   background-color: var(--surface);
+  flex-shrink: 0;
 }
 
 /* Accessibility: respect user preference for reduced motion */

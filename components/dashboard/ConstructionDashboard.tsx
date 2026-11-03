@@ -17,6 +17,9 @@ import {
   MapPin,
   ChevronRight,
   AlertTriangle,
+  Loader2,
+  ShieldCheck,
+  Truck,
 } from "lucide-react";
 import { formatCurrency } from "@/lib/formatters/currency";
 import { ProgressBar } from "@/components/ui/ProgressBar";
@@ -24,12 +27,15 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { useCurrentUser } from "@/components/auth/UserProvider";
 import { useSearch } from "@/components/layout/AppShell";
 import { exportCsv } from "@/lib/exportCsv";
+import { getCached, setCached } from "@/lib/client-cache";
+import { downloadReportPdf } from "@/lib/exportPdf";
+import { RoleType } from "@/types/erp";
 import type { ProjectLocationItem } from "./ProjectLocationsMap";
 
 const ProjectLocationsMap = dynamic(() => import("./ProjectLocationsMap"), {
   ssr: false,
   loading: () => (
-    <div className="h-[460px] rounded-2xl bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] animate-pulse flex items-center justify-center text-xs font-mono text-[#666666] dark:text-[#A3A3A3]">
+    <div className="h-[460px] rounded-3xl bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] animate-pulse flex items-center justify-center text-xs font-mono text-[#666666] dark:text-[#A3A3A3]">
       Loading Construction Sites Map...
     </div>
   ),
@@ -177,20 +183,33 @@ const TIMEFRAME_CONFIG: Record<
 
 export default function ConstructionDashboard({
   userName,
+  userRole,
   onCreate,
 }: {
   userName?: string;
+  userRole?: RoleType;
   onCreate?: () => void;
 }) {
   const { user } = useCurrentUser();
   const { searchQuery } = useSearch();
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const cachedInitial = useMemo(() => getCached<DashboardData>("dashboard_data"), []);
+  const [data, setData] = useState<DashboardData | null>(cachedInitial);
+  const [loading, setLoading] = useState(!cachedInitial);
   const [error, setError] = useState("");
   const [timeFilter, setTimeFilter] = useState<TimeFilterOption>("Month");
   const [activityFilter, setActivityFilter] = useState<string>("ALL");
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [isCompact, setIsCompact] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+  const handleDownloadMasterPdf = async () => {
+    setDownloadingPdf(true);
+    await downloadReportPdf("master-executive", {
+      title: "Master Executive Intelligence Dossier",
+      filename: `Apex_Master_Executive_Report_${new Date().toISOString().split("T")[0]}.pdf`,
+    });
+    setDownloadingPdf(false);
+  };
 
   // Dynamic Current Date for Greeting
   const currentDateString = useMemo(() => {
@@ -213,6 +232,7 @@ export default function ConstructionDashboard({
         }
         if (active) {
           setData(result.data);
+          setCached("dashboard_data", result.data, 60_000);
           setError("");
         }
       } catch (err) {
@@ -229,6 +249,32 @@ export default function ConstructionDashboard({
     };
   }, []);
 
+  const currentRole = userRole || user?.role || "Admin";
+
+  const getRoleDescription = (role: string) => {
+    switch (role) {
+      case "Project Manager":
+        return "Schedule tracking, milestone execution, critical path dependencies & workforce allocation.";
+      case "Site Engineer":
+        return "On-site structural execution, daily safety inspections, and engineering task logs.";
+      case "Contractor":
+        return "Subcontracted site packages, field worker deployment, and materials requisitions.";
+      case "Supplier":
+        return "Inbound materials dispatch, route checkpoints telemetry, and purchase orders fulfillment.";
+      case "Procurement Officer":
+        return "Purchase orders lifecycle, supplier quotations, and material inventory restocking.";
+      case "Warehouse Manager":
+      case "Storekeeper":
+        return "Central inventory ledger, stock valuation, and materials issue/receipt audit.";
+      case "Accountant":
+        return "CSI division cost accounting, expenditure ledger, and budget variance controls.";
+      case "Worker":
+        return "Assigned construction deliverables, task checklist, and site attendance.";
+      default:
+        return "Enterprise portfolio execution, active construction sites & fiscal intelligence.";
+    }
+  };
+
   const resolvedName = userName || user?.fullName || "";
   const displayName = resolvedName
     ? resolvedName.split(" ")[0]
@@ -238,15 +284,15 @@ export default function ConstructionDashboard({
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse">
-        <div className="h-20 bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl w-full border border-[#D4D4D4] dark:border-[#303030]" />
+        <div className="h-20 bg-[#FFFFFF] dark:bg-[#111111] rounded-3xl w-full border border-[#D4D4D4] dark:border-[#303030]" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-32 bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl border border-[#D4D4D4] dark:border-[#303030]" />
+            <div key={i} className="h-32 bg-[#FFFFFF] dark:bg-[#111111] rounded-3xl border border-[#D4D4D4] dark:border-[#303030]" />
           ))}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 h-96 bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl border border-[#D4D4D4] dark:border-[#303030]" />
-          <div className="h-96 bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl border border-[#D4D4D4] dark:border-[#303030]" />
+          <div className="lg:col-span-2 h-96 bg-[#FFFFFF] dark:bg-[#111111] rounded-3xl border border-[#D4D4D4] dark:border-[#303030]" />
+          <div className="h-96 bg-[#FFFFFF] dark:bg-[#111111] rounded-3xl border border-[#D4D4D4] dark:border-[#303030]" />
         </div>
       </div>
     );
@@ -255,7 +301,7 @@ export default function ConstructionDashboard({
   // Error fallback
   if (error && !data) {
     return (
-      <div className="rounded-2xl border border-[#303030] dark:border-[#D4D4D4] bg-[#FAFAFA] dark:bg-[#171717] p-6 text-[#000000] dark:text-[#FFFFFF]">
+      <div className="rounded-3xl border border-[#303030] dark:border-[#D4D4D4] bg-[#FAFAFA] dark:bg-[#171717] p-6 text-[#000000] dark:text-[#FFFFFF]">
         <h2 className="font-bold text-base flex items-center gap-2">
           <AlertTriangle className="w-5 h-5 text-[#666666] dark:text-[#A3A3A3]" />
           Unable to synchronize dashboard
@@ -263,7 +309,7 @@ export default function ConstructionDashboard({
         <p className="mt-2 text-sm text-[#666666] dark:text-[#A3A3A3]">{error}</p>
         <button
           onClick={() => window.location.reload()}
-          className="mt-4 px-4 py-2 bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] rounded-xl text-xs font-semibold"
+          className="mt-4 px-5 py-2.5 bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] rounded-full text-xs font-semibold shadow-xs"
         >
           Retry Connection
         </button>
@@ -360,26 +406,58 @@ export default function ConstructionDashboard({
   return (
     <div className="space-y-6 max-w-full min-w-0">
       {/* ─── 1. Welcome Section & Contextual Greeting ─── */}
-      <section className="v18-card animate-v18-spring relative overflow-hidden rounded-2xl p-6 sm:p-7 bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <section className="v18-card animate-v18-spring relative overflow-hidden rounded-3xl p-6 sm:p-7 bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#666666] dark:text-[#A3A3A3] mb-1">
-            <span>{currentDateString}</span>
-            <span>•</span>
-            <span className="text-[#000000] dark:text-[#FFFFFF] font-semibold">Active Session</span>
+          <div className="flex flex-wrap items-center gap-2 mb-2.5">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F5F5F5] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] text-xs font-mono text-[#666666] dark:text-[#A3A3A3]">
+              <span>{currentDateString}</span>
+              <span>•</span>
+              <span className="text-[#000000] dark:text-[#FFFFFF] font-semibold">Active Session</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#000000] text-[#FFFFFF] dark:bg-[#FFFFFF] dark:text-[#000000] text-xs font-bold shadow-2xs">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Role: {currentRole}</span>
+            </span>
+            {user?.department && (
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#F5F5F5] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] text-[11px] font-mono text-[#666666] dark:text-[#A3A3A3]">
+                Dept: {user.department}
+              </span>
+            )}
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#000000] dark:text-[#FFFFFF] tracking-tight">
             Welcome back, {displayName}
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-[#666666] dark:text-[#A3A3A3]">
-            Portfolio execution, active construction sites &amp; fiscal intelligence.
+            {getRoleDescription(currentRole)}
           </p>
         </div>
 
-        <div className="shrink-0">
+        <div className="shrink-0 flex items-center gap-2">
+          <Link
+            href="/deliveries"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F] text-[#000000] dark:text-[#FFFFFF] px-4 py-2.5 text-xs sm:text-sm font-bold shadow-xs transition-colors"
+            title="Track Active Deliveries & Waypoints"
+          >
+            <Truck className="h-4 w-4" />
+            <span className="hidden sm:inline">Deliveries</span>
+          </Link>
+          <button
+            onClick={handleDownloadMasterPdf}
+            disabled={downloadingPdf}
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F] text-[#000000] dark:text-[#FFFFFF] px-4 py-2.5 text-xs sm:text-sm font-bold shadow-xs transition-colors disabled:opacity-50"
+            title="Download Full Master Executive Dossier (PDF)"
+          >
+            {downloadingPdf ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
+            <span className="hidden sm:inline">{downloadingPdf ? "Generating..." : "Executive PDF"}</span>
+          </button>
           {onCreate ? (
             <button
               onClick={onCreate}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] hover:opacity-90 px-4 py-2.5 text-xs sm:text-sm font-bold shadow-xs transition-opacity active:scale-98"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] hover:opacity-90 px-5 py-2.5 text-xs sm:text-sm font-bold shadow-xs transition-opacity active:scale-98"
             >
               <Plus className="h-4 w-4" />
               <span>New Project</span>
@@ -387,7 +465,7 @@ export default function ConstructionDashboard({
           ) : (
             <Link
               href="/projects/new"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] hover:opacity-90 px-4 py-2.5 text-xs sm:text-sm font-bold shadow-xs transition-opacity active:scale-98"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] hover:opacity-90 px-5 py-2.5 text-xs sm:text-sm font-bold shadow-xs transition-opacity active:scale-98"
             >
               <Plus className="h-4 w-4" />
               <span>New Project</span>
@@ -399,12 +477,12 @@ export default function ConstructionDashboard({
       {/* ─── 2. Top 4 Monochrome KPI Cards ─── */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Active Projects */}
-        <div className="v18-card animate-v18-spring v18-stagger-1 p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
+        <div className="v18-card animate-v18-spring v18-stagger-1 p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-3xl shadow-sm transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3]">
               Active Projects
             </span>
-            <span className="p-2 rounded-xl bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
+            <span className="p-2.5 rounded-2xl bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
               <Building2 className="w-4 h-4" />
             </span>
           </div>
@@ -423,12 +501,12 @@ export default function ConstructionDashboard({
         </div>
 
         {/* Card 2: Total Contract Value */}
-        <div className="v18-card animate-v18-spring v18-stagger-2 p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
+        <div className="v18-card animate-v18-spring v18-stagger-2 p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-3xl shadow-sm transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3]">
               Total Contract Value
             </span>
-            <span className="p-2 rounded-xl bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
+            <span className="p-2.5 rounded-2xl bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
               <Banknote className="w-4 h-4" />
             </span>
           </div>
@@ -447,12 +525,12 @@ export default function ConstructionDashboard({
         </div>
 
         {/* Card 3: Total Expenses */}
-        <div className="v18-card animate-v18-spring v18-stagger-3 p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
+        <div className="v18-card animate-v18-spring v18-stagger-3 p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-3xl shadow-sm transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3]">
               Total Expenses
             </span>
-            <span className="p-2 rounded-xl bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
+            <span className="p-2.5 rounded-2xl bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
               <ClipboardList className="w-4 h-4" />
             </span>
           </div>
@@ -471,12 +549,12 @@ export default function ConstructionDashboard({
         </div>
 
         {/* Card 4: Project Progress */}
-        <div className="v18-card animate-v18-spring v18-stagger-4 p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl shadow-xs transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
+        <div className="v18-card animate-v18-spring v18-stagger-4 p-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] rounded-3xl shadow-sm transition-all hover:border-[#000000] dark:hover:border-[#FFFFFF]">
           <div className="flex items-start justify-between">
             <span className="text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#A3A3A3]">
               Project Progress
             </span>
-            <span className="p-2 rounded-xl bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
+            <span className="p-2.5 rounded-2xl bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
               <TrendingUp className="w-4 h-4" />
             </span>
           </div>
@@ -498,7 +576,7 @@ export default function ConstructionDashboard({
       {/* ─── 3. Main Analytics: Progress Overview (Line) + Tasks Overview (Donut) ─── */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Project Progress Overview: Monochrome Line Chart Card */}
-        <div className="v18-card animate-v18-spring v18-stagger-3 lg:col-span-2 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
+        <div className="v18-card animate-v18-spring v18-stagger-3 lg:col-span-2 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-3xl p-5 sm:p-6 flex flex-col justify-between shadow-md">
           <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#D4D4D4] dark:border-[#303030]">
               <div>
@@ -511,12 +589,12 @@ export default function ConstructionDashboard({
               </div>
 
               {/* Timeframe filters: Day, Week, Month, Year */}
-              <div className="flex items-center gap-1 p-1 bg-[#F5F5F5] dark:bg-[#171717] rounded-xl border border-[#D4D4D4] dark:border-[#303030] self-start sm:self-auto">
+              <div className="flex items-center gap-1 p-1 bg-[#F5F5F5] dark:bg-[#171717] rounded-full border border-[#D4D4D4] dark:border-[#303030] self-start sm:self-auto">
                 {(["Day", "Week", "Month", "Year"] as const).map((filter) => (
                   <button
                     key={filter}
                     onClick={() => setTimeFilter(filter)}
-                    className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
+                    className={`px-3.5 py-1 text-xs font-semibold rounded-full transition-all ${
                       timeFilter === filter
                         ? "bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] font-bold shadow-2xs border border-[#D4D4D4] dark:border-[#303030]"
                         : "text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF]"
@@ -633,7 +711,7 @@ export default function ConstructionDashboard({
         </div>
 
         {/* Tasks Overview: Circular Donut Visualization (Section 4.G) */}
-        <div className="v18-card animate-v18-spring v18-stagger-4 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
+        <div className="v18-card animate-v18-spring v18-stagger-4 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-3xl p-5 sm:p-6 flex flex-col justify-between shadow-md">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[#D4D4D4] dark:border-[#303030]">
               <div>
@@ -646,7 +724,7 @@ export default function ConstructionDashboard({
               </div>
               <Link
                 href="/tasks"
-                className="p-1.5 rounded-lg text-[#666666] dark:text-[#A3A3A3] hover:bg-[#F5F5F5] dark:hover:bg-[#252525] transition-colors"
+                className="p-2 rounded-full text-[#666666] dark:text-[#A3A3A3] hover:bg-[#F5F5F5] dark:hover:bg-[#252525] transition-colors"
                 title="View all tasks"
               >
                 <ArrowUpRight className="w-4 h-4" />
@@ -733,7 +811,7 @@ export default function ConstructionDashboard({
 
             {/* Task Breakdown Legend */}
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-2.5 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]">
+              <div className="p-2.5 rounded-2xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]">
                 <div className="flex items-center gap-1.5 text-[11px] text-[#666666] dark:text-[#A3A3A3]">
                   <span className="w-2 h-2 rounded-full bg-[#111111] dark:bg-[#FFFFFF]" />
                   <span>Completed</span>
@@ -744,7 +822,7 @@ export default function ConstructionDashboard({
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]">
+              <div className="p-2.5 rounded-2xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]">
                 <div className="flex items-center gap-1.5 text-[11px] text-[#666666] dark:text-[#A3A3A3]">
                   <span className="w-2 h-2 rounded-full bg-[#666666] dark:bg-[#A3A3A3]" />
                   <span>In Progress</span>
@@ -755,7 +833,7 @@ export default function ConstructionDashboard({
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]">
+              <div className="p-2.5 rounded-2xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]">
                 <div className="flex items-center gap-1.5 text-[11px] text-[#666666] dark:text-[#A3A3A3]">
                   <span className="w-2 h-2 rounded-full bg-[#D1D5DB] dark:bg-[#383838]" />
                   <span>Pending</span>
@@ -766,7 +844,7 @@ export default function ConstructionDashboard({
                 </div>
               </div>
 
-              <div className="p-2.5 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]">
+              <div className="p-2.5 rounded-2xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]">
                 <div className="flex items-center gap-1.5 text-[11px] text-[#666666] dark:text-[#A3A3A3]">
                   <span className="w-2 h-2 rounded-full bg-[#666666] dark:bg-[#A3A3A3]" />
                   <span>Overdue</span>
@@ -796,7 +874,7 @@ export default function ConstructionDashboard({
       {/* ─── 4. Secondary Grid: Active Projects + Project Locations (Section 4.F) ─── */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left 5 Cols: Active Construction Projects List */}
-        <div className="v18-card animate-v18-spring v18-stagger-5 lg:col-span-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs">
+        <div className="v18-card animate-v18-spring v18-stagger-5 lg:col-span-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-3xl p-5 sm:p-6 flex flex-col justify-between shadow-md">
           <div>
             <div className="flex items-center justify-between pb-4 border-b border-[#D4D4D4] dark:border-[#303030]">
               <div>
@@ -809,7 +887,7 @@ export default function ConstructionDashboard({
               </div>
               <Link
                 href="/projects"
-                className="p-1.5 rounded-lg text-[#666666] dark:text-[#A3A3A3] hover:bg-[#F5F5F5] dark:hover:bg-[#252525] transition-colors"
+                className="p-2 rounded-full text-[#666666] dark:text-[#A3A3A3] hover:bg-[#F5F5F5] dark:hover:bg-[#252525] transition-colors"
                 title="View all projects"
               >
                 <ArrowUpRight className="w-4 h-4" />
@@ -864,7 +942,7 @@ export default function ConstructionDashboard({
           <div className="mt-5 pt-3 border-t border-[#D4D4D4] dark:border-[#303030]">
             <Link
               href="/projects/new"
-              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-[#F5F5F5] dark:bg-[#171717] hover:bg-[#D4D4D4] dark:hover:bg-[#252525] text-[#000000] dark:text-[#FFFFFF] font-semibold text-xs rounded-xl border border-[#D4D4D4] dark:border-[#303030] transition-all"
+              className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-[#F5F5F5] dark:bg-[#171717] hover:bg-[#D4D4D4] dark:hover:bg-[#252525] text-[#000000] dark:text-[#FFFFFF] font-semibold text-xs rounded-full border border-[#D4D4D4] dark:border-[#303030] transition-all shadow-xs"
             >
               <Plus className="w-4 h-4 text-[#000000] dark:text-[#FFFFFF]" />
               <span>Add New Construction Site</span>
@@ -879,7 +957,7 @@ export default function ConstructionDashboard({
       </section>
 
       {/* ─── 5. Recent Activity / Table with Filtering & CSV Export ─── */}
-      <section className="v18-card animate-v18-spring v18-stagger-6 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-2xl overflow-hidden shadow-xs">
+      <section className="v18-card animate-v18-spring v18-stagger-5 border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-[#000000] dark:text-[#FFFFFF] rounded-3xl overflow-hidden shadow-md">
         <div className="p-5 sm:p-6 border-b border-[#D4D4D4] dark:border-[#303030] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">
@@ -895,7 +973,7 @@ export default function ConstructionDashboard({
             {/* Customize: toggle compact density */}
             <button
               onClick={() => setIsCompact(!isCompact)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all border border-[#D4D4D4] dark:border-[#303030] ${
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-full transition-all border border-[#D4D4D4] dark:border-[#303030] ${
                 isCompact
                   ? "bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] font-bold shadow-2xs"
                   : "text-[#000000] dark:text-[#FFFFFF] bg-[#FAFAFA] dark:bg-[#171717] hover:bg-[#F5F5F5] dark:hover:bg-[#252525]"
@@ -910,7 +988,7 @@ export default function ConstructionDashboard({
             <div className="relative">
               <button
                 onClick={() => setShowFilterMenu(!showFilterMenu)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all border border-[#D4D4D4] dark:border-[#303030] ${
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-full transition-all border border-[#D4D4D4] dark:border-[#303030] ${
                   activityFilter !== "ALL"
                     ? "bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#111111] font-bold"
                     : "text-[#000000] dark:text-[#FFFFFF] bg-[#FAFAFA] dark:bg-[#171717] hover:bg-[#F5F5F5] dark:hover:bg-[#252525]"
@@ -921,7 +999,7 @@ export default function ConstructionDashboard({
               </button>
 
               {showFilterMenu && (
-                <div className="absolute right-0 mt-2 w-44 bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl shadow-xl py-1 z-30 animate-in fade-in zoom-in-95 duration-100">
+                <div className="absolute right-0 mt-2 w-48 bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl shadow-xl py-1.5 z-30 animate-in fade-in zoom-in-95 duration-100 overflow-hidden">
                   {["ALL", "In Progress", "On Track", "At Risk", "Delayed"].map((statusOpt) => (
                     <button
                       key={statusOpt}
@@ -929,7 +1007,7 @@ export default function ConstructionDashboard({
                         setActivityFilter(statusOpt);
                         setShowFilterMenu(false);
                       }}
-                      className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors ${
+                      className={`w-full text-left px-3.5 py-2 text-xs font-medium transition-colors ${
                         activityFilter === statusOpt
                           ? "bg-[#F5F5F5] dark:bg-[#252525] text-[#000000] dark:text-[#FFFFFF] font-bold"
                           : "text-[#666666] dark:text-[#A3A3A3] hover:bg-[#F5F5F5] dark:hover:bg-[#252525]"
@@ -945,11 +1023,26 @@ export default function ConstructionDashboard({
             {/* Export: real CSV download */}
             <button
               onClick={handleExport}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#FFFFFF] dark:text-[#111111] bg-[#111111] dark:bg-[#FFFFFF] hover:opacity-90 rounded-lg transition-opacity shadow-xs"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-[#FFFFFF] dark:text-[#111111] bg-[#111111] dark:bg-[#FFFFFF] hover:opacity-90 rounded-full transition-opacity shadow-xs"
               title="Export activities to CSV"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Export CSV</span>
+            </button>
+
+            {/* Master Executive PDF Download */}
+            <button
+              onClick={handleDownloadMasterPdf}
+              disabled={downloadingPdf}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F] rounded-full transition-colors shadow-xs disabled:opacity-50"
+              title="Download Full Master Executive Dossier (PDF)"
+            >
+              {downloadingPdf ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Download className="w-3.5 h-3.5" />
+              )}
+              <span>{downloadingPdf ? "Compiling..." : "Executive PDF"}</span>
             </button>
           </div>
         </div>
@@ -1009,10 +1102,10 @@ export default function ConstructionDashboard({
         </div>
 
         {/* Mobile Cards View */}
-        <div className="md:hidden divide-y divide-[#D4D4D4] dark:divide-[#303030]">
+        <div className="md:hidden divide-y divide-[#D4D4D4] dark:divide-[#303030] p-3 space-y-2">
           {filteredActivities.length > 0 ? (
             filteredActivities.map((act) => (
-              <div key={act.id} className="p-4 space-y-2">
+              <div key={act.id} className="p-4 space-y-2 rounded-2xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030]">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <Link

@@ -178,6 +178,29 @@ export const ROLE_PERMISSIONS: Record<RoleType, Permission[]> = {
     "inventory.adjust",
   ],
 
+  Contractor: [
+    "PROJECT_VIEW",
+    "TASK_VIEW",
+    "TASK_UPDATE",
+    "PROGRESS_LOG",
+    "MATERIAL_REQUEST_CREATE",
+    "MATERIAL_REQUEST_VIEW",
+    "DOCUMENT_VIEW",
+    "DOCUMENT_UPLOAD",
+    "NOTIFICATION_VIEW",
+    "projects.read",
+    "tasks.read",
+    "tasks.update",
+  ],
+
+  Supplier: [
+    "MATERIAL_VIEW",
+    "PURCHASE_ORDER_VIEW",
+    "GOODS_RECEIPT_VIEW",
+    "NOTIFICATION_VIEW",
+    "procurement.read",
+  ],
+
   Accountant: [
     "PROJECT_VIEW",
     "CLIENT_VIEW",

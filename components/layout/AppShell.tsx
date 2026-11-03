@@ -29,6 +29,7 @@ interface AppShellProps {
   userEmail?: string;
   onRoleChange?: (role: RoleType) => void;
   onLogout?: () => void;
+  background?: React.ReactNode;
 }
 
 export default function AppShell({
@@ -38,6 +39,7 @@ export default function AppShell({
   userEmail,
   onRoleChange,
   onLogout: onLogoutProp,
+  background,
 }: AppShellProps) {
   const { user, logout } = useCurrentUser();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -97,7 +99,7 @@ export default function AppShell({
 
   return (
     <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
-      <div className="min-h-screen w-full overflow-x-hidden bg-[#FAFAFA] dark:bg-[#000000] font-sans text-[#000000] dark:text-[#FFFFFF] transition-colors relative">
+      <div className="h-dvh w-full overflow-hidden flex bg-[var(--background)] text-[var(--foreground)] font-sans transition-colors relative">
         <AppSidebar
           isMobileOpen={isMobileOpen}
           onMobileClose={() => setIsMobileOpen(false)}
@@ -105,42 +107,56 @@ export default function AppShell({
           onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
           userName={userName}
           userRole={userRole}
+          userEmail={resolvedEmail}
+          profileImage={user?.profileImage}
           onRoleChange={onRoleChange}
           onLogout={handleTriggerLogout}
         />
 
-        {/* Main Content Area */}
+        {/* Right-Side Column Wrapper */}
         <div
-          className={`flex-1 flex flex-col min-w-0 overflow-x-hidden transition-all duration-300 ease-in-out
+          className={`flex-1 min-w-0 h-dvh flex flex-col overflow-hidden transition-all duration-300 ease-in-out relative
             md:pl-20
             ${isCollapsed ? "lg:pl-20" : "lg:pl-64"}
           `}
         >
+          {/* Background layer behind Header and Main */}
+          {background && (
+            <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden z-0">
+              {background}
+            </div>
+          )}
+
           {/* Top Header */}
-          <AppHeader
-            isMobileSidebarOpen={isMobileOpen}
-            onToggleMobileSidebar={() => setIsMobileOpen(!isMobileOpen)}
-            userName={userName}
-            userRole={userRole}
-            userEmail={resolvedEmail}
-            onLogout={handleTriggerLogout}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-          />
+          <div className="shrink-0 z-30 relative">
+            <AppHeader
+              isMobileSidebarOpen={isMobileOpen}
+              onToggleMobileSidebar={() => setIsMobileOpen(!isMobileOpen)}
+              userName={userName}
+              userRole={userRole}
+              userEmail={resolvedEmail}
+              userProfileImage={user?.profileImage}
+              onLogout={handleTriggerLogout}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+            />
+          </div>
 
           {/* Dynamic Page Content with Smooth Transition */}
           <main
             key={pathname}
-            className="mx-auto w-full max-w-[1800px] flex-1 overflow-x-hidden p-3.5 sm:p-5 lg:p-7 relative z-1 animate-slide-up"
+            className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain scroll-smooth p-3 sm:p-6 lg:p-8 relative z-10 animate-slide-up"
           >
-            {children}
+            <div className="mx-auto w-full max-w-[1800px] min-w-0 overflow-x-hidden">
+              {children}
+            </div>
           </main>
         </div>
 
         {/* Logout Confirmation Modal */}
         {showLogoutModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-150">
-            <div className="w-full max-w-sm bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-6 shadow-2xl space-y-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-150">
+            <div className="relative w-full max-w-sm max-h-[88vh] flex flex-col overflow-hidden bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-6 shadow-2xl space-y-4 animate-in zoom-in-95 duration-150">
               <div className="flex items-start justify-between">
                 <div className="w-10 h-10 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] flex items-center justify-center shrink-0">
                   <LogOut className="w-5 h-5" />

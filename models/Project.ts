@@ -63,6 +63,7 @@ const projectSchema = new Schema(
 
 projectSchema.index({ projectManager: 1, status: 1 });
 projectSchema.index({ organizationId: 1, createdAt: -1 });
+projectSchema.index({ status: 1, createdAt: -1 });
 
 export type ProjectDocument = InferSchemaType<typeof projectSchema>;
 export const Project = models.Project || model("Project", projectSchema);

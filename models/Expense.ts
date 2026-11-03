@@ -35,6 +35,7 @@ const expenseSchema = new Schema(
 );
 
 expenseSchema.index({ projectId: 1, date: -1 });
+expenseSchema.index({ projectId: 1, createdAt: -1 });
 
 export type ExpenseDocument = InferSchemaType<typeof expenseSchema>;
 export const Expense = models.Expense || model("Expense", expenseSchema);

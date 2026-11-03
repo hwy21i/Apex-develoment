@@ -68,10 +68,10 @@ const PROJECTS_PREVIEW = [
 ];
 
 const QUICK_DEMO_ROLES = [
-  { title: "Super Admin", role: "Admin", identifier: "hawariya21", note: "Full system & RBAC authority (Hawariya)" },
-  { title: "Executive Admin", role: "Admin", identifier: "admin", note: "Executive Administrator (Alemayehu)" },
+  { title: "Super Admin", role: "Admin", identifier: "admin", note: "Full system & RBAC authority" },
   { title: "Project Manager", role: "Project Manager", identifier: "pm.abebe", note: "Gantt schedules & site logs" },
   { title: "Site Engineer", role: "Site Engineer", identifier: "engineer.marta", note: "QA/QC & inspection records" },
+  { title: "Contractor Lead", role: "Contractor", identifier: "contractor.samuel", note: "Site execution & daily workforce logs" },
   { title: "Financial Controller", role: "Accountant", identifier: "accountant.hana", note: "Cost codes & fiscal ledger" },
   { title: "Procurement Officer", role: "Procurement Officer", identifier: "procurement.dawit", note: "POs & stock replenishment" },
 ];
@@ -140,6 +140,31 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
       suppressHydrationWarning
       className="min-h-screen bg-[#FAFAFA] dark:bg-[#000000] text-[#000000] dark:text-[#FFFFFF] selection:bg-[#111111] selection:text-[#FFFFFF] dark:selection:bg-[#FFFFFF] dark:selection:text-[#111111] relative overflow-x-hidden transition-colors duration-300"
     >
+      {/* ─── FULL-PAGE ARCHITECTURAL BACKGROUND IMAGE ─── */}
+      <div className="fixed inset-0 w-full h-full z-0 pointer-events-none overflow-hidden">
+        <Image
+          src="/images/construction-gateway.jpg"
+          alt="Apex Developments Commercial Construction Project"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center opacity-35 dark:opacity-25 grayscale transition-opacity duration-500 scale-[1.01]"
+        />
+        {/* Full-page atmospheric veil to maintain perfect readability */}
+        <div className="absolute inset-0 bg-[#FAFAFA]/85 dark:bg-[#000000]/85 backdrop-blur-[0.5px] transition-colors duration-300" />
+        {/* Architectural Precision Blueprint Grid */}
+        <div
+          className="absolute inset-0 opacity-20 dark:opacity-10 animate-blueprint-drift pointer-events-none"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, rgba(128,128,128,0.08) 1px, transparent 1px),
+              linear-gradient(to bottom, rgba(128,128,128,0.08) 1px, transparent 1px)
+            `,
+            backgroundSize: "40px 40px",
+          }}
+        />
+      </div>
+
       {/* ─── FLOATING HEADER / NAVIGATION ─── */}
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 sm:px-12 ${
@@ -210,12 +235,12 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
         <div className="absolute inset-0 w-full h-full z-0 overflow-hidden pointer-events-none">
           {/* Authentic Construction Photography: Building Under Development with Multiple Cranes */}
           <Image
-            src="/images/construction-hero.jpg"
+            src="/images/construction-hero-v2.jpg"
             alt="Apex Developments Construction Site with Multiple Tower Cranes"
             fill
             priority
             sizes="100vw"
-            className="object-cover object-[center_18%] sm:object-[center_16%] lg:object-[center_14%] opacity-80 dark:opacity-55 transition-opacity duration-300"
+            className="object-cover object-[center_18%] sm:object-[center_16%] lg:object-[center_14%] opacity-90 dark:opacity-65 transition-opacity duration-300"
           />
           {/* Subtle monochrome contrast veil for readability */}
           <div className="absolute inset-0 w-full h-full bg-[#FFFFFF]/45 dark:bg-[#0A0A0A]/65 backdrop-blur-[0.5px] transition-colors duration-300" />
@@ -427,7 +452,7 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
       </section>
 
       {/* ─── LIVE STATS BAND ─── */}
-      <section className="relative z-10 bg-[#FFFFFF] dark:bg-[#000000] border-y border-[#D4D4D4] dark:border-[#303030] py-8 px-6 sm:px-12 shadow-xs">
+      <section className="relative z-10 bg-[#FFFFFF]/75 dark:bg-[#0A0A0A]/75 backdrop-blur-md border-y border-[#D4D4D4] dark:border-[#303030] py-8 px-6 sm:px-12 shadow-xs transition-colors">
         <div className="max-w-7xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {STATS.map((stat, sIdx) => {
             const Icon = stat.icon;
@@ -503,8 +528,8 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
       </section>
 
       {/* ─── CALL TO ACTION BANNER ─── */}
-      <section className="relative z-10 py-20 px-6 sm:px-12 border-t border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#000000]">
-        <div className="max-w-5xl mx-auto rounded-3xl bg-[#FAFAFA] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] p-8 sm:p-14 text-center shadow-xl relative overflow-hidden">
+      <section className="relative z-10 py-20 px-6 sm:px-12 border-t border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF]/70 dark:bg-[#000000]/70 backdrop-blur-md transition-colors">
+        <div className="max-w-5xl mx-auto rounded-3xl bg-[#FAFAFA]/90 dark:bg-[#111111]/90 backdrop-blur-xl border border-[#D4D4D4] dark:border-[#303030] p-8 sm:p-14 text-center shadow-2xl relative overflow-hidden">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-[#000000] dark:text-[#FFFFFF] tracking-tight leading-tight mb-4 relative z-1">
             Ready to streamline your site operations?
           </h2>
@@ -529,7 +554,7 @@ export default function EntryPage({ onEnter }: { onEnter: () => void }) {
       </section>
 
       {/* ─── FOOTER ─── */}
-      <footer className="relative z-10 py-8 px-6 sm:px-12 border-t border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] text-xs text-[#666666] dark:text-[#A3A3A3]">
+      <footer className="relative z-10 py-8 px-6 sm:px-12 border-t border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF]/80 dark:bg-[#111111]/80 backdrop-blur-md text-xs text-[#666666] dark:text-[#A3A3A3] transition-colors">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <ApexLogo size={20} />

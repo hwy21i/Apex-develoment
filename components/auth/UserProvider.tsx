@@ -142,8 +142,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           "apex_session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
       } catch {}
 
-      // Hard redirect to the entry page, replacing history so Back cannot return
-      window.location.replace("/");
+      // Hard redirect to login, replacing history so Back cannot return
+      window.location.replace("/login");
     }
   }, []);
 

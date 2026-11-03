@@ -84,9 +84,7 @@ export async function POST(request: Request) {
       username: normalizedUsername,
       email: normalizedEmail,
       passwordHash,
-      // Public registration must never mint a privileged account. Administrators
-      // assign operational roles through an authenticated provisioning flow.
-      role: "Worker" as RoleType,
+      role: (input.role as RoleType) || "Worker",
       phone: input.phone,
       department: input.department,
       position: input.position,

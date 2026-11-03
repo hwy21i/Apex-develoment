@@ -193,3 +193,41 @@ for (const cfg of configs) {
   });
 }
 
+test("Enterprise PDF Engine: Dynamic Y cursor, text-wrapping, and multi-line row handling", async () => {
+  const { generateEnterprisePdf } = await import("../lib/pdf/engine.ts");
+  const longMaterial = "400 Bags Mugher Portland Cement 42.5R Grade A Special Construction High Durability Formulation for Commercial Foundations";
+  const longTracking = "TRK-2026-ETH-AA-BOLE-COMMERCIAL-TOWER-000849204";
+  const longLocation = "Addis Heights Tower - Bole Site Gate B Main Inbound Gate Logistics Terminal";
+
+  const pdfBytes = await generateEnterprisePdf({
+    title: "Delivery Telemetry, Carrier Route & Checkpoints Audit",
+    reportType: "delivery-tracking",
+    issuerName: "Lead Logistics Specialist",
+    issuerRole: "Admin",
+    summaryStats: [
+      { label: "Active Deliveries", value: "14 Shipments" },
+      { label: "Transit Integrity", value: "100% Sealed" },
+    ],
+    singleTable: {
+      headers: ["Tracking Number", "PO Ref", "Material / Payload", "Carrier & Plate", "Origin", "Location", "Status"],
+      rows: [
+        [
+          longTracking,
+          "PO-2026-0091",
+          longMaterial,
+          "Trans-Ethiopia Logistics (ET-3-48192-AA)",
+          "Mugher Cement Factory Silo 4",
+          longLocation,
+          "IN TRANSIT",
+        ],
+      ],
+    },
+  });
+
+  assert.ok(pdfBytes instanceof Uint8Array);
+  assert.ok(pdfBytes.length > 1000);
+  const pdfString = Buffer.from(pdfBytes).toString("latin1");
+  assert.ok(pdfString.startsWith("%PDF-"));
+  assert.ok(pdfString.includes("%%EOF"));
+});
+

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import AppShell from "@/components/layout/AppShell";
+import LiveDeliveryTracker from "@/components/procurement/LiveDeliveryTracker";
 import {
   Plus,
   Search,
@@ -65,6 +66,7 @@ export default function GoodsReceiptsPage() {
   const [receipts, setReceipts] = useState<GoodsReceiptRecord[]>([]);
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [suppliers, setSuppliers] = useState<SupplierOption[]>([]);
+  const [activeTab, setActiveTab] = useState<"grn" | "tracking">("grn");
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -300,18 +302,48 @@ export default function GoodsReceiptsPage() {
           </div>
         </div>
 
-        {/* Feedback Alert */}
-        {feedback && (
-          <div className="p-3.5 rounded-xl bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] border border-[#111111] dark:border-[#FFFFFF] font-semibold text-xs flex items-center justify-between animate-in fade-in">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 shrink-0" />
-              <span>{feedback}</span>
-            </div>
-            <button onClick={() => setFeedback(null)} className="p-1">
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        )}
+        {/* Navigation Tabs */}
+        <div className="flex items-center gap-2 border-b border-[#D4D4D4] dark:border-[#303030] pb-2">
+          <button
+            onClick={() => setActiveTab("grn")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              activeTab === "grn"
+                ? "bg-[#000000] text-[#FFFFFF] dark:bg-[#FFFFFF] dark:text-[#000000] shadow-sm"
+                : "bg-transparent text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF]"
+            }`}
+          >
+            <PackageCheck className="w-4 h-4" />
+            <span>GRN &amp; Quality Inspections</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("tracking")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              activeTab === "tracking"
+                ? "bg-[#000000] text-[#FFFFFF] dark:bg-[#FFFFFF] dark:text-[#000000] shadow-sm"
+                : "bg-transparent text-[#666666] dark:text-[#A3A3A3] hover:text-[#000000] dark:hover:text-[#FFFFFF]"
+            }`}
+          >
+            <Truck className="w-4 h-4" />
+            <span>Live Route Telemetry &amp; Checkpoints</span>
+          </button>
+        </div>
+
+        {activeTab === "tracking" ? (
+          <LiveDeliveryTracker />
+        ) : (
+          <>
+            {/* Feedback Alert */}
+            {feedback && (
+              <div className="p-3.5 rounded-xl bg-[#111111] dark:bg-[#FFFFFF] text-[#FFFFFF] dark:text-[#000000] border border-[#111111] dark:border-[#FFFFFF] font-semibold text-xs flex items-center justify-between animate-in fade-in">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4 shrink-0" />
+                  <span>{feedback}</span>
+                </div>
+                <button onClick={() => setFeedback(null)} className="p-1">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -455,12 +487,14 @@ export default function GoodsReceiptsPage() {
             </table>
           </div>
         </div>
+        </>
+        )}
 
         {/* Modal: View Receipt Details & Traceability Timeline */}
         {activeReceipt && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-v18-backdrop">
-            <div className="v18-card animate-v18-modal bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-6 w-full erp-modal-md shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between pb-3 border-b border-[#D4D4D4] dark:border-[#303030]">
+          <div className="fixed inset-0 z-50 overflow-y-auto overscroll-contain p-4 sm:p-6 flex items-center justify-center bg-black/70 backdrop-blur-xs animate-v18-backdrop">
+            <div className="v18-card animate-v18-modal bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full erp-modal-md shadow-2xl my-auto max-h-[88vh] flex flex-col overflow-hidden">
+              <div className="shrink-0 p-6 pb-3 border-b border-[#D4D4D4] dark:border-[#303030] flex items-center justify-between">
                 <div>
                   <h3 className="text-base font-extrabold text-[#000000] dark:text-[#FFFFFF] font-mono">
                     {activeReceipt.grnNumber}
@@ -469,126 +503,131 @@ export default function GoodsReceiptsPage() {
                     Delivery Intake &amp; Physical Quality Inspection Slip
                   </p>
                 </div>
-                <button onClick={() => setActiveReceipt(null)} className="text-[#888888]">
+                <button
+                  onClick={() => setActiveReceipt(null)}
+                  className="text-[#888888] hover:text-[#000000] dark:hover:text-[#FFFFFF] p-1 rounded-lg"
+                >
                   <X size={18} />
                 </button>
               </div>
 
-              {/* Delivery Traceability Progress Timeline */}
-              <div className="p-4 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider font-mono text-[#666666] dark:text-[#A3A3A3]">
-                  Delivery Traceability Timeline
-                </h4>
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-1.5 font-semibold text-[#000000] dark:text-[#FFFFFF]">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>PO Dispatched</span>
-                  </div>
-                  <div className="h-0.5 w-8 bg-[#000000] dark:bg-[#FFFFFF]" />
-                  <div className="flex items-center gap-1.5 font-semibold text-[#000000] dark:text-[#FFFFFF]">
-                    <Truck className="w-3.5 h-3.5" />
-                    <span>In Transit</span>
-                  </div>
-                  <div className="h-0.5 w-8 bg-[#000000] dark:bg-[#FFFFFF]" />
-                  <div className="flex items-center gap-1.5 font-semibold text-[#000000] dark:text-[#FFFFFF]">
-                    <PackageCheck className="w-3.5 h-3.5" />
-                    <span>Inspected</span>
-                  </div>
-                  <div className="h-0.5 w-8 bg-[#000000] dark:bg-[#FFFFFF]" />
-                  <div className="flex items-center gap-1.5 font-semibold text-[#000000] dark:text-[#FFFFFF]">
-                    <Warehouse className="w-3.5 h-3.5" />
-                    <span>Stocked</span>
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-6 py-4 space-y-4 pr-3">
+                {/* Delivery Traceability Progress Timeline */}
+                <div className="p-4 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] space-y-3">
+                  <h4 className="text-xs font-bold uppercase tracking-wider font-mono text-[#666666] dark:text-[#A3A3A3]">
+                    Delivery Traceability Timeline
+                  </h4>
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5 font-semibold text-[#000000] dark:text-[#FFFFFF]">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>PO Dispatched</span>
+                    </div>
+                    <div className="h-0.5 w-8 bg-[#000000] dark:bg-[#FFFFFF]" />
+                    <div className="flex items-center gap-1.5 font-semibold text-[#000000] dark:text-[#FFFFFF]">
+                      <Truck className="w-3.5 h-3.5" />
+                      <span>In Transit</span>
+                    </div>
+                    <div className="h-0.5 w-8 bg-[#000000] dark:bg-[#FFFFFF]" />
+                    <div className="flex items-center gap-1.5 font-semibold text-[#000000] dark:text-[#FFFFFF]">
+                      <PackageCheck className="w-3.5 h-3.5" />
+                      <span>Inspected</span>
+                    </div>
+                    <div className="h-0.5 w-8 bg-[#000000] dark:bg-[#FFFFFF]" />
+                    <div className="flex items-center gap-1.5 font-semibold text-[#000000] dark:text-[#FFFFFF]">
+                      <Warehouse className="w-3.5 h-3.5" />
+                      <span>Stocked</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Delivery Meta Grid */}
-              <div className="grid grid-cols-2 gap-3 text-xs p-3.5 bg-[#FAFAFA] dark:bg-[#171717] rounded-xl border border-[#D4D4D4] dark:border-[#303030]">
-                <div>
-                  <span className="text-[#666666] dark:text-[#A3A3A3]">Supplier:</span>
-                  <p className="font-semibold text-[#000000] dark:text-[#FFFFFF] mt-0.5">{activeReceipt.supplierName}</p>
-                </div>
-                <div>
-                  <span className="text-[#666666] dark:text-[#A3A3A3]">Delivery Note #:</span>
-                  <p className="font-mono font-bold text-[#000000] dark:text-[#FFFFFF] mt-0.5">{activeReceipt.deliveryNoteNumber}</p>
-                </div>
-                <div>
-                  <span className="text-[#666666] dark:text-[#A3A3A3]">Purchase Order:</span>
-                  <p className="font-mono text-[#000000] dark:text-[#FFFFFF] mt-0.5">{activeReceipt.poNumber}</p>
-                </div>
-                <div>
-                  <span className="text-[#666666] dark:text-[#A3A3A3]">Assigned Project:</span>
-                  <p className="text-[#000000] dark:text-[#FFFFFF] mt-0.5">{activeReceipt.projectName}</p>
-                </div>
-                {activeReceipt.vehicleNumber && (
+                {/* Delivery Meta Grid */}
+                <div className="grid grid-cols-2 gap-3 text-xs p-3.5 bg-[#FAFAFA] dark:bg-[#171717] rounded-xl border border-[#D4D4D4] dark:border-[#303030]">
                   <div>
-                    <span className="text-[#666666] dark:text-[#A3A3A3]">Carrier &amp; Vehicle:</span>
-                    <p className="text-[#000000] dark:text-[#FFFFFF] mt-0.5">
-                      {activeReceipt.carrierName || "Direct"} &bull; {activeReceipt.vehicleNumber}
-                    </p>
+                    <span className="text-[#666666] dark:text-[#A3A3A3]">Supplier:</span>
+                    <p className="font-semibold text-[#000000] dark:text-[#FFFFFF] mt-0.5">{activeReceipt.supplierName}</p>
                   </div>
-                )}
+                  <div>
+                    <span className="text-[#666666] dark:text-[#A3A3A3]">Delivery Note #:</span>
+                    <p className="font-mono font-bold text-[#000000] dark:text-[#FFFFFF] mt-0.5">{activeReceipt.deliveryNoteNumber}</p>
+                  </div>
+                  <div>
+                    <span className="text-[#666666] dark:text-[#A3A3A3]">Purchase Order:</span>
+                    <p className="font-mono text-[#000000] dark:text-[#FFFFFF] mt-0.5">{activeReceipt.poNumber}</p>
+                  </div>
+                  <div>
+                    <span className="text-[#666666] dark:text-[#A3A3A3]">Assigned Project:</span>
+                    <p className="text-[#000000] dark:text-[#FFFFFF] mt-0.5">{activeReceipt.projectName}</p>
+                  </div>
+                  {activeReceipt.vehicleNumber && (
+                    <div>
+                      <span className="text-[#666666] dark:text-[#A3A3A3]">Carrier &amp; Vehicle:</span>
+                      <p className="text-[#000000] dark:text-[#FFFFFF] mt-0.5">
+                        {activeReceipt.carrierName || "Direct"} &bull; {activeReceipt.vehicleNumber}
+                      </p>
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-[#666666] dark:text-[#A3A3A3]">Receipt Date:</span>
+                    <p className="text-[#000000] dark:text-[#FFFFFF] mt-0.5">{activeReceipt.receivedDate}</p>
+                  </div>
+                </div>
+
+                {/* Inspected Items Table */}
                 <div>
-                  <span className="text-[#666666] dark:text-[#A3A3A3]">Receipt Date:</span>
-                  <p className="text-[#000000] dark:text-[#FFFFFF] mt-0.5">{activeReceipt.receivedDate}</p>
-                </div>
-              </div>
-
-              {/* Inspected Items Table */}
-              <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider font-mono text-[#666666] dark:text-[#A3A3A3] mb-2">
-                  Material Verification &amp; Acceptance Log
-                </h4>
-                <div className="border border-[#D4D4D4] dark:border-[#303030] rounded-xl overflow-hidden">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-[#FAFAFA] dark:bg-[#171717] font-mono text-[10px] uppercase text-[#666666] dark:text-[#A3A3A3] border-b border-[#D4D4D4] dark:border-[#303030]">
-                      <tr>
-                        <th className="px-3 py-2">Material</th>
-                        <th className="px-3 py-2 text-right">Ordered</th>
-                        <th className="px-3 py-2 text-right">Accepted</th>
-                        <th className="px-3 py-2 text-right">Rejected</th>
-                        <th className="px-3 py-2 text-right">Total (ETB)</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#D4D4D4] dark:border-[#303030]">
-                      {activeReceipt.items.map((it, idx) => (
-                        <tr key={idx}>
-                          <td className="px-3 py-2 font-bold text-[#000000] dark:text-[#FFFFFF]">
-                            {it.materialName}
-                            {it.batchNumber && (
-                              <span className="block text-[10px] font-mono text-[#666666] dark:text-[#A3A3A3]">
-                                Batch: {it.batchNumber}
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-3 py-2 font-mono text-right">{it.orderedQuantity ?? it.receivedQuantity}</td>
-                          <td className="px-3 py-2 font-mono text-right font-bold text-[#000000] dark:text-[#FFFFFF]">
-                            {it.receivedQuantity}
-                          </td>
-                          <td className="px-3 py-2 font-mono text-right text-[#666666] dark:text-[#A3A3A3]">
-                            {it.rejectedQuantity || 0}
-                          </td>
-                          <td className="px-3 py-2 font-mono text-right font-bold">{fmt(it.totalPrice)}</td>
+                  <h4 className="text-xs font-bold uppercase tracking-wider font-mono text-[#666666] dark:text-[#A3A3A3] mb-2">
+                    Material Verification &amp; Acceptance Log
+                  </h4>
+                  <div className="border border-[#D4D4D4] dark:border-[#303030] rounded-xl overflow-hidden">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-[#FAFAFA] dark:bg-[#171717] font-mono text-[10px] uppercase text-[#666666] dark:text-[#A3A3A3] border-b border-[#D4D4D4] dark:border-[#303030]">
+                        <tr>
+                          <th className="px-3 py-2">Material</th>
+                          <th className="px-3 py-2 text-right">Ordered</th>
+                          <th className="px-3 py-2 text-right">Accepted</th>
+                          <th className="px-3 py-2 text-right">Rejected</th>
+                          <th className="px-3 py-2 text-right">Total (ETB)</th>
                         </tr>
-                      ))}
-                    </tbody>
-                    <tfoot className="bg-[#FAFAFA] dark:bg-[#171717] font-bold border-t border-[#D4D4D4] dark:border-[#303030]">
-                      <tr>
-                        <td colSpan={4} className="px-3 py-2 text-right uppercase font-mono text-[10px]">
-                          Net Valuation:
-                        </td>
-                        <td className="px-3 py-2 font-mono text-right">{fmt(activeReceipt.totalValue)}</td>
-                      </tr>
-                    </tfoot>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-[#D4D4D4] dark:border-[#303030]">
+                        {activeReceipt.items.map((it, idx) => (
+                          <tr key={idx}>
+                            <td className="px-3 py-2 font-bold text-[#000000] dark:text-[#FFFFFF]">
+                              {it.materialName}
+                              {it.batchNumber && (
+                                <span className="block text-[10px] font-mono text-[#666666] dark:text-[#A3A3A3]">
+                                  Batch: {it.batchNumber}
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-3 py-2 font-mono text-right">{it.orderedQuantity ?? it.receivedQuantity}</td>
+                            <td className="px-3 py-2 font-mono text-right font-bold text-[#000000] dark:text-[#FFFFFF]">
+                              {it.receivedQuantity}
+                            </td>
+                            <td className="px-3 py-2 font-mono text-right text-[#666666] dark:text-[#A3A3A3]">
+                              {it.rejectedQuantity || 0}
+                            </td>
+                            <td className="px-3 py-2 font-mono text-right font-bold">{fmt(it.totalPrice)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot className="bg-[#FAFAFA] dark:bg-[#171717] font-bold border-t border-[#D4D4D4] dark:border-[#303030]">
+                        <tr>
+                          <td colSpan={4} className="px-3 py-2 text-right uppercase font-mono text-[10px]">
+                            Net Valuation:
+                          </td>
+                          <td className="px-3 py-2 font-mono text-right">{fmt(activeReceipt.totalValue)}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex justify-end pt-2 border-t border-[#D4D4D4] dark:border-[#303030]">
+              <div className="shrink-0 p-6 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] flex justify-end">
                 <button
                   type="button"
                   onClick={() => setActiveReceipt(null)}
-                  className="px-4 py-2 rounded-xl border border-[#D4D4D4] dark:border-[#303030] text-xs font-semibold"
+                  className="px-4 py-2 rounded-xl border border-[#D4D4D4] dark:border-[#303030] text-xs font-semibold hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F]"
                 >
                   Close
                 </button>
@@ -599,9 +638,9 @@ export default function GoodsReceiptsPage() {
 
         {/* Modal: Receive Delivery / Record GRN Dialog */}
         {isCreateOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-v18-backdrop">
-            <div className="v18-card animate-v18-modal bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl p-6 w-full erp-modal-md shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between pb-3 border-b border-[#D4D4D4] dark:border-[#303030]">
+          <div className="fixed inset-0 z-50 overflow-y-auto overscroll-contain p-4 sm:p-6 flex items-center justify-center bg-black/70 backdrop-blur-xs animate-v18-backdrop">
+            <div className="v18-card animate-v18-modal bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full erp-modal-md shadow-2xl my-auto max-h-[88vh] flex flex-col overflow-hidden">
+              <div className="shrink-0 p-6 pb-3 border-b border-[#D4D4D4] dark:border-[#303030] flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="p-2 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border border-[#D4D4D4] dark:border-[#303030]">
                     <PackageCheck className="w-5 h-5" />
@@ -615,173 +654,179 @@ export default function GoodsReceiptsPage() {
                     </p>
                   </div>
                 </div>
-                <button onClick={() => setIsCreateOpen(false)} className="text-[#888888]">
+                <button
+                  onClick={() => setIsCreateOpen(false)}
+                  className="text-[#888888] hover:text-[#000000] dark:hover:text-[#FFFFFF] p-1 rounded-lg"
+                >
                   <X size={18} />
                 </button>
               </div>
 
-              {formError && (
-                <div className="p-3 rounded-xl bg-[#000000] text-[#FFFFFF] dark:bg-[#FFFFFF] dark:text-[#000000] text-xs font-bold">
-                  {formError}
-                </div>
-              )}
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-6 py-4 space-y-3 pr-3">
+                {formError && (
+                  <div className="p-3 rounded-xl bg-[#000000] text-[#FFFFFF] dark:bg-[#FFFFFF] dark:text-[#000000] text-xs font-bold">
+                    {formError}
+                  </div>
+                )}
 
-              <form onSubmit={handleCreate} className="space-y-3 text-xs">
-                <div className="grid grid-cols-2 gap-3">
+                <form id="grn-form" onSubmit={handleCreate} className="space-y-3 text-xs">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="font-semibold block mb-1">GRN Number</label>
+                      <input
+                        required
+                        value={formGrnNumber}
+                        onChange={(e) => setFormGrnNumber(e.target.value)}
+                        className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
+                      />
+                    </div>
+                    <div>
+                      <label className="font-semibold block mb-1">PO Reference #</label>
+                      <input
+                        required
+                        value={formPoNumber}
+                        onChange={(e) => setFormPoNumber(e.target.value)}
+                        className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="font-semibold block mb-1">Vendor / Supplier *</label>
+                      <select
+                        value={formSupplierId}
+                        onChange={(e) => setFormSupplierId(e.target.value)}
+                        className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 text-[#000000] dark:text-[#FFFFFF]"
+                      >
+                        {suppliers.map((s) => (
+                          <option key={s._id} value={s._id}>
+                            {s.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="font-semibold block mb-1">Delivery Note # *</label>
+                      <input
+                        required
+                        value={formDeliveryNote}
+                        onChange={(e) => setFormDeliveryNote(e.target.value)}
+                        className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="font-semibold block mb-1">Project Site *</label>
+                      <select
+                        value={formProjectId}
+                        onChange={(e) => setFormProjectId(e.target.value)}
+                        className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 text-[#000000] dark:text-[#FFFFFF]"
+                      >
+                        {projects.map((p) => (
+                          <option key={p._id} value={p._id}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="font-semibold block mb-1">Batch / Heat Number</label>
+                      <input
+                        value={formBatchNumber}
+                        onChange={(e) => setFormBatchNumber(e.target.value)}
+                        className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
+                      />
+                    </div>
+                  </div>
+
                   <div>
-                    <label className="font-semibold block mb-1">GRN Number</label>
+                    <label className="font-semibold block mb-1">Delivered Material Name</label>
                     <input
                       required
-                      value={formGrnNumber}
-                      onChange={(e) => setFormGrnNumber(e.target.value)}
-                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-semibold block mb-1">PO Reference #</label>
-                    <input
-                      required
-                      value={formPoNumber}
-                      onChange={(e) => setFormPoNumber(e.target.value)}
-                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="font-semibold block mb-1">Vendor / Supplier *</label>
-                    <select
-                      value={formSupplierId}
-                      onChange={(e) => setFormSupplierId(e.target.value)}
-                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 text-[#000000] dark:text-[#FFFFFF]"
-                    >
-                      {suppliers.map((s) => (
-                        <option key={s._id} value={s._id}>
-                          {s.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="font-semibold block mb-1">Delivery Note # *</label>
-                    <input
-                      required
-                      value={formDeliveryNote}
-                      onChange={(e) => setFormDeliveryNote(e.target.value)}
-                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="font-semibold block mb-1">Project Site *</label>
-                    <select
-                      value={formProjectId}
-                      onChange={(e) => setFormProjectId(e.target.value)}
-                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 text-[#000000] dark:text-[#FFFFFF]"
-                    >
-                      {projects.map((p) => (
-                        <option key={p._id} value={p._id}>
-                          {p.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="font-semibold block mb-1">Batch / Heat Number</label>
-                    <input
-                      value={formBatchNumber}
-                      onChange={(e) => setFormBatchNumber(e.target.value)}
-                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="font-semibold block mb-1">Delivered Material Name</label>
-                  <input
-                    required
-                    value={formMaterialName}
-                    onChange={(e) => setFormMaterialName(e.target.value)}
-                    className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2 text-[#000000] dark:text-[#FFFFFF]"
-                  />
-                </div>
-
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <label className="font-semibold block mb-1">Accepted Qty *</label>
-                    <input
-                      required
-                      type="number"
-                      min="0.01"
-                      value={formReceivedQty}
-                      onChange={(e) => setFormReceivedQty(e.target.value)}
-                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-semibold block mb-1">Rejected Qty</label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={formRejectedQty}
-                      onChange={(e) => setFormRejectedQty(e.target.value)}
-                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-semibold block mb-1">Unit Price (ETB)</label>
-                    <input
-                      required
-                      type="number"
-                      min="0"
-                      value={formUnitPrice}
-                      onChange={(e) => setFormUnitPrice(e.target.value)}
-                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="font-semibold block mb-1">Carrier Name</label>
-                    <input
-                      placeholder="e.g. Abyssinia Freight"
-                      value={formCarrier}
-                      onChange={(e) => setFormCarrier(e.target.value)}
+                      value={formMaterialName}
+                      onChange={(e) => setFormMaterialName(e.target.value)}
                       className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2 text-[#000000] dark:text-[#FFFFFF]"
                     />
                   </div>
-                  <div>
-                    <label className="font-semibold block mb-1">Truck / Vehicle Plate #</label>
-                    <input
-                      placeholder="e.g. 3-AA-12345"
-                      value={formVehicle}
-                      onChange={(e) => setFormVehicle(e.target.value)}
-                      className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2 text-[#000000] dark:text-[#FFFFFF]"
-                    />
-                  </div>
-                </div>
 
-                <div className="flex justify-end gap-2 pt-3 border-t border-[#D4D4D4] dark:border-[#303030]">
-                  <button
-                    type="button"
-                    onClick={() => setIsCreateOpen(false)}
-                    className="px-4 py-2 rounded-xl border border-[#D4D4D4] dark:border-[#303030] text-xs font-semibold"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="px-5 py-2 rounded-xl bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] text-xs font-bold shadow-md"
-                  >
-                    {submitting ? "Processing GRN..." : "Confirm & Post GRN"}
-                  </button>
-                </div>
-              </form>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="font-semibold block mb-1">Accepted Qty *</label>
+                      <input
+                        required
+                        type="number"
+                        min="0.01"
+                        value={formReceivedQty}
+                        onChange={(e) => setFormReceivedQty(e.target.value)}
+                        className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
+                      />
+                    </div>
+                    <div>
+                      <label className="font-semibold block mb-1">Rejected Qty</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={formRejectedQty}
+                        onChange={(e) => setFormRejectedQty(e.target.value)}
+                        className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
+                      />
+                    </div>
+                    <div>
+                      <label className="font-semibold block mb-1">Unit Price (ETB)</label>
+                      <input
+                        required
+                        type="number"
+                        min="0"
+                        value={formUnitPrice}
+                        onChange={(e) => setFormUnitPrice(e.target.value)}
+                        className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3 py-2 font-mono text-[#000000] dark:text-[#FFFFFF]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="font-semibold block mb-1">Carrier Name</label>
+                      <input
+                        placeholder="e.g. Abyssinia Freight"
+                        value={formCarrier}
+                        onChange={(e) => setFormCarrier(e.target.value)}
+                        className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2 text-[#000000] dark:text-[#FFFFFF]"
+                      />
+                    </div>
+                    <div>
+                      <label className="font-semibold block mb-1">Truck / Vehicle Plate #</label>
+                      <input
+                        placeholder="e.g. 3-AA-12345"
+                        value={formVehicle}
+                        onChange={(e) => setFormVehicle(e.target.value)}
+                        className="w-full bg-[#FAFAFA] dark:bg-[#171717] border border-[#D4D4D4] dark:border-[#303030] rounded-xl px-3.5 py-2 text-[#000000] dark:text-[#FFFFFF]"
+                      />
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div className="shrink-0 p-6 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-[#D4D4D4] dark:border-[#303030] text-xs font-semibold hover:bg-[#F5F5F5] dark:hover:bg-[#1F1F1F]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  form="grn-form"
+                  disabled={submitting}
+                  className="px-5 py-2 rounded-xl bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] text-xs font-bold shadow-md disabled:opacity-50"
+                >
+                  {submitting ? "Processing GRN..." : "Confirm & Post GRN"}
+                </button>
+              </div>
             </div>
           </div>
         )}

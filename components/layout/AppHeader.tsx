@@ -42,6 +42,7 @@ interface AppHeaderProps {
   userName?: string;
   userRole?: RoleType;
   userEmail?: string;
+  userProfileImage?: string;
   onLogout?: () => void;
   searchQuery?: string;
   onSearchChange?: (q: string) => void;
@@ -53,6 +54,7 @@ export default function AppHeader({
   userName = "",
   userRole,
   userEmail,
+  userProfileImage,
   onLogout,
   searchQuery = "",
   onSearchChange,
@@ -343,10 +345,7 @@ export default function AppHeader({
             <Search className="w-5 h-5" />
           </button>
 
-          {/* Direct 1-Click Sun/Moon Theme Toggle */}
-          <ThemeToggle size="sm" className="hidden sm:inline-flex" />
-
-          {/* Theme Mode Toggle Dropdown */}
+          {/* Theme Mode Toggle Control */}
           <div className="relative" ref={themeMenuRef}>
             <button
               onClick={() => setShowThemeMenu(!showThemeMenu)}
@@ -431,8 +430,14 @@ export default function AppHeader({
               className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-[#F5F5F5] dark:hover:bg-[#171717] min-h-[44px] transition-colors"
               aria-label="User profile menu"
             >
-              <div className="w-8 h-8 rounded-full bg-[#111111] dark:bg-[#171717] text-[#FFFFFF] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] flex items-center justify-center text-xs font-bold shadow-2xs">
-                {userName ? userName.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
+              <div className="w-8 h-8 rounded-full bg-[#111111] dark:bg-[#171717] text-[#FFFFFF] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] flex items-center justify-center text-xs font-bold shadow-2xs overflow-hidden">
+                {userProfileImage ? (
+                  <img src={userProfileImage} alt={userName} className="w-full h-full object-cover" />
+                ) : userName ? (
+                  userName.charAt(0).toUpperCase()
+                ) : (
+                  <User className="w-4 h-4" />
+                )}
               </div>
               <div className="hidden sm:flex flex-col text-left leading-tight">
                 <span className="text-xs font-semibold text-[#000000] dark:text-[#FFFFFF]">
@@ -447,19 +452,30 @@ export default function AppHeader({
 
             {/* Profile Dropdown Menu */}
             {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-60 bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
-                <div className="px-4 py-2.5 border-b border-[#D4D4D4] dark:border-[#303030]">
-                  <p className="text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] truncate">
-                    {userName}
-                  </p>
-                  {userEmail && (
-                    <p className="text-[11px] text-[#666666] dark:text-[#A3A3A3] truncate">
-                      {userEmail}
+              <div className="absolute right-0 mt-2 w-64 bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+                <div className="px-4 py-2.5 border-b border-[#D4D4D4] dark:border-[#303030] flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#111111] dark:bg-[#171717] text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] flex items-center justify-center text-xs font-bold overflow-hidden shrink-0 shadow-2xs">
+                    {userProfileImage ? (
+                      <img src={userProfileImage} alt={userName} className="w-full h-full object-cover" />
+                    ) : userName ? (
+                      userName.charAt(0).toUpperCase()
+                    ) : (
+                      <User className="w-5 h-5" />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] truncate">
+                      {userName}
                     </p>
-                  )}
-                  <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
-                    {userRole}
-                  </span>
+                    {userEmail && (
+                      <p className="text-[11px] text-[#666666] dark:text-[#A3A3A3] truncate">
+                        {userEmail}
+                      </p>
+                    )}
+                    <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-[#F5F5F5] dark:bg-[#171717] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030]">
+                      {userRole}
+                    </span>
+                  </div>
                 </div>
 
                 <Link

@@ -80,7 +80,11 @@ export async function proxy(request: NextRequest) {
   // 3. Everything else is a protected application route.
   const authed = await isAuthenticated(request);
   if (!authed) {
-    return NextResponse.redirect(new URL("/", request.url));
+    const loginUrl = new URL("/login", request.url);
+    if (pathname && pathname !== "/") {
+      loginUrl.searchParams.set("next", pathname);
+    }
+    return NextResponse.redirect(loginUrl);
   }
 
   return withSecurityHeaders(NextResponse.next());

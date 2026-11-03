@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
 import Link from "next/link";
 import {
@@ -62,6 +62,12 @@ export default function DocumentsHubPage() {
     fileSize: "",
   });
 
+  useEffect(() => {
+    if (projects.length > 0 && !form.projectId) {
+      setForm((prev) => ({ ...prev, projectId: projects[0]._id }));
+    }
+  }, [projects, form.projectId]);
+
   const countBy = (v: Vault) => docs.filter((d) => d.vault === v).length;
 
   const categories = [
@@ -105,7 +111,7 @@ export default function DocumentsHubPage() {
 
   const openForm = () => {
     setForm({
-      projectId: projects[0]?._id || "",
+      projectId: form.projectId || projects[0]?._id || "",
       vault: "drawings",
       fileName: "",
       category: "",
@@ -312,9 +318,9 @@ export default function DocumentsHubPage() {
 
       {/* Create modal */}
       {formOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030] pb-3">
+        <div className="fixed inset-0 z-50 overflow-y-auto overscroll-contain p-4 sm:p-6 flex items-center justify-center bg-black/70 backdrop-blur-xs animate-v18-backdrop">
+          <div className="my-auto max-h-[88vh] flex flex-col overflow-hidden w-full max-w-lg v18-card bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl shadow-2xl animate-v18-modal">
+            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] p-6 pb-4 shrink-0">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-xl bg-[#000000] dark:bg-[#FFFFFF]/15 text-[#666666] dark:text-[#A3A3A3]">
                   <Upload className="w-5 h-5" />
@@ -324,18 +330,18 @@ export default function DocumentsHubPage() {
                   <p className="text-xs text-[#666666] dark:text-[#A3A3A3]">Index an architectural sheet, permit, or legal document</p>
                 </div>
               </div>
-              <button onClick={() => setFormOpen(false)} className="p-1.5 rounded-lg text-[#888888] dark:text-[#888888] hover:text-[#444444] dark:text-[#D4D4D4] dark:hover:text-[#FFFFFF] hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] dark:hover:bg-[#1F1F1F]/50 transition-colors"><X size={16} /></button>
+              <button onClick={() => setFormOpen(false)} className="p-1.5 rounded-lg text-[#888888] hover:text-[#444444] dark:text-[#A3A3A3] dark:hover:text-[#FFFFFF] hover:bg-[#E5E5E5] dark:hover:bg-[#1F1F1F] transition-colors"><X size={16} /></button>
             </div>
-            <div className="space-y-3">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-6 py-4 space-y-3 pr-2">
               <div>
-                <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">Project *</label>
+                <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">Project *</label>
                 <select className={inputCls} value={form.projectId} onChange={(e) => setForm({ ...form, projectId: e.target.value })}>
                   {projects.length === 0 && <option value="">No accessible projects</option>}
                   {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">Vault section</label>
+                <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">Vault section</label>
                 <select className={inputCls} value={form.vault} onChange={(e) => setForm({ ...form, vault: e.target.value as Vault })}>
                   <option value="drawings">Project Engineering Drawings (IFC)</option>
                   <option value="contracts">Contracts &amp; Legal Agreements</option>
@@ -343,23 +349,23 @@ export default function DocumentsHubPage() {
                 </select>
               </div>
               <div>
-                <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">Document title / file name *</label>
+                <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">Document title / file name *</label>
                 <input className={inputCls} value={form.fileName} onChange={(e) => setForm({ ...form, fileName: e.target.value })} placeholder="e.g. Architectural Elevation Sheet A-102.dwg" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">Category tag</label>
+                  <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">Category tag</label>
                   <input className={inputCls} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="e.g. Structural Blueprint" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">File size estimate</label>
+                  <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">File size estimate</label>
                   <input className={inputCls} value={form.fileSize} onChange={(e) => setForm({ ...form, fileSize: e.target.value })} placeholder="e.g. 14.8 MB" />
                 </div>
               </div>
+              {formError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF] font-medium">{formError}</p>}
             </div>
-            {formError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF] font-medium font-medium">{formError}</p>}
-            <div className="flex justify-end gap-2 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030]">
-              <button onClick={() => setFormOpen(false)} className="px-4 py-2.5 rounded-xl border border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030] text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] text-xs font-semibold hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] dark:hover:bg-[#1F1F1F]/50 transition-colors">
+            <div className="flex justify-end gap-2 p-6 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] shrink-0">
+              <button onClick={() => setFormOpen(false)} className="px-4 py-2.5 rounded-xl border border-[#D4D4D4] dark:border-[#303030] text-[#444444] dark:text-[#A3A3A3] text-xs font-semibold hover:bg-[#E5E5E5] dark:hover:bg-[#1F1F1F] transition-colors">
                 Cancel
               </button>
               <button onClick={submit} disabled={busy} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] text-xs font-bold shadow-md transition-all disabled:opacity-60">

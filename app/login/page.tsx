@@ -16,8 +16,21 @@ function LoginScreen() {
   };
 
   const initialPreset = searchParams.get("preset") || searchParams.get("role") || "";
+  const googleOnboarding = searchParams.get("googleOnboarding") === "true";
+  const initialGoogleEmail = searchParams.get("email") || "";
+  const initialGoogleName = searchParams.get("name") || "";
+  const initialGooglePicture = searchParams.get("picture") || "";
 
-  return <AuthPage onEnter={handleEnter} initialPreset={initialPreset} />;
+  return (
+    <AuthPage
+      onEnter={handleEnter}
+      initialPreset={initialPreset}
+      initialGoogleOnboarding={googleOnboarding}
+      initialGoogleEmail={initialGoogleEmail}
+      initialGoogleName={initialGoogleName}
+      initialGooglePicture={initialGooglePicture}
+    />
+  );
 }
 
 function LoginFallback() {

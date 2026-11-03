@@ -456,9 +456,9 @@ export default function MaterialsPage() {
 
         {/* Modal: Add Material Dialog */}
         {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-v18-backdrop">
-            <div className="v18-card animate-v18-modal bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full erp-modal-md shadow-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between pb-3 border-b border-[#D4D4D4] dark:border-[#303030]">
+          <div className="fixed inset-0 z-50 overflow-y-auto overscroll-contain p-4 sm:p-6 flex items-center justify-center bg-black/70 backdrop-blur-xs animate-v18-backdrop">
+            <div className="my-auto max-h-[88vh] flex flex-col overflow-hidden w-full erp-modal-md v18-card bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl shadow-2xl animate-v18-modal">
+              <div className="flex items-center justify-between p-6 pb-4 border-b border-[#D4D4D4] dark:border-[#303030] shrink-0">
                 <div className="flex items-center gap-2">
                   <div className="p-2 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border border-[#D4D4D4] dark:border-[#303030]">
                     <Boxes className="w-5 h-5" />
@@ -480,7 +480,8 @@ export default function MaterialsPage() {
                 </button>
               </div>
 
-              <form onSubmit={handleAddMaterial} className="space-y-4">
+              <form onSubmit={handleAddMaterial} className="flex-1 min-h-0 flex flex-col overflow-hidden">
+                <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-6 py-4 space-y-4 pr-2">
                 <div>
                   <label className="block text-xs font-semibold text-[#000000] dark:text-[#FFFFFF] mb-1">
                     Material Name *
@@ -602,7 +603,9 @@ export default function MaterialsPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#D4D4D4] dark:border-[#303030]">
+                </div>
+
+                <div className="flex items-center justify-end gap-3 p-6 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] shrink-0">
                   <button
                     type="button"
                     onClick={() => setShowAddModal(false)}

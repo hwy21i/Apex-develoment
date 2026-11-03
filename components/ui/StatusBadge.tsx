@@ -81,7 +81,7 @@ export function StatusBadge({
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[10px] tracking-wide capitalize shadow-2xs transition-colors ${cfg.badge} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] tracking-wide capitalize shadow-2xs transition-colors ${cfg.badge} ${className}`}
     >
       <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot}`} />
       <span>{value.replaceAll("_", " ").replaceAll("-", " ")}</span>

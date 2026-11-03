@@ -39,6 +39,7 @@ const goodsReceiptSchema = new Schema(
 );
 
 goodsReceiptSchema.index({ purchaseOrderId: 1, receiptDate: -1 });
+goodsReceiptSchema.index({ projectId: 1, createdAt: -1 });
 
 export type GoodsReceiptDocument = InferSchemaType<typeof goodsReceiptSchema>;
 export const GoodsReceipt =

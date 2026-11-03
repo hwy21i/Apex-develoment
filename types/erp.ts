@@ -8,6 +8,8 @@ export type RoleType =
   | "Procurement Officer"
   | "Storekeeper"
   | "Warehouse Manager"
+  | "Contractor"
+  | "Supplier"
   | "Accountant"
   | "HR Manager"
   | "Worker"
@@ -24,6 +26,8 @@ export const SYSTEM_ROLES: RoleType[] = [
   "Procurement Officer",
   "Storekeeper",
   "Warehouse Manager",
+  "Contractor",
+  "Supplier",
   "Accountant",
   "HR Manager",
   "Worker",

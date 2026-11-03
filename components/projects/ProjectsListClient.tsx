@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Building2,
   Plus,
@@ -9,11 +10,18 @@ import {
   DollarSign,
   Search,
   X,
+  FileText,
+  BarChart3,
+  CheckSquare,
+  ShoppingCart,
+  ArrowUpRight,
 } from "lucide-react";
 import { ProjectSummary } from "@/types/project";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { useSearch } from "@/components/layout/AppShell";
+import { getCached, setCached } from "@/lib/client-cache";
+import { downloadReportPdf } from "@/lib/exportPdf";
 
 interface ProjectsListClientProps {
   initialProjects: ProjectSummary[];
@@ -24,9 +32,17 @@ export default function ProjectsListClient({
   initialProjects,
   canCreate,
 }: ProjectsListClientProps) {
+  const router = useRouter();
   const { searchQuery: globalQuery, setSearchQuery: setGlobalQuery } = useSearch();
   const [localQuery, setLocalQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialProjects && initialProjects.length > 0) {
+      setCached("projects_summary_list", initialProjects, 60_000);
+    }
+  }, [initialProjects]);
 
   // Effective query is either the in-page search or the global header search
   const effectiveQuery = (localQuery || globalQuery || "").trim().toLowerCase();
@@ -54,6 +70,18 @@ export default function ProjectsListClient({
     setLocalQuery("");
     setGlobalQuery("");
     setStatusFilter("ALL");
+  };
+
+  const handleDownloadPdf = async (e: React.MouseEvent, projectId: string, projectName: string) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setDownloadingId(projectId);
+    await downloadReportPdf("project-overview", {
+      projectId,
+      title: `${projectName} — Project Execution Dossier`,
+      filename: `Apex_${projectName.replace(/[^a-zA-Z0-9_-]/g, "_")}_Report.pdf`,
+    });
+    setDownloadingId(null);
   };
 
   return (
@@ -135,18 +163,20 @@ export default function ProjectsListClient({
         </section>
       ) : (
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {filteredProjects.map((project) => {
+          {filteredProjects.map((project, idx) => {
             const rawBudget = Number(project.totalBudget ?? (project as unknown as { budget?: number }).budget ?? 0);
             const formattedBudget =
               rawBudget >= 1000000
                 ? `ETB ${(rawBudget / 1000000).toFixed(2)}M`
                 : `ETB ${rawBudget.toLocaleString()}`;
 
+            const staggerClass = `stagger-${(idx % 6) + 1}`;
+
             return (
-              <Link
+              <div
                 key={project._id}
-                href={`/projects/${project._id}/overview`}
-                className="group rounded-2xl border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#1F1F1F] p-5 transition-all hover:-translate-y-1 hover:border-[#000000] dark:hover:border-[#FFFFFF] flex flex-col justify-between shadow-xs"
+                onClick={() => router.push(`/projects/${project._id}/overview`)}
+                className={`group cursor-pointer rounded-2xl border border-[#D4D4D4] dark:border-[#303030] bg-[#FFFFFF] dark:bg-[#111111] p-5 transition-all duration-200 hover:-translate-y-1.5 hover:border-[#000000] dark:hover:border-[#FFFFFF] hover:shadow-xl flex flex-col justify-between animate-v18-spring ${staggerClass} relative`}
               >
                 <div>
                   <div className="flex items-start justify-between gap-3">
@@ -178,16 +208,58 @@ export default function ProjectsListClient({
                   </div>
                 </div>
 
-                <div className="mt-5 pt-3 border-t border-[#D4D4D4] dark:border-[#303030]">
+                {/* Quick Action Navigation Pills (Visible on Hover & Mobile) */}
+                <div
+                  className="mt-4 pt-3 border-t border-[#E5E5E5] dark:border-[#222222] flex flex-wrap items-center gap-1.5 transition-opacity"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Link
+                    href={`/projects/${project._id}/overview`}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold bg-[#FAFAFA] dark:bg-[#1A1A1A] text-[#111111] dark:text-[#EEEEEE] border border-[#D4D4D4] dark:border-[#333333] hover:border-[#000000] dark:hover:border-[#FFFFFF] transition-colors"
+                  >
+                    <span>Overview</span>
+                    <ArrowUpRight className="w-2.5 h-2.5" />
+                  </Link>
+                  <Link
+                    href={`/projects/${project._id}/budget`}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold bg-[#FAFAFA] dark:bg-[#1A1A1A] text-[#666666] dark:text-[#A3A3A3] border border-[#D4D4D4] dark:border-[#333333] hover:text-[#000000] dark:hover:text-[#FFFFFF] transition-colors"
+                  >
+                    <span>Budget</span>
+                  </Link>
+                  <Link
+                    href={`/projects/${project._id}/progress`}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold bg-[#FAFAFA] dark:bg-[#1A1A1A] text-[#666666] dark:text-[#A3A3A3] border border-[#D4D4D4] dark:border-[#333333] hover:text-[#000000] dark:hover:text-[#FFFFFF] transition-colors"
+                  >
+                    <span>Tasks</span>
+                  </Link>
+                  <Link
+                    href={`/projects/${project._id}/procurement`}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold bg-[#FAFAFA] dark:bg-[#1A1A1A] text-[#666666] dark:text-[#A3A3A3] border border-[#D4D4D4] dark:border-[#333333] hover:text-[#000000] dark:hover:text-[#FFFFFF] transition-colors"
+                  >
+                    <span>Procurement</span>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={(e) => handleDownloadPdf(e, project._id, project.name)}
+                    disabled={downloadingId === project._id}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold bg-[#000000] text-[#FFFFFF] dark:bg-[#FFFFFF] dark:text-[#000000] hover:opacity-85 transition-opacity ml-auto"
+                    title="Download Official Project PDF Report"
+                  >
+                    <FileText className="w-2.5 h-2.5" />
+                    <span>{downloadingId === project._id ? "PDF..." : "PDF Report"}</span>
+                  </button>
+                </div>
+
+                <div className="mt-3 pt-2">
                   <div className="flex justify-between text-[11px] mb-1.5">
-                    <span className="text-[#666666] dark:text-[#A3A3A3] font-medium">Progress</span>
+                    <span className="text-[#666666] dark:text-[#A3A3A3] font-medium">Site Completion</span>
                     <span className="text-[#000000] dark:text-[#FFFFFF] font-mono font-bold">
                       {project.progressPercentage}%
                     </span>
                   </div>
                   <ProgressBar value={project.progressPercentage} />
                 </div>
-              </Link>
+              </div>
             );
           })}
         </div>

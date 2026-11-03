@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
   Users2,
@@ -66,8 +66,14 @@ export default function ClientsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  useEffect(() => {
+    if (projects.length > 0 && !form.projectId) {
+      setForm((prev) => ({ ...prev, projectId: projects[0]._id }));
+    }
+  }, [projects, form.projectId]);
+
   const openForm = () => {
-    setForm({ ...EMPTY_FORM, projectId: projects[0]?._id || "" });
+    setForm({ ...EMPTY_FORM, projectId: form.projectId || projects[0]?._id || "" });
     setFormError(null);
     setFormOpen(true);
   };
@@ -221,16 +227,16 @@ export default function ClientsPage() {
 
       {/* Create modal */}
       {formOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] pb-4">
+        <div className="fixed inset-0 z-50 overflow-y-auto overscroll-contain p-4 sm:p-6 flex items-center justify-center bg-black/70 backdrop-blur-xs animate-v18-backdrop">
+          <div className="my-auto max-h-[88vh] flex flex-col overflow-hidden w-full max-w-lg v18-card bg-[#FFFFFF] dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] rounded-2xl shadow-2xl animate-v18-modal">
+            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] p-6 pb-4 shrink-0">
               <h2 className="text-base font-bold text-[#000000] dark:text-[#FFFFFF]">Add Client</h2>
               <button onClick={() => setFormOpen(false)} className="text-[#888888] dark:text-[#888888] hover:text-[#000000] dark:hover:text-[#FFFFFF]">
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-6 py-4 space-y-3 pr-2">
               <div>
                 <label className="text-[11px] text-[#888888] dark:text-[#888888] block mb-1">Associated Project</label>
                 <select
@@ -312,21 +318,20 @@ export default function ClientsPage() {
                   </select>
                 </div>
               </div>
+              {formError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF] bg-black/5 dark:bg-white/10 p-2 rounded">{formError}</p>}
             </div>
 
-            {formError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF] bg-black/5 dark:bg-white/10 p-2 rounded">{formError}</p>}
-
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex justify-end gap-2 p-6 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] shrink-0">
               <button
                 onClick={() => setFormOpen(false)}
-                className="bg-[#FAFAFA] hover:bg-[#E5E5E5] dark:bg-[#171717] dark:hover:bg-[#1F1F1F] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] px-4 py-2 rounded-lg text-xs font-semibold"
+                className="bg-[#FAFAFA] hover:bg-[#E5E5E5] dark:bg-[#171717] dark:hover:bg-[#1F1F1F] text-[#000000] dark:text-[#FFFFFF] border border-[#D4D4D4] dark:border-[#303030] px-4 py-2 rounded-xl text-xs font-semibold"
               >
                 Cancel
               </button>
               <button
                 onClick={submit}
                 disabled={busy}
-                className="bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-lg text-xs font-semibold disabled:opacity-50 flex items-center gap-2"
+                className="bg-[#000000] hover:bg-[#303030] dark:bg-[#FFFFFF] dark:hover:bg-[#D4D4D4] text-[#FFFFFF] dark:text-[#000000] px-4 py-2 rounded-xl text-xs font-bold disabled:opacity-50 flex items-center gap-2"
               >
                 {busy && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Save Client

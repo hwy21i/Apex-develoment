@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
   Plus, Search, Loader2, X, PieChart,
@@ -99,6 +99,13 @@ export default function FinanceBudgetsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  // Auto-select first accessible project if none selected yet
+  useEffect(() => {
+    if (projects.length > 0 && !form.projectId) {
+      setForm((prev) => ({ ...prev, projectId: projects[0]._id }));
+    }
+  }, [projects, form.projectId]);
+
   const filtered = budgets.filter((b) => {
     const matchSearch =
       b.budgetCode.toLowerCase().includes(search.toLowerCase()) ||
@@ -130,7 +137,7 @@ export default function FinanceBudgetsPage() {
   const fmt = (n: number) => formatCurrency(n);
 
   const openForm = () => {
-    setForm({ ...EMPTY_FORM, projectId: projects[0]?._id || "" });
+    setForm({ ...EMPTY_FORM, projectId: form.projectId || projects[0]?._id || "" });
     setFormError(null);
     setFormOpen(true);
   };
@@ -375,9 +382,9 @@ export default function FinanceBudgetsPage() {
 
       {/* Create modal */}
       {formOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-v18-backdrop">
-          <div className="v18-card animate-v18-modal bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl w-full erp-modal-md p-6 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030] pb-3">
+        <div className="fixed inset-0 z-50 overflow-y-auto overscroll-contain p-4 sm:p-6 flex items-center justify-center bg-black/70 backdrop-blur-xs animate-v18-backdrop">
+          <div className="my-auto max-h-[88vh] flex flex-col overflow-hidden w-full erp-modal-md v18-card bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl shadow-2xl animate-v18-modal">
+            <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] p-6 pb-4 shrink-0">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border border-[#D4D4D4] dark:border-[#303030]">
                   <PieChart className="w-5 h-5" />
@@ -389,15 +396,15 @@ export default function FinanceBudgetsPage() {
               </div>
               <button
                 onClick={() => setFormOpen(false)}
-                className="p-1.5 rounded-lg text-[#888888] dark:text-[#888888] hover:text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] dark:hover:text-[#000000] dark:hover:text-[#FFFFFF] hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] dark:hover:bg-[#1F1F1F] transition-colors"
+                className="p-1.5 rounded-lg text-[#888888] hover:text-[#444444] dark:text-[#A3A3A3] dark:hover:text-[#FFFFFF] hover:bg-[#E5E5E5] dark:hover:bg-[#1F1F1F] transition-colors"
               >
                 <X size={16} />
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-6 py-4 space-y-3 pr-2">
               <div>
-                <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">Project *</label>
+                <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">Project *</label>
                 <select className={inputCls} value={form.projectId} onChange={(e) => setForm({ ...form, projectId: e.target.value })}>
                   {projects.length === 0 && <option value="">No accessible projects</option>}
                   {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
@@ -405,58 +412,57 @@ export default function FinanceBudgetsPage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">Budget code</label>
+                  <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">Budget code</label>
                   <input className={inputCls} value={form.budgetCode} onChange={(e) => setForm({ ...form, budgetCode: e.target.value })} placeholder="CSI-03-CONC" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">WBS category / description</label>
+                  <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">WBS category / description</label>
                   <input className={inputCls} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} placeholder="Substructure & Concrete" />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">Total allocated (ETB)</label>
+                  <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">Total allocated (ETB)</label>
                   <input type="number" min="0" className={inputCls} value={form.totalAmount} onChange={(e) => setForm({ ...form, totalAmount: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">Spent to date (ETB)</label>
+                  <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">Spent to date (ETB)</label>
                   <input type="number" min="0" className={inputCls} value={form.spentAmount} onChange={(e) => setForm({ ...form, spentAmount: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">Committed (ETB)</label>
+                  <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">Committed (ETB)</label>
                   <input type="number" min="0" className={inputCls} value={form.committedAmount} onChange={(e) => setForm({ ...form, committedAmount: e.target.value })} />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">Start date</label>
+                  <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">Start date</label>
                   <input type="date" className={inputCls} value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">End date</label>
+                  <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">End date</label>
                   <input type="date" className={inputCls} value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })} />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">Fiscal year</label>
+                  <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">Fiscal year</label>
                   <input className={inputCls} value={form.fiscalYear} onChange={(e) => setForm({ ...form, fiscalYear: e.target.value })} placeholder="2023/24" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-[#444444] dark:text-[#D4D4D4] dark:text-[#A3A3A3] block mb-1">Status</label>
+                  <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">Status</label>
                   <select className={inputCls} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as BudgetStatus })}>
                     {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
               </div>
+              {formError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF] font-medium">{formError}</p>}
             </div>
 
-            {formError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF] font-medium font-medium">{formError}</p>}
-
-            <div className="flex justify-end gap-2 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] dark:border-[#303030]">
+            <div className="flex justify-end gap-2 p-6 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] shrink-0">
               <button
                 onClick={() => setFormOpen(false)}
-                className="px-4 py-2.5 rounded-xl border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] text-xs font-semibold hover:bg-[#E5E5E5] dark:hover:bg-[#2A2A2A] dark:hover:bg-[#1F1F1F] transition-colors"
+                className="px-4 py-2.5 rounded-xl border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] text-xs font-semibold hover:bg-[#E5E5E5] dark:hover:bg-[#1F1F1F] transition-colors"
               >
                 Cancel
               </button>
