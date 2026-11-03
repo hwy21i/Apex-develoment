@@ -32,6 +32,27 @@ interface ManagerOption {
   role: string;
 }
 
+const DEFAULT_MANAGERS: ManagerOption[] = [
+  {
+    _id: "usr-pm-marta",
+    fullName: "Marta Tesfaye",
+    email: "engineer.apex@gmail.com",
+    role: "Site Engineer",
+  },
+  {
+    _id: "usr-pm-abebe",
+    fullName: "Abebe Kebede",
+    email: "pm.abebe@apexdevelopments.com",
+    role: "Project Manager",
+  },
+  {
+    _id: "usr-pm-hawariya",
+    fullName: "Hawariya Alemayehu",
+    email: "admin@apexdevelopments.com",
+    role: "Project Director",
+  },
+];
+
 interface ProjectFormProps {
   initialProject?: ProjectSummary;
 }
@@ -60,19 +81,20 @@ export default function ProjectForm({ initialProject }: ProjectFormProps) {
     status: initialProject?.status || "planning",
     projectManager: typeof initialProject?.projectManager === "string"
       ? initialProject.projectManager
-      : initialProject?.projectManager?._id || "",
+      : initialProject?.projectManager?._id || DEFAULT_MANAGERS[0]._id,
     notes: (initialProject as { notes?: string })?.notes || "",
   });
 
   const [hierarchy, setHierarchy] = useState<HierarchicalLocationValue>({
-    countryId: "",
+    countryId: "loc-country-eth",
+    countryName: "Ethiopia",
     regionId: "",
     cityId: "",
     district: "",
     address: initialProject?.location || "",
   });
 
-  const [managers, setManagers] = useState<ManagerOption[]>([]);
+  const [managers, setManagers] = useState<ManagerOption[]>(DEFAULT_MANAGERS);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -82,14 +104,17 @@ export default function ProjectForm({ initialProject }: ProjectFormProps) {
         const res = await fetch("/api/users?limit=100", { cache: "no-store" });
         const json = await res.json();
         if (res.ok && json.success && Array.isArray(json.data?.items)) {
-          setManagers(
-            json.data.items.filter(
-              (u: ManagerOption) =>
-                u.role === "Project Manager" || u.role === "Admin" || u.role === "Site Engineer"
-            )
+          const eligible = json.data.items.filter(
+            (u: ManagerOption) =>
+              u.role === "Project Manager" || u.role === "Admin" || u.role === "Site Engineer"
           );
+          if (eligible.length > 0) {
+            setManagers(eligible);
+          }
         }
-      } catch {}
+      } catch (err) {
+        console.warn("Notice: Loaded default project managers", err);
+      }
     }
     loadManagers();
   }, []);

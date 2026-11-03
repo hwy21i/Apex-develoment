@@ -658,7 +658,7 @@ export default function LiveDeliveryTracker() {
       {/* MODAL: LOG NEW CHECKPOINT */}
       {checkpointModalOpen && targetShipment && mounted && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-150">
-          <div className="relative w-full max-w-lg bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-150">
+          <div className="relative w-full max-w-lg bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-3xl shadow-2xl flex flex-col max-h-[85dvh] overflow-hidden animate-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between p-6 pb-4 border-b border-[#D4D4D4] dark:border-[#303030] shrink-0">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-2xl bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border border-[#D4D4D4] dark:border-[#303030]">
@@ -744,7 +744,7 @@ export default function LiveDeliveryTracker() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 p-6 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] shrink-0">
+              <div className="sticky bottom-0 bg-white dark:bg-[#111111] border-t border-[#D4D4D4] dark:border-[#303030] p-4 sm:p-6 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))] z-10 shrink-0 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setCheckpointModalOpen(false)}
@@ -770,7 +770,7 @@ export default function LiveDeliveryTracker() {
       {/* MODAL: DISPATCH NEW SHIPMENT */}
       {createModalOpen && mounted && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-150">
-          <div className="relative w-full max-w-lg bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-150">
+          <div className="relative w-full max-w-lg bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-3xl shadow-2xl flex flex-col max-h-[85dvh] overflow-hidden animate-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between p-6 pb-4 border-b border-[#D4D4D4] dark:border-[#303030] shrink-0">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-2xl bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border border-[#D4D4D4] dark:border-[#303030]">
@@ -887,7 +887,7 @@ export default function LiveDeliveryTracker() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 p-6 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] shrink-0">
+              <div className="sticky bottom-0 bg-white dark:bg-[#111111] border-t border-[#D4D4D4] dark:border-[#303030] p-4 sm:p-6 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))] z-10 shrink-0 flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setCreateModalOpen(false)}

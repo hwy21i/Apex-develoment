@@ -1,6 +1,17 @@
 "use client";
 
 import React, { useEffect, useState, useId } from "react";
+import {
+  type CountryOption,
+  type RegionOption,
+  type CityOption,
+  type OfflineRegionData,
+  DEFAULT_OFFLINE_COUNTRIES,
+  OFFLINE_ETHIOPIAN_REGIONS,
+} from "@/lib/geo/ethiopia-locations";
+
+export type { CountryOption, RegionOption, CityOption, OfflineRegionData };
+export { DEFAULT_OFFLINE_COUNTRIES, OFFLINE_ETHIOPIAN_REGIONS };
 
 export interface HierarchicalLocationValue {
   countryId: string;
@@ -20,32 +31,13 @@ interface LocationSelectorProps {
   disabled?: boolean;
 }
 
-interface CountryOption {
-  _id: string;
-  name: string;
-  countryCode: string;
-  currencyCode: string;
-}
-
-interface RegionOption {
-  _id: string;
-  name: string;
-  regionCode?: string;
-}
-
-interface CityOption {
-  _id: string;
-  name: string;
-  cityCode?: string;
-}
-
 export default function HierarchicalLocationSelector({
   value,
   onChange,
   required = false,
   disabled = false,
 }: LocationSelectorProps) {
-  const [countries, setCountries] = useState<CountryOption[]>([]);
+  const [countries, setCountries] = useState<CountryOption[]>(DEFAULT_OFFLINE_COUNTRIES);
   const [regions, setRegions] = useState<RegionOption[]>([]);
   const [cities, setCities] = useState<CityOption[]>([]);
 
@@ -67,11 +59,15 @@ export default function HierarchicalLocationSelector({
       try {
         const res = await fetch("/api/countries");
         const json = await res.json();
-        if (json.success && mounted) {
-          setCountries(json.data.items || []);
+        if (json.success && mounted && Array.isArray(json.data?.items) && json.data.items.length > 0) {
+          const fetched = json.data.items as CountryOption[];
+          const hasEth = fetched.some(
+            (c) => c.countryCode === "ETH" || c.name.toLowerCase().includes("ethiopia")
+          );
+          setCountries(hasEth ? fetched : [...DEFAULT_OFFLINE_COUNTRIES, ...fetched]);
         }
       } catch (err) {
-        console.error("Failed to load countries:", err);
+        console.warn("Notice: Loading countries from offline defaults", err);
       } finally {
         if (mounted) setLoadingCountries(false);
       }
@@ -98,16 +94,34 @@ export default function HierarchicalLocationSelector({
       };
     }
 
+    // Immediately supply offline regions for Ethiopia so there is 0 delay
+    const selectedCountry = countries.find((c) => c._id === value.countryId);
+    const isEthiopia =
+      value.countryId === "loc-country-eth" ||
+      selectedCountry?.countryCode === "ETH" ||
+      selectedCountry?.name.toLowerCase().includes("ethiopia") ||
+      value.countryName?.toLowerCase().includes("ethiopia");
+
+    if (isEthiopia) {
+      setRegions(
+        OFFLINE_ETHIOPIAN_REGIONS.map((r) => ({
+          _id: r._id,
+          name: r.name,
+          regionCode: r.regionCode,
+        }))
+      );
+    }
+
     async function fetchRegions() {
       setLoadingRegions(true);
       try {
         const res = await fetch(`/api/regions?countryId=${value.countryId}`);
         const json = await res.json();
-        if (json.success && mounted) {
-          setRegions(json.data.items || []);
+        if (json.success && mounted && Array.isArray(json.data?.items) && json.data.items.length > 0) {
+          setRegions(json.data.items);
         }
       } catch (err) {
-        console.error("Failed to load regions:", err);
+        console.warn("Notice: Using offline Ethiopian regions", err);
       } finally {
         if (mounted) setLoadingRegions(false);
       }
@@ -116,7 +130,7 @@ export default function HierarchicalLocationSelector({
     return () => {
       mounted = false;
     };
-  }, [value.countryId]);
+  }, [value.countryId, value.countryName, countries]);
 
   // Load cities when regionId changes
   useEffect(() => {
@@ -133,16 +147,27 @@ export default function HierarchicalLocationSelector({
       };
     }
 
+    // Immediately supply offline cities/subcities for the selected region
+    const matchedRegion = OFFLINE_ETHIOPIAN_REGIONS.find(
+      (r) =>
+        r._id === value.regionId ||
+        r.name.toLowerCase() === value.regionName?.toLowerCase()
+    );
+
+    if (matchedRegion && matchedRegion.cities.length > 0) {
+      setCities(matchedRegion.cities);
+    }
+
     async function fetchCities() {
       setLoadingCities(true);
       try {
         const res = await fetch(`/api/cities?regionId=${value.regionId}`);
         const json = await res.json();
-        if (json.success && mounted) {
-          setCities(json.data.items || []);
+        if (json.success && mounted && Array.isArray(json.data?.items) && json.data.items.length > 0) {
+          setCities(json.data.items);
         }
       } catch (err) {
-        console.error("Failed to load cities:", err);
+        console.warn("Notice: Using offline cities", err);
       } finally {
         if (mounted) setLoadingCities(false);
       }
@@ -151,14 +176,19 @@ export default function HierarchicalLocationSelector({
     return () => {
       mounted = false;
     };
-  }, [value.regionId]);
+  }, [value.regionId, value.regionName]);
 
   const handleCountryChange = (cId: string) => {
     const selected = countries.find((c) => c._id === cId);
+    const isEth =
+      cId === "loc-country-eth" ||
+      selected?.countryCode === "ETH" ||
+      selected?.name?.toLowerCase().includes("ethiopia");
+
     onChange({
       ...value,
       countryId: cId,
-      countryName: selected?.name || "",
+      countryName: selected?.name || (isEth ? "Ethiopia" : ""),
       regionId: "",
       regionName: "",
       cityId: "",

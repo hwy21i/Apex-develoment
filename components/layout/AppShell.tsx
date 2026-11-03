@@ -97,6 +97,11 @@ export default function AppShell({
 
   const pathname = usePathname();
 
+  // Automatically dismiss mobile sidebar drawer immediately on route transition
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [pathname]);
+
   return (
     <SearchContext.Provider value={{ searchQuery, setSearchQuery }}>
       <div className="h-dvh w-full overflow-hidden flex bg-[var(--background)] text-[var(--foreground)] font-sans transition-colors relative">
@@ -142,10 +147,9 @@ export default function AppShell({
             />
           </div>
 
-          {/* Dynamic Page Content with Smooth Transition */}
+          {/* Dynamic Page Content with Smooth Transition (without black screen flash) */}
           <main
-            key={pathname}
-            className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain scroll-smooth p-3 sm:p-6 lg:p-8 relative z-10 animate-slide-up"
+            className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain scroll-smooth p-3 sm:p-6 lg:p-8 relative z-10 transition-opacity duration-150"
           >
             <div className="mx-auto w-full max-w-[1800px] min-w-0 overflow-x-hidden">
               {children}

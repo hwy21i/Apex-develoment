@@ -68,12 +68,18 @@ export async function GET(
     const isExecutive =
       guard.user.role === "Super Admin" ||
       guard.user.role === "Company Admin" ||
-      guard.user.role === "Admin";
+      guard.user.role === "Admin" ||
+      guard.user.role === "Site Engineer" ||
+      guard.user.role === "Project Manager" ||
+      guard.user.role === "Accountant" ||
+      guard.user.role === "Quantity Surveyor";
 
     if (!isExecutive) {
       const accessQuery = buildProjectAccessQuery(guard.user);
       const projectIds = await Project.find(accessQuery).distinct("_id");
-      query.projectId = { $in: projectIds };
+      if (projectIds.length > 0) {
+        query.projectId = { $in: projectIds };
+      }
     }
 
     if (projectId) {

@@ -32,6 +32,16 @@ test("RBAC - Role Default Permissions", () => {
   assert.ok(hasPermission({ role: "Project Manager" }, "PROJECT_CREATE"));
   assert.ok(hasPermission({ role: "Project Manager" }, "TASK_UPDATE"));
 
+  // Site Engineer permissions: must have FINANCE_VIEW, PROJECT_VIEW, PROJECT_CREATE, BUDGET_VIEW, BUDGET_CREATE, TASK_VIEW
+  assert.ok(hasPermission({ role: "Site Engineer" }, "FINANCE_VIEW"));
+  assert.ok(hasPermission({ role: "Site Engineer" }, "PROJECT_VIEW"));
+  assert.ok(hasPermission({ role: "Site Engineer" }, "PROJECT_CREATE"));
+  assert.ok(hasPermission({ role: "Site Engineer" }, "BUDGET_VIEW"));
+  assert.ok(hasPermission({ role: "Site Engineer" }, "BUDGET_CREATE"));
+  assert.ok(hasPermission({ role: "Site Engineer" }, "TASK_VIEW"));
+  assert.ok(hasPermission({ role: "Site Engineer" }, "finance.read"));
+  assert.ok(hasPermission({ role: "Site Engineer" }, "finance.create"));
+
   // Site Engineer should NOT have finance approval
   assert.equal(hasPermission({ role: "Site Engineer" }, "EXPENSE_APPROVE"), false);
 
@@ -156,5 +166,44 @@ test("Authentication - Email Validation and First-Time Google Onboarding Logic",
     action: "SIGN_IN_EXISTING",
     needsRole: false,
   });
+});
+
+test("Ethiopian Hierarchical Location Offline Dataset Integrity", async () => {
+  const { OFFLINE_ETHIOPIAN_REGIONS, DEFAULT_OFFLINE_COUNTRIES } = await import(
+    "../lib/geo/ethiopia-locations.ts"
+  );
+
+  // Country check
+  assert.equal(DEFAULT_OFFLINE_COUNTRIES.length, 1);
+  assert.equal(DEFAULT_OFFLINE_COUNTRIES[0].name, "Ethiopia");
+  assert.equal(DEFAULT_OFFLINE_COUNTRIES[0].countryCode, "ETH");
+
+  // 7 Authentic Regions check
+  assert.equal(OFFLINE_ETHIOPIAN_REGIONS.length, 7);
+  const regionNames = OFFLINE_ETHIOPIAN_REGIONS.map((r) => r.name);
+  assert.ok(regionNames.includes("Addis Ababa"));
+  assert.ok(regionNames.includes("Oromia"));
+  assert.ok(regionNames.includes("Amhara"));
+  assert.ok(regionNames.includes("Tigray"));
+  assert.ok(regionNames.includes("Sidama"));
+  assert.ok(regionNames.includes("Dire Dawa"));
+  assert.ok(regionNames.includes("Somali"));
+
+  // Addis Ababa 11 subcities check
+  const addis = OFFLINE_ETHIOPIAN_REGIONS.find((r) => r.name === "Addis Ababa");
+  assert.ok(addis);
+  assert.equal(addis.cities.length, 11);
+  const subcityNames = addis.cities.map((c) => c.name);
+  assert.ok(subcityNames.includes("Bole Sub-City"));
+  assert.ok(subcityNames.includes("Kirkos Sub-City"));
+  assert.ok(subcityNames.includes("Yeka Sub-City"));
+  assert.ok(subcityNames.includes("Arada Sub-City"));
+  assert.ok(subcityNames.includes("Lideta Sub-City"));
+  assert.ok(subcityNames.includes("Addis Ketema Sub-City"));
+  assert.ok(subcityNames.includes("Gullele Sub-City"));
+  assert.ok(subcityNames.includes("Kolfe Keranio Sub-City"));
+  assert.ok(subcityNames.includes("Akaki Kality Sub-City"));
+  assert.ok(subcityNames.includes("Nifas Silk-Lafto Sub-City"));
+  assert.ok(subcityNames.includes("Lemi Kura Sub-City"));
 });
 

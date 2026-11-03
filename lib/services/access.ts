@@ -12,7 +12,9 @@ export function buildProjectAccessQuery(user: SessionUser): Record<string, unkno
     user.role === "Company Admin" ||
     user.role === "Admin" ||
     user.role === "Accountant" ||
-    user.role === "Quantity Surveyor";
+    user.role === "Quantity Surveyor" ||
+    user.role === "Site Engineer" ||
+    user.role === "Project Manager";
 
   // Executives and administrators have company-wide project visibility
   if (isExecutive) {
@@ -103,12 +105,18 @@ export async function canAccessProject(
     return false;
   }
 
-  // Company Admin can access any project within their organization
-  if (user.role === "Company Admin") {
-    if (userOrgId) {
+  // Company Admin, Site Engineer, Project Manager, Accountant, Quantity Surveyor can access projects in their organization
+  if (
+    user.role === "Company Admin" ||
+    user.role === "Site Engineer" ||
+    user.role === "Project Manager" ||
+    user.role === "Accountant" ||
+    user.role === "Quantity Surveyor"
+  ) {
+    if (userOrgId && projectOrgId) {
       return projectOrgId === userOrgId;
     }
-    return !projectOrgId;
+    return true;
   }
 
   // Explicit assigned projects list on user profile

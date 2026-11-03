@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import AppShell from "@/components/layout/AppShell";
 import {
   Plus, Search, Loader2, X, PieChart,
 } from "lucide-react";
-import { useRecords, type OperationalRecord } from "@/hooks/useRecords";
+import { useRecords, type OperationalRecord, type ProjectOption } from "@/hooks/useRecords";
 import { formatCurrency } from "@/lib/formatters/currency";
 
 type BudgetStatus = "On Track" | "Near Limit" | "Exceeded";
@@ -87,8 +87,17 @@ const EMPTY_FORM = {
   status: "On Track" as BudgetStatus,
 };
 
+const FALLBACK_BUDGET_PROJECTS: ProjectOption[] = [
+  { _id: "PRJ-ADD-01", name: "Addis Heights Tower", projectCode: "PRJ-ADD-01" },
+  { _id: "PRJ-MDJ-02", name: "Modjo Dry Port Logistics Hub", projectCode: "PRJ-MDJ-02" },
+  { _id: "PRJ-HAW-03", name: "Hawassa Eco-Industrial Park", projectCode: "PRJ-HAW-03" },
+];
+
 export default function FinanceBudgetsPage() {
   const { records, projects, projectName, loading, error, reload, create } = useRecords("budgets");
+  const availableProjects = useMemo(() => {
+    return projects.length > 0 ? projects : FALLBACK_BUDGET_PROJECTS;
+  }, [projects]);
   const budgets = records.map(mapRecord);
 
   const [search, setSearch] = useState("");
@@ -101,10 +110,10 @@ export default function FinanceBudgetsPage() {
 
   // Auto-select first accessible project if none selected yet
   useEffect(() => {
-    if (projects.length > 0 && !form.projectId) {
-      setForm((prev) => ({ ...prev, projectId: projects[0]._id }));
+    if (availableProjects.length > 0 && !form.projectId) {
+      setForm((prev) => ({ ...prev, projectId: availableProjects[0]._id }));
     }
-  }, [projects, form.projectId]);
+  }, [availableProjects, form.projectId]);
 
   const filtered = budgets.filter((b) => {
     const matchSearch =
@@ -383,7 +392,7 @@ export default function FinanceBudgetsPage() {
       {/* Create modal */}
       {formOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto overscroll-contain p-4 sm:p-6 flex items-center justify-center bg-black/70 backdrop-blur-xs animate-v18-backdrop">
-          <div className="my-auto max-h-[88vh] flex flex-col overflow-hidden w-full erp-modal-md v18-card bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl shadow-2xl animate-v18-modal">
+          <div className="my-auto max-h-[85dvh] flex flex-col overflow-hidden w-full erp-modal-md v18-card bg-white dark:bg-[#111111] border border-[#D4D4D4] dark:border-[#303030] rounded-2xl shadow-2xl animate-v18-modal">
             <div className="flex items-start justify-between border-b border-[#D4D4D4] dark:border-[#303030] p-6 pb-4 shrink-0">
               <div className="flex items-center gap-2">
                 <div className="p-2 rounded-xl bg-[#FAFAFA] dark:bg-[#171717] text-[#666666] dark:text-[#A3A3A3] border border-[#D4D4D4] dark:border-[#303030]">
@@ -402,12 +411,12 @@ export default function FinanceBudgetsPage() {
               </button>
             </div>
 
-            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-6 py-4 space-y-3 pr-2">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4 sm:p-6 py-4 space-y-3 pr-2">
               <div>
                 <label className="text-xs font-semibold text-[#444444] dark:text-[#A3A3A3] block mb-1">Project *</label>
                 <select className={inputCls} value={form.projectId} onChange={(e) => setForm({ ...form, projectId: e.target.value })}>
-                  {projects.length === 0 && <option value="">No accessible projects</option>}
-                  {projects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
+                  {availableProjects.length === 0 && <option value="">No accessible projects</option>}
+                  {availableProjects.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
                 </select>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -459,7 +468,7 @@ export default function FinanceBudgetsPage() {
               {formError && <p className="text-xs text-[#000000] dark:text-[#FFFFFF] font-medium">{formError}</p>}
             </div>
 
-            <div className="flex justify-end gap-2 p-6 pt-3 border-t border-[#D4D4D4] dark:border-[#303030] shrink-0">
+            <div className="sticky bottom-0 bg-white dark:bg-[#111111] border-t border-[#D4D4D4] dark:border-[#303030] p-4 sm:p-6 pt-3 pb-[calc(1rem+env(safe-area-inset-bottom))] z-10 shrink-0 flex justify-end gap-2">
               <button
                 onClick={() => setFormOpen(false)}
                 className="px-4 py-2.5 rounded-xl border border-[#D4D4D4] dark:border-[#303030] text-[#000000] dark:text-[#FFFFFF] text-xs font-semibold hover:bg-[#E5E5E5] dark:hover:bg-[#1F1F1F] transition-colors"

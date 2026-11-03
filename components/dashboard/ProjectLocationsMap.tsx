@@ -213,7 +213,7 @@ export default function ProjectLocationsMap({
       if (locations && locations.length > 0) {
         return { displayLocations: locations, unmappedProjects: [] };
       }
-      return { displayLocations: [], unmappedProjects: [] };
+      return { displayLocations: DEFAULT_ETHIOPIAN_LOCATIONS, unmappedProjects: [] };
     }
 
     const mapped: ProjectLocationItem[] = [];
@@ -493,22 +493,40 @@ export default function ProjectLocationsMap({
           });
         }
 
-        // Invalidate size once DOM has rendered
-        setTimeout(() => {
+        // Invalidate size once DOM has rendered with 200ms timeout
+        const initialTimer = setTimeout(() => {
           if (mapInstanceRef.current) {
             mapInstanceRef.current.invalidateSize();
           }
-        }, 150);
+        }, 200);
+
+        // Attach ResizeObserver to map container to guarantee tiles fill 100% without white gaps
+        let observer: ResizeObserver | null = null;
+        if (mapContainerRef.current && typeof ResizeObserver !== "undefined") {
+          observer = new ResizeObserver(() => {
+            if (mapInstanceRef.current) {
+              mapInstanceRef.current.invalidateSize();
+            }
+          });
+          observer.observe(mapContainerRef.current);
+        }
+
+        cleanupFn = () => {
+          clearTimeout(initialTimer);
+          if (observer) observer.disconnect();
+        };
       } catch (err) {
         console.warn("Leaflet map initialization notice:", err);
         setMapError(true);
       }
     }
 
+    let cleanupFn: (() => void) | undefined;
     initMap();
 
     return () => {
       isCancelled = true;
+      if (cleanupFn) cleanupFn();
     };
   }, [resolvedTheme, activeLayerType, displayLocations, activeLocation, isDark]);
 
@@ -595,7 +613,7 @@ export default function ProjectLocationsMap({
         )}
 
         {/* Map Viewport Area */}
-        <div className="mt-4 relative rounded-2xl overflow-hidden border border-[#D4D4D4] dark:border-[#303030] h-64 sm:h-72 bg-[#F5F5F5] dark:bg-[#171717]">
+        <div className="mt-4 w-full aspect-[4/3] min-h-[260px] max-h-[340px] relative overflow-hidden rounded-xl bg-zinc-900 border border-[#D4D4D4] dark:border-[#303030]">
           {mapError ? (
             /* Resilient SVG Fallback with accurate Ethiopia polygon and nodes */
             <div className="w-full h-full relative flex items-center justify-center p-4">

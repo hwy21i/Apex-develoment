@@ -118,6 +118,8 @@ export type Permission =
   | "equipment.maintain"
   // Finance & Cost Control
   | "FINANCE_VIEW"
+  | "BUDGET_VIEW"
+  | "BUDGET_CREATE"
   | "EXPENSE_CREATE"
   | "EXPENSE_APPROVE"
   | "INVOICE_VIEW"

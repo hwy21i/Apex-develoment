@@ -630,7 +630,7 @@ export default function ConstructionDashboard({
             </div>
 
             {/* SVG Line Chart */}
-            <div className="mt-6 w-full h-48 sm:h-56 relative min-w-0">
+            <div className="mt-4 sm:mt-6 w-full aspect-[16/10] min-h-[220px] pr-2 relative min-w-0">
               <svg
                 viewBox="0 0 600 200"
                 className="w-full h-full overflow-visible transition-all duration-300"
@@ -689,11 +689,22 @@ export default function ConstructionDashboard({
               </svg>
             </div>
 
-            {/* Dynamic labels */}
-            <div className="mt-2 flex justify-between text-[11px] font-mono text-[#A3A3A3] dark:text-[#777777] px-2">
-              {TIMEFRAME_CONFIG[timeFilter].labels.map((lbl, idx) => (
-                <span key={idx}>{lbl}</span>
-              ))}
+            {/* Dynamic labels with responsive ticks and auto-skip on mobile to prevent cramping */}
+            <div className="mt-2 flex justify-between text-[10px] sm:text-[11px] font-mono text-[#A3A3A3] dark:text-[#777777] px-1 sm:px-2">
+              {TIMEFRAME_CONFIG[timeFilter].labels.map((lbl, idx) => {
+                const isHiddenOnMobile =
+                  timeFilter === "Month" &&
+                  idx % 2 === 1 &&
+                  idx !== TIMEFRAME_CONFIG[timeFilter].labels.length - 1;
+                return (
+                  <span
+                    key={idx}
+                    className={`${isHiddenOnMobile ? "hidden sm:inline" : "inline"} truncate`}
+                  >
+                    {lbl}
+                  </span>
+                );
+              })}
             </div>
           </div>
 
